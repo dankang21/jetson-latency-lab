@@ -86,16 +86,29 @@ python3 analysis/plot.py        # tail / jitter-vs-compute / CDF PNGs
 
 ## Results
 
-> Filled from your run. `analysis/analyze.py` prints this table ready to paste.
+100 Hz periodic loop, 100,000 cycles, MobileNetV2 on the CUDA EP.
 
-| profile | resp p50 | resp p99 | resp p99.99 | resp max | compute p99.99 | jitter p99.99 | misses | miss % |
-|---|---|---|---|---|---|---|---|---|
-| baseline | … | … | … | … | … | … | … | … |
-| … | | | | | | | | |
+| condition | resp p50 | resp p99.99 | resp max | compute p50 | jitter p99.99 | misses |
+|---|---|---|---|---|---|---|
+| back-to-back (tight loop) | 3.882 | 3.978 | 4.205 | — | — | 0 |
+| 100 Hz periodic, default governor | 6.333 | 6.680 | 6.726 | 6306.6 | 45.0 | 0 |
+| 100 Hz periodic, `jetson_clocks` | 3.905 | 3.982 | 4.017 | 3893.6 | 22.9 | 0 |
 
-![tail by profile](results/tail_by_profile.png)
-![jitter vs compute](results/jitter_vs_compute.png)
-![tail CDF](results/cdf_tail.png)
+(latencies in ms except compute/jitter in µs)
+
+Driving the same model at its real 100 Hz period costs **62%** over the
+back-to-back number — and it is GPU dynamic clocking, not the scheduler
+(jitter stays under 45 µs). Locking clocks with `jetson_clocks` fully recovers
+deterministic ~3.9 ms.
+
+![the idle tax](docs/chart_idle_tax.png)
+![what the latency is made of](docs/chart_whodunit.png)
+
+Full writeup: [cleinsoft.com/dk](https://cleinsoft.com/dk)
+
+> Stress-matrix results (CPU / memory / cache / IO / IRQ / thermal) and the
+> tail-distribution plots are part 2 — run `experiments/run_matrix.sh`, then
+> `analysis/analyze.py` and `analysis/plot.py`.
 
 ## Layout
 
