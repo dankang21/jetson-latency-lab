@@ -1,0 +1,13 @@
+# Analysis-side deps (install anywhere):
+numpy
+matplotlib
+pyyaml
+
+# Inference deps are assumed already present in your working Jetson env and are
+# intentionally NOT pinned here, because on Jetson they come from NVIDIA's
+# wheels, not plain PyPI:
+#   - onnxruntime-gpu  (Jetson build, CUDA EP)   -> https://elinux.org/Jetson_Zoo
+#   - or torch 2.9.1 + CUDA 12.6 (your baseline stack)
+#
+# System:
+#   sudo apt-get install stress-ng

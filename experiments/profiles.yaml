@@ -1,0 +1,53 @@
+# Stress matrix for the latency study.
+#
+# Each profile launches stress-ng with the given args alongside the inference
+# loop. "args: null" is the clean baseline. The harness is pinned to --cpu
+# (an isolated core); stressors are NOT pinned, so they contend on the other
+# cores / shared resources (cache, memory bandwidth, IRQs, scheduler).
+#
+# warmup_s: seconds to let the stressor ramp before measurement starts.
+# Tune cpu count / bytes to your board (Orin Nano Super = 6 cores).
+
+defaults:
+  warmup_s: 3
+
+profiles:
+  - name: baseline
+    desc: no contention (cleanroom)
+    args: null
+
+  - name: cpu_partial
+    desc: 4 CPU stressors (leaves the isolated core nominally free)
+    args: "--cpu 4"
+
+  - name: cpu_full
+    desc: oversubscribe every core
+    args: "--cpu 8"
+
+  - name: mem_bandwidth
+    desc: memory bandwidth + cache pressure
+    args: "--vm 4 --vm-bytes 80% --vm-method all"
+
+  - name: cache_thrash
+    desc: last-level cache thrashing
+    args: "--cache 6 --cache-level 3"
+
+  - name: io_stress
+    desc: filesystem / IO churn
+    args: "--io 4 --hdd 2 --hdd-bytes 256m"
+
+  - name: irq_load
+    desc: timer + scheduler churn (IRQ / wakeup pressure)
+    args: "--timer 8 --timerfd 8 --sched 4"
+
+  - name: combined
+    desc: everything at once -- worst realistic case
+    args: "--cpu 4 --vm 2 --vm-bytes 50% --cache 4 --io 2 --timer 4"
+
+# Thermal is special: it needs sustained load long enough to throttle, so it is
+# run separately with a longer measurement window (see run_matrix.sh THERMAL).
+thermal:
+  name: thermal
+  desc: sustained GPU+CPU load until throttling
+  args: "--cpu 6 --matrix 6"
+  warmup_s: 120

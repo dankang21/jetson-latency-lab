@@ -1,0 +1,9 @@
+jetson-latency-lab
+Copyright 2026 Daniel Kang
+
+This product includes software developed by Daniel Kang (dk).
+
+The MobileNetV2 ONNX model used for measurement is NOT distributed with this
+repository. It is obtained separately from the ONNX Model Zoo
+(https://github.com/onnx/models), which distributes it under the Apache License
+2.0. See that repository for its license and attribution.
