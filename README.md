@@ -27,9 +27,16 @@ attributable rather than guessed:
 | `compute` | inference done − wake-up | GPU + framework |
 | `response` | inference done − scheduled release | end-to-end, vs deadline |
 
-**Part 2 (in progress):** drive the same loop under contention (CPU, memory
-bandwidth, cache, IO, timer/IRQ, thermal) to find where the deadline breaks and
-which layer breaks it. The stress harness is in this repo; results pending.
+**Part 2 (published):** fixing each clock domain independently shows the 62%
+penalty is **GPU-dominant (~69%) but not GPU-only** — about 27% is a GPU↔CPU
+pipeline interaction, and EMC plays no role. A tegrastats trace confirms the GPU
+sat at 510 MHz (half its max) for 98.7% of the periodic run. The worst-case tail
+needs the CPU pinned too. Writeup:
+[It wasn't just the GPU](https://www.cleinsoft.com/dk/posts/it-wasnt-just-the-gpu).
+
+**Part 3 (planned):** drive the loop under contention (CPU, memory bandwidth,
+cache, IO, timer/IRQ, thermal) to find where the deadline breaks under load. The
+stress harness is in this repo (`experiments/`); results pending.
 
 ## Test bed
 
@@ -108,9 +115,32 @@ deterministic ~3.9 ms.
 
 Full writeup: [cleinsoft.com/dk](https://www.cleinsoft.com/dk/posts/back-to-back-benchmarks-lie)
 
-> Stress-matrix results (CPU / memory / cache / IO / IRQ / thermal) and the
-> tail-distribution plots are part 2 — run `experiments/run_matrix.sh`, then
-> `analysis/analyze.py` and `analysis/plot.py`.
+### Part 2 — DVFS domain decomposition
+
+`jetson_clocks` pins CPU+GPU+EMC together, so it cannot say *which* domain owns
+the penalty. Fixing one domain at a time (100 Hz, 100k cycles), with tegrastats
+logging the actual clocks:
+
+| profile | compute p50 (ms) | recovered | share | resp p99.99 (ms) |
+|---|---|---|---|---|
+| free (all dynamic) | 6.881 | — | — | 7.817 |
+| GPU fixed | 4.835 | 2.05 ms | ~69% | 7.784 |
+| CPU fixed | 6.757 | 0.12 ms | ~4% | 6.830 |
+| both fixed | 3.889 | 2.99 ms | 100% | 3.972 |
+
+GPU-dominant but not GPU-only: ~27% is a GPU↔CPU interaction that only resolves
+when both are pinned. EMC stayed at the same clock across all profiles, so it is
+not the cause. Fixing the GPU recovers the *median*; the worst-case *tail* needs
+the CPU pinned too. Run code in [`part2/`](part2/). Writeup:
+[It wasn't just the GPU](https://www.cleinsoft.com/dk/posts/it-wasnt-just-the-gpu).
+
+![GPU sat at half clock during periodic inference](docs/p2_gpu_clock_evidence.png)
+![domain decomposition](docs/p2_decomposition.png)
+![tail spread by domain](docs/p2_tail_spread.png)
+
+> Part 3 (planned): stress-matrix results (CPU / memory / cache / IO / IRQ /
+> thermal) — run `experiments/run_matrix.sh`, then `analysis/analyze.py` and
+> `analysis/plot.py`.
 
 ## Layout
 
@@ -125,6 +155,10 @@ experiments/
 analysis/
   analyze.py       aggregate -> markdown table + summary.csv
   plot.py          tail-by-profile, jitter-vs-compute, tail CDF
+part2/
+  set_domain.sh    fix one clock domain at a time (free/gpu_only/cpu_only/all)
+  run_part2.sh     run each profile with tegrastats logged in parallel
+  analyze_part2.py join latency with the clock/thermal trace
 ```
 
 ## Caveats
