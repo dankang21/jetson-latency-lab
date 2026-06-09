@@ -34,9 +34,14 @@ sat at 510 MHz (half its max) for 98.7% of the periodic run. The worst-case tail
 needs the CPU pinned too. Writeup:
 [It wasn't just the GPU](https://www.cleinsoft.com/dk/posts/it-wasnt-just-the-gpu).
 
-**Part 3 (planned):** drive the loop under contention (CPU, memory bandwidth,
-cache, IO, timer/IRQ, thermal) to find where the deadline breaks under load. The
-stress harness is in this repo (`experiments/`); results pending.
+**Part 3 (published):** with clocks pinned, this light loop (~6 ms slack on a
+10 ms deadline) held under every `stress-ng` load tested — CPU, memory bandwidth
+(STREAM ×8), cache, IO, IRQ storm, and a combined CPU+mem+cache+IO profile —
+with **zero deadline misses over 100k cycles** each, staying >5 ms under the
+deadline. In this regime the governor mattered more than load. Caveats: cool
+server room (not thermal-tested), no competing GPU workload, single runs.
+Writeup:
+[What jetson_clocks survives](https://www.cleinsoft.com/dk/posts/what-jetson-clocks-survives).
 
 ## Test bed
 
@@ -138,9 +143,32 @@ the CPU pinned too. Run code in [`part2/`](part2/). Writeup:
 ![domain decomposition](docs/p2_decomposition.png)
 ![tail spread by domain](docs/p2_tail_spread.png)
 
-> Part 3 (planned): stress-matrix results (CPU / memory / cache / IO / IRQ /
-> thermal) — run `experiments/run_matrix.sh`, then `analysis/analyze.py` and
-> `analysis/plot.py`.
+### Part 3 — stress / high-load matrix
+
+With clocks pinned (`jetson_clocks`), drive the 100 Hz loop under contention and
+push each axis harder (100 Hz, 100k cycles each):
+
+| profile | resp p99.99 (ms) | resp max (ms) | misses |
+|---|---|---|---|
+| baseline (clocked) | 3.97 | 4.06 | 0 |
+| memory (vm) | 4.93 | 5.43 | 0 |
+| cache | 4.22 | 4.26 | 0 |
+| combined (CPU+vm+timer+IO) | 4.35 | 4.65 | 0 |
+| memory bandwidth ×8 (STREAM) | 3.99 | 4.01 | 0 |
+| cache thrashed | 3.98 | 3.99 | 0 |
+| IRQ storm | 4.01 | 4.08 | 0 |
+| combined (CPU+mem+cache+IO) | 3.98 | 3.99 | 0 |
+
+Zero misses anywhere; even the heaviest profile stays >5 ms under the 10 ms
+deadline. The STREAM sweep (2→4→6→8) is flat — with the clock pinned at max,
+this `stress-ng` load produced no measurable slowdown (DRAM throughput itself
+wasn't measured). In this regime the governor mattered more than load. Scope is
+narrow: a light model with ~6 ms slack, a cool server room (not thermal-tested),
+no competing GPU workload, and single runs per profile. Run code in
+[`part3/`](part3/). Writeup:
+[What jetson_clocks survives](https://www.cleinsoft.com/dk/posts/what-jetson-clocks-survives).
+
+![stress matrix: every tested profile stays under the deadline](docs/p3_stress_matrix.png)
 
 ## Layout
 
@@ -159,6 +187,11 @@ part2/
   set_domain.sh    fix one clock domain at a time (free/gpu_only/cpu_only/all)
   run_part2.sh     run each profile with tegrastats logged in parallel
   analyze_part2.py join latency with the clock/thermal trace
+part3/
+  run_part3.sh           stress matrix (clocked baseline + CPU/mem/cache/IO/IRQ)
+  run_part3_highload.sh  high-load sweep (STREAM bandwidth, vm, cache, IRQ, all)
+  analyze_part3.py       jitter-vs-compute attribution per stressor
+  analyze_part3_highload.py  high-load matrix + near-miss detection
 ```
 
 ## Caveats
