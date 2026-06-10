@@ -5,3 +5,4 @@ venv/
 models/*.onnx
 results/*.png
 !results/.gitkeep
+imgs/
