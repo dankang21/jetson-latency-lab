@@ -43,6 +43,17 @@ server room (not thermal-tested), no competing GPU workload, single runs.
 Writeup:
 [What jetson_clocks survives](https://www.cleinsoft.com/dk/posts/what-jetson-clocks-survives).
 
+**Part 4 (published) — series finale, a different model and question:** moving
+from MobileNetV2 (a classifier) to **YOLOv8s** (detection, what robots actually
+run), and from "why is it slow" to "optimize the *whole* pipeline." A naive full
+pipeline (numpy preprocess + ORT-CUDA + CPU NMS) is **27.2 ms** end-to-end;
+optimized (TensorRT-FP16, GPU preprocess, zero-copy `io_binding`, CPU NMS for
+real-scene box counts) is **~7.7 ms**, ~3.5×. The reversal: postprocess cost is
+**not** NMS (0.20 ms) — it's the xywh→xyxy coordinate transform (0.70 ms), i.e.
+small-GPU-kernel launch overhead, not the algorithm. Validated on 15 COCO images
+(14–135 detections; end-to-end flat). Writeup:
+[Optimizing the whole pipeline, not just the model](https://www.cleinsoft.com/dk/posts/optimizing-the-whole-pipeline).
+
 ## Test bed
 
 | | |
@@ -51,7 +62,7 @@ Writeup:
 | Power | `MAXN_SUPER` (default governor and `jetson_clocks` both measured) |
 | Kernel | `PREEMPT_RT` |
 | Runtime | ONNX Runtime 1.23.0, CUDA EP (PyTorch 2.9.1 / CUDA 12.6 / TensorRT 10.3.0 stack) |
-| Model | MobileNetV2-12, ONNX, input `1×3×224×224` |
+| Model | MobileNetV2-12, ONNX, input `1×3×224×224` (Parts 1–3); YOLOv8s, input `1×3×640×640` (Part 4) |
 | Loop | 100 Hz (10 ms period), 100k cycles, `SCHED_FIFO`, pinned to a dedicated core, `mlockall` |
 
 Headline numbers are in [Results](#results). The 3.882 ms back-to-back figure is
@@ -170,6 +181,47 @@ no competing GPU workload, and single runs per profile. Run code in
 
 ![stress matrix: every tested profile stays under the deadline](docs/p3_stress_matrix.png)
 
+### Part 4 — YOLOv8s full pipeline (finale)
+
+A different model (YOLOv8s detection, input `1×3×640×640`) and a different
+question: optimize the whole pipeline, not just the model. Naive vs optimized,
+end-to-end (p50, ms):
+
+| stage | naive | optimized |
+|---|---|---|
+| preprocess | 2.57 (numpy) | 0.55 (GPU + upload) |
+| inference | 23.98 (ORT-CUDA) | 6.34 (TensorRT-FP16 + io_binding) |
+| postprocess | 0.70 (CPU NMS) | see breakdown |
+| **end-to-end** | **27.25** | **~7.7** (CPU NMS) / 8.6 (GPU NMS as-built) |
+
+Backend sets the inference floor: ORT-CUDA 23.76 → TensorRT-FP16 6.34 ms (3.7×),
+the last ~1 ms from zero-copy `io_binding` removing per-frame host↔device copies.
+Preprocess moves to the GPU: 2.46 → 0.55 ms (4.5×).
+
+The postprocess reversal — "NMS is the bottleneck" is wrong (per-step, ms):
+
+| decode | filter | coord xform (xywh→xyxy) | NMS |
+|---|---|---|---|
+| 0.19 | 0.46 | **0.70** | 0.20 |
+
+The coordinate transform — four small tensor ops — costs 3.5× the NMS algorithm,
+because for small tensors the GPU kernel-launch overhead dominates the work.
+Moving NMS to CPU leaves the 0.70 ms untouched, confirming it isn't NMS hiding
+there. And NMS device choice has a crossover (~400 boxes): CPU is faster below,
+GPU above; real scenes (14–135 detections) sit in CPU territory.
+
+Validated on 15 COCO val images: preprocess (0.75) and inference (6.42) are
+input-independent, and end-to-end is flat (~8.9 ms, GPU-NMS build) across the
+14–135 detection range. Run code in [`part4/`](part4/); raw per-image results in
+[`results/`](results/). Scope: single model, single stream, pre-decoded frames,
+cool room — no camera/ISP path and no competing GPU workload (a real robot adds
+both). Writeup:
+[Optimizing the whole pipeline, not just the model](https://www.cleinsoft.com/dk/posts/optimizing-the-whole-pipeline).
+
+![full pipeline: naive vs optimized](docs/p4_naive_vs_opt.png)
+
+![postprocess breakdown: NMS is not the bottleneck](docs/p4_postproc_breakdown.png)
+
 ## Layout
 
 ```
@@ -192,6 +244,11 @@ part3/
   run_part3_highload.sh  high-load sweep (STREAM bandwidth, vm, cache, IRQ, all)
   analyze_part3.py       jitter-vs-compute attribution per stressor
   analyze_part3_highload.py  high-load matrix + near-miss detection
+part4/
+  yolo_pipeline_opt.py   naive vs optimized full pipeline, per-stage timing,
+                         --boxes scene-complexity knob (synthetic NMS input)
+  real_image_anchor.py   optimized pipeline on real images, real detections,
+                         postprocess split into decode/filter/NMS, --nms-dev cpu|cuda
 ```
 
 ## Caveats
