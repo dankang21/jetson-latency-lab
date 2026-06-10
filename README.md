@@ -45,13 +45,17 @@ Writeup:
 
 **Part 4 (published) — series finale, a different model and question:** moving
 from MobileNetV2 (a classifier) to **YOLOv8s** (detection, what robots actually
-run), and from "why is it slow" to "optimize the *whole* pipeline." A naive full
-pipeline (numpy preprocess + ORT-CUDA + CPU NMS) is **27.2 ms** end-to-end;
-optimized (TensorRT-FP16, GPU preprocess, zero-copy `io_binding`, CPU NMS for
-real-scene box counts) is **~7.7 ms**, ~3.5×. The reversal: postprocess cost is
-**not** NMS (0.20 ms) — it's the xywh→xyxy coordinate transform (0.70 ms), i.e.
-small-GPU-kernel launch overhead, not the algorithm. Validated on 15 COCO images
-(14–135 detections; end-to-end flat). Writeup:
+run), and from "why is it slow" to "where does the time go across the *whole*
+pipeline." A naive full pipeline (numpy preprocess + ORT-CUDA + CPU NMS) is
+**27.2 ms p50** end-to-end; optimized (TensorRT-FP16, GPU preprocess, zero-copy
+`io_binding`) is **~8.9 ms p50 on real images** (~7.7 ms in the synthetic
+CPU-NMS best case). The reversal: in *this implementation* the postprocess cost
+wasn't NMS (0.20 ms) but the xywh→xyxy coordinate transform (0.70 ms) — small-GPU-
+kernel launch overhead, not the algorithm (a fused kernel/plugin would
+distribute it differently). Validated on 15 COCO images (14–135 detections;
+end-to-end flat). **Note:** this part is a p50 pipeline-latency analysis, *not*
+a periodic real-time validation like Parts 1–3 — no 100k-cycle loop, no p99.99,
+no deadline-miss accounting on this pipeline. Writeup:
 [Optimizing the whole pipeline, not just the model](https://www.cleinsoft.com/dk/posts/optimizing-the-whole-pipeline).
 
 ## Test bed
@@ -184,43 +188,50 @@ no competing GPU workload, and single runs per profile. Run code in
 ### Part 4 — YOLOv8s full pipeline (finale)
 
 A different model (YOLOv8s detection, input `1×3×640×640`) and a different
-question: optimize the whole pipeline, not just the model. Naive vs optimized,
-end-to-end (p50, ms):
+question: where does the time go across the whole pipeline. **This part is a p50
+latency analysis, not a periodic real-time test** — warmup + a few hundred
+iterations with `perf_counter`, not the 100 Hz / 100k-cycle / p99.99 / deadline-
+miss harness of Parts 1–3. Naive vs optimized, end-to-end (p50, ms):
 
 | stage | naive | optimized |
 |---|---|---|
 | preprocess | 2.57 (numpy) | 0.55 (GPU + upload) |
 | inference | 23.98 (ORT-CUDA) | 6.34 (TensorRT-FP16 + io_binding) |
-| postprocess | 0.70 (CPU NMS) | see breakdown |
-| **end-to-end** | **27.25** | **~7.7** (CPU NMS) / 8.6 (GPU NMS as-built) |
+| postprocess | 0.70 | see breakdown |
+| **end-to-end** | **27.25** | **~8.9 on real images** (~7.7 synthetic CPU-NMS best case) |
 
 Backend sets the inference floor: ORT-CUDA 23.76 → TensorRT-FP16 6.34 ms (3.7×),
 the last ~1 ms from zero-copy `io_binding` removing per-frame host↔device copies.
 Preprocess moves to the GPU: 2.46 → 0.55 ms (4.5×).
 
-The postprocess reversal — "NMS is the bottleneck" is wrong (per-step, ms):
+The postprocess reversal — in *this implementation*, the named stage ("NMS")
+isn't where the time goes (per-step, ms, via `postproc_microbench.py`):
 
 | decode | filter | coord xform (xywh→xyxy) | NMS |
 |---|---|---|---|
 | 0.19 | 0.46 | **0.70** | 0.20 |
 
-The coordinate transform — four small tensor ops — costs 3.5× the NMS algorithm,
-because for small tensors the GPU kernel-launch overhead dominates the work.
-Moving NMS to CPU leaves the 0.70 ms untouched, confirming it isn't NMS hiding
-there. And NMS device choice has a crossover (~400 boxes): CPU is faster below,
-GPU above; real scenes (14–135 detections) sit in CPU territory.
+The coordinate transform — four small tensor ops — cost ~3.5× the NMS algorithm,
+because for small tensors the GPU kernel-launch overhead dominates the work
+(a fused kernel or TensorRT NMS plugin would distribute this differently; this
+is about this postprocess code, not YOLO in general). NMS device choice also has
+a crossover (~400 boxes): CPU faster below, GPU above; real scenes (14–135
+detections) sit in CPU territory. Note `real_image_anchor.py`'s `nms` column
+times coord+copy+NMS+sync as one region (~1.0 ms), not the NMS algorithm alone —
+see `postproc_microbench.py` for the split.
 
 Validated on 15 COCO val images: preprocess (0.75) and inference (6.42) are
-input-independent, and end-to-end is flat (~8.9 ms, GPU-NMS build) across the
-14–135 detection range. Run code in [`part4/`](part4/); raw per-image results in
-[`results/`](results/). Scope: single model, single stream, pre-decoded frames,
-cool room — no camera/ISP path and no competing GPU workload (a real robot adds
-both). Writeup:
+input-independent, and end-to-end is flat (~8.9 ms p50 across the 14–135
+detection range, both NMS devices). Run code in [`part4/`](part4/); per-image
+p50 summaries (not per-iteration raw) in
+[`results/`](results/) (`p4_real_anchor*.csv`). Scope: single model, single
+stream, pre-decoded frames, cool room — no camera/ISP path, no competing GPU
+workload, and no periodic-deadline tail measurement. Writeup:
 [Optimizing the whole pipeline, not just the model](https://www.cleinsoft.com/dk/posts/optimizing-the-whole-pipeline).
 
 ![full pipeline: naive vs optimized](docs/p4_naive_vs_opt.png)
 
-![postprocess breakdown: NMS is not the bottleneck](docs/p4_postproc_breakdown.png)
+![postprocess breakdown: coordinate transform dominates, not NMS](docs/p4_postproc_breakdown.png)
 
 ## Layout
 
@@ -249,6 +260,9 @@ part4/
                          --boxes scene-complexity knob (synthetic NMS input)
   real_image_anchor.py   optimized pipeline on real images, real detections,
                          postprocess split into decode/filter/NMS, --nms-dev cpu|cuda
+  postproc_microbench.py decode/filter/coord-transform/NMS split (reproduces the
+                         "where postprocess time goes" table; documents how it
+                         relates to real_image_anchor.py's fused nms column)
 ```
 
 ## Caveats
