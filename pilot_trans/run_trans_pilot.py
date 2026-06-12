@@ -42,8 +42,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "results" / "pilot_trans"
-PROBE_CPU = 5          # probe runs here; cpu domain also toggles this core's policy
-ORCH_CPUS = {0, 1, 2, 3}
+PROBE_CPU = int(os.environ.get("PROBE_CPU", 5))   # probe core (last core)
+ORCH_CPUS = set(range(PROBE_CPU - 1)) or {0}       # orchestrator stays off it
 SETTLE_S = 0.25        # between transitions; > any expected transient
 POLL_SLEEP_S = 0.0005
 POLL_TIMEOUT_S = 0.5
@@ -53,7 +53,8 @@ PROBE_PAD_S = 3.0
 GPU_DIR = Path("/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu")
 EMC_DIR = Path("/sys/kernel/debug/bpmp/debug/clk/emc")
 
-CPU_TABLE_MIN, CPU_TABLE_MAX = 115200, 1728000
+CPU_TABLE_MIN = int(os.environ.get("CPU_TABLE_MIN", 115200))
+CPU_TABLE_MAX = int(os.environ.get("CPU_TABLE_MAX", 1728000))
 
 # (domain, rate_a, rate_b) — a is the "high" end, units are the domain's own
 # (kHz for cpufreq, Hz for devfreq/BPMP). Pairs chosen as max<->mid and
@@ -68,6 +69,10 @@ MATRIX = [
     ("emc", 3199000000, 2133000000, 400),
     ("emc", 3199000000, 665600000, 400),
 ]
+# Override for other boards (e.g. Orin NX): TRANS_MATRIX="emc:A:B:n,gpu:A:B:n,..."
+if os.environ.get("TRANS_MATRIX"):
+    MATRIX = [(d, int(a), int(b), int(n)) for d, a, b, n in
+              (e.split(":") for e in os.environ["TRANS_MATRIX"].split(","))]
 
 
 def read_str(p: Path) -> str:
