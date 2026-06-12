@@ -32,23 +32,23 @@ emc3199_adv2_mobilenet        4739.9    4719.3    4766.1     4784.7       no
 emc3199_adv4_mobilenet        4803.5    4763.7    4839.0     4875.5       no
 
 == 4. margin policy -> achieved QoS (deadline set from first 50k, applied to last 50k; design target 0.1% miss) ==
-cell                        gauss DL us    miss%  evt DL us    miss%
-emc2133_adv0_mobilenet           4774.0    1.930     4877.6    0.018
-emc2133_adv0_proxy               6601.1    2.486     6700.9    0.064
-emc2133_adv2_mobilenet           5416.3    1.314     5647.8    0.016
-emc2133_adv4_mobilenet           5434.6    2.866     5521.5    0.202
-emc2133_adv4_proxy               8825.2    1.354     8903.3    0.064
-emc3199_adv0_mobilenet           4252.5    1.816     4302.5    0.180
-emc3199_adv2_mobilenet           4529.5    2.238     4630.1    0.064
-emc3199_adv4_mobilenet           4549.9    1.502     4641.3    0.020
+cell                        gauss DL us    miss%  evt DL us    miss%  emp DL us    miss%
+emc2133_adv0_mobilenet           4774.0    1.930     4877.6    0.018     4902.7    0.018
+emc2133_adv0_proxy               6601.1    2.486     6700.9    0.064     6699.5    0.068
+emc2133_adv2_mobilenet           5416.3    1.314     5647.8    0.016     5681.6    0.014
+emc2133_adv4_mobilenet           5434.6    2.866     5521.5    0.202     5521.9    0.198
+emc2133_adv4_proxy               8825.2    1.354     8903.3    0.064     8894.4    0.088
+emc3199_adv0_mobilenet           4252.5    1.816     4302.5    0.180     4292.8    0.436
+emc3199_adv2_mobilenet           4529.5    2.238     4630.1    0.064     4639.0    0.050
+emc3199_adv4_mobilenet           4549.9    1.502     4641.3    0.020     4641.9    0.018
 
 == 5. declustering sensitivity (runs method, gap=2): predicted p99.99 ==
-cell                         raw fit  declustered  delta%  clusters/exceed
-emc2133_adv0_mobilenet        5038.3       4905.7   -2.6%     900/999     
-emc2133_adv0_proxy            6746.6       6745.8   -0.0%     959/1000    
-emc2133_adv2_mobilenet        5940.0       5664.8   -4.6%     706/1000    
-emc2133_adv4_mobilenet        5779.0       5675.1   -1.8%     832/1000    
-emc2133_adv4_proxy            8961.7       8949.3   -0.1%     929/1000    
-emc3199_adv0_mobilenet        4345.1       4335.1   -0.2%     933/1000    
-emc3199_adv2_mobilenet        4739.9       4699.7   -0.8%     872/1000    
-emc3199_adv4_mobilenet        4803.5       4692.4   -2.3%     852/1000    
+cell                         raw fit    gap=1   gap=2   gap=5  gap=10
+emc2133_adv0_mobilenet        5038.3   -2.5%   -2.6%   -2.7%   -2.7%
+emc2133_adv0_proxy            6746.6   -0.0%   -0.0%   -0.0%   -0.0%
+emc2133_adv2_mobilenet        5940.0   -4.5%   -4.6%   -4.7%   -5.0%
+emc2133_adv4_mobilenet        5779.0   -1.8%   -1.8%   -2.1%   -2.4%
+emc2133_adv4_proxy            8961.7   -0.1%   -0.1%   -0.2%   -0.2%
+emc3199_adv0_mobilenet        4345.1   -0.2%   -0.2%   -0.2%   -0.3%
+emc3199_adv2_mobilenet        4739.9   -0.8%   -0.8%   -0.9%   -1.1%
+emc3199_adv4_mobilenet        4803.5   -2.3%   -2.3%   -2.6%   -2.6%

@@ -14,7 +14,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 [ "$(id -u)" = 0 ] || { echo "run as root" >&2; exit 1; }
 
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
 EMC_CTL="$ROOT/pilot_emc/emc_ctl.sh"
 GPU=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 OUT=results/replication_25w

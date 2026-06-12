@@ -208,12 +208,12 @@ def fig_actuation():
     fig, ax = plt.subplots(figsize=(3.45, 1.9))
     domains = ["CPU", "GPU", "EMC"]
     settle = [1.2, 5.0, 8.0]       # workload-observed settle p50 (ms), n=150-200/dir
-    stall = [0.0252, 0.0178, 0.0098]  # worst net stall p95 (ms)
+    stall = [0.0491, 0.0916, 0.0235]  # worst RAW stall p95 (ms)
     y = np.arange(len(domains))
     ax.barh(y + 0.18, settle, height=0.34, color="#369",
             label="actuation lag (settle p50)")
     ax.barh(y - 0.18, stall, height=0.34, color="#c44",
-            label="workload stall (net p95)")
+            label="workload stall (raw p95)")
     ax.set_yticks(y)
     ax.set_yticklabels(domains)
     ax.set_xscale("log")

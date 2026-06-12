@@ -12,16 +12,17 @@ same CLOCK_MONOTONIC) and reports, per (domain, pair, direction):
                is not double-counted as stall (a max-vs-max baseline had a
                masking dead zone of Q_slow - Q_fast, up to ~245us).
   noise_us     the SAME statistic computed over the steady window of the same
-               transition (no switch in it) — the noise floor. The verdict
-               uses net = stall_p95 - noise_p95, because SCHED_FIFO probes on
-               an unshielded core still take timer ticks.
+               transition (no switch in it) — the noise floor, reported
+               alongside the stall so residual SCHED_FIFO tick noise on the
+               unshielded core is visible. The verdict uses the RAW stall p95
+               (a real quantile); subtracting noise p95 is not one.
   settle_ms    first run of 3 consecutive in-band (15% of post level) samples.
                Meaningless when the pair is level-degenerate (levels within
                20%) — flagged per pair, settle suppressed.
   readback_us  diagnostic only: cached driver / firmware bookkeeping values,
                NOT hardware state (see run_trans_pilot docstring).
 
-Kill criterion (pre-registered): if net stall p95 < 100us on every domain,
+Kill criterion (pre-specified): if raw stall p95 < 100us on every domain,
 RQ3 is demoted from a headline contribution to an appendix.
 
 Data-quality gates: pairs with readback timeouts, dropped transitions
@@ -142,7 +143,7 @@ def main():
         sys.exit(f"no results under {OUT} — run pilot_trans/run_trans_pilot.py first")
 
     print(f"{'pair':<24} {'dir':<5} {'n':>3} {'stall p50/p95 us':>18} "
-          f"{'noise p95':>10} {'net p95':>9} {'settle p50 ms':>14} "
+          f"{'noise p95':>10} {'settle p50/p95 ms':>18} "
           f"{'readback p50':>13} {'quantum':>8}")
     domain_worst = defaultdict(float)
     excluded = []
@@ -159,17 +160,20 @@ def main():
                 continue
             s50 = st.median(d["stall_us"])
             s95, n95 = p95(d["stall_us"]), p95(d["noise_us"])
-            net = s95 - n95
+            # verdict uses the RAW stall p95 (a real quantile); the noise p95
+            # is shown alongside. p95(stall)-p95(noise) is NOT a quantile of a
+            # net effect (it can go negative) and is no longer reported.
             if not bad:
-                domain_worst[domain] = max(domain_worst[domain], net)
+                domain_worst[domain] = max(domain_worst[domain], s95)
             settle = (st.median(d["settle_ms"])
                       if d["settle_ms"] else float("nan"))
+            settle95 = p95(d["settle_ms"]) if d["settle_ms"] else float("nan")
             rb = (st.median(d["readback_us"])
                   if d["readback_us"] else float("nan"))
             flag = " DEGEN" if q["degenerate"] else ""
             print(f"{label:<24} {direction:<5} {len(d['stall_us']):>3} "
-                  f"{s50:>8.1f} /{s95:>8.1f} {n95:>10.1f} {net:>9.1f} "
-                  f"{settle:>14.2f} {rb:>13.1f} "
+                  f"{s50:>8.1f} /{s95:>8.1f} {n95:>10.1f} "
+                  f"{settle:>8.2f} /{settle95:>8.2f} {rb:>13.1f} "
                   f"{st.median(d['quantum_us']):>8.1f}{flag}")
 
     if excluded:
@@ -178,15 +182,16 @@ def main():
             print(f"   {label}: timeouts={q['timeouts']} dropped={q['dropped']} "
                   f"probe_alive={q['probe_alive']} probe_rc={q['probe_rc']}")
 
-    print("\n== verdict (kill: net stall p95 < 100us on every domain) ==")
+    print("\n== verdict (kill: raw stall p95 < 100us on every domain; "
+          "noise p95 shown above for context) ==")
     if not domain_worst:
         sys.exit("no pair passed the data-quality gate — fix the runs first")
     alive = {k: v for k, v in domain_worst.items() if v >= KILL_US}
     for dom, worst in sorted(domain_worst.items(), key=lambda kv: -kv[1]):
-        print(f"  {dom}: worst net stall p95 = {worst:.1f} us "
+        print(f"  {dom}: worst raw stall p95 = {worst:.1f} us "
               f"{'(above kill line)' if worst >= KILL_US else '(below)'}")
     if alive:
-        print(f"RQ3 ALIVE on {sorted(alive)} — transition cost is "
+        print(f"RQ3 stall ALIVE on {sorted(alive)} — transition cost is "
               "deadline-relevant at the 1-10ms regime.")
     else:
         print("RQ3 DEAD as a headline: all domains under 100us net. "

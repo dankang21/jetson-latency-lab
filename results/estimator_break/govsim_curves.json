@@ -1,6 +1,7 @@
 {
  "mobilenet": {
   "A+G": {
+   "violF_pct": 22.4,
    "curve": {
     "D_ms": [
      4.5081,
@@ -196,6 +197,7 @@
    "n_deadlines": 60
   },
   "A+P": {
+   "violF_pct": 19.0,
    "curve": {
     "D_ms": [
      4.5081,
@@ -391,6 +393,7 @@
    "n_deadlines": 60
   },
   "C+G": {
+   "violF_pct": 0.0,
    "curve": {
     "D_ms": [
      4.5081,
@@ -586,6 +589,7 @@
    "n_deadlines": 60
   },
   "C+P": {
+   "violF_pct": 0.0,
    "curve": {
     "D_ms": [
      4.5081,
@@ -783,6 +787,7 @@
  },
  "vit": {
   "A+G": {
+   "violF_pct": 17.5,
    "curve": {
     "D_ms": [
      12.8665,
@@ -978,6 +983,7 @@
    "n_deadlines": 60
   },
   "A+P": {
+   "violF_pct": 14.0,
    "curve": {
     "D_ms": [
      12.8665,
@@ -1173,6 +1179,7 @@
    "n_deadlines": 60
   },
   "C+G": {
+   "violF_pct": 0.0,
    "curve": {
     "D_ms": [
      12.8665,
@@ -1368,6 +1375,7 @@
    "n_deadlines": 60
   },
   "C+P": {
+   "violF_pct": 0.0,
    "curve": {
     "D_ms": [
      12.8665,
@@ -1565,6 +1573,7 @@
  },
  "proxy": {
   "A+G": {
+   "violF_pct": 1.8,
    "curve": {
     "D_ms": [
      6.2285,
@@ -1760,6 +1769,7 @@
    "n_deadlines": 60
   },
   "A+P": {
+   "violF_pct": 1.8,
    "curve": {
     "D_ms": [
      6.2285,
@@ -1955,6 +1965,7 @@
    "n_deadlines": 60
   },
   "C+G": {
+   "violF_pct": 0.0,
    "curve": {
     "D_ms": [
      6.2285,
@@ -2150,6 +2161,7 @@
    "n_deadlines": 60
   },
   "C+P": {
+   "violF_pct": 0.0,
    "curve": {
     "D_ms": [
      6.2285,
@@ -2347,6 +2359,7 @@
  },
  "cproxyv2": {
   "A+G": {
+   "violF_pct": 5.2,
    "curve": {
     "D_ms": [
      15.8275,
@@ -2542,6 +2555,7 @@
    "n_deadlines": 60
   },
   "A+P": {
+   "violF_pct": 5.2,
    "curve": {
     "D_ms": [
      15.8275,
@@ -2737,6 +2751,7 @@
    "n_deadlines": 60
   },
   "C+G": {
+   "violF_pct": 0.0,
    "curve": {
     "D_ms": [
      15.8275,
@@ -2932,6 +2947,7 @@
    "n_deadlines": 60
   },
   "C+P": {
+   "violF_pct": 0.0,
    "curve": {
     "D_ms": [
      15.8275,

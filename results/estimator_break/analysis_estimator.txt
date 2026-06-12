@@ -12,6 +12,13 @@ vit          5.1/17.6    10.5/14.1     6.7/9.4      4.2/6.7
 proxy        3.4/32.2    19.9/30.9    17.2/29.2     9.2/20.9  
 cproxyv2     1.5/2.8     17.8/34.5     2.0/4.0      2.5/4.8   
 
+== model C (2-cell refit) at the OTHER held-out point, EMC 665.6 ==
+workload    C@665 med/max %
+mobilenet      1.8/2.9    
+vit            1.0/2.2    
+proxy          0.0/0.1    
+cproxyv2       8.1/8.7    
+
 == governor consequence: sign of model-A error at 2133 ==
 (positive = overestimates latency -> conservative;
  negative = underestimates -> picks a frequency that misses)

@@ -106,7 +106,10 @@ DUMP = {}
 def main():
     data = load_cells()
     print(f"{'workload':<10} {'policy':<6} {'viol%':>7} {'miss% (viol)':>13} "
-          f"{'f_avg MHz':>10} {'infeas%':>8}")
+          f"{'f_avg MHz':>10} {'infeas%':>8} {'violF%':>7}")
+    # violF% = violations conditioned on FEASIBLE deadlines only (those the
+    # max-frequency cell can meet under the 1/300 floor) — separates policy
+    # mistakes from physically impossible deadlines.
     for wl in WLS:
         cells = data[wl]
         kA, bA = fit_gpu_only(cells, 3199)
@@ -147,10 +150,14 @@ def main():
         lat_lo = np.median(cells[(2133, 1020)])
         lat_hi = np.percentile(cells[(2133, 306)], 99.9)
         deadlines = np.linspace(0.95 * lat_lo, 1.3 * lat_hi, 60)
+        best = cells[(2133, 1020)]
+        feasible_D = {D for D in deadlines
+                      if (best > D).mean() <= 1.0 / len(best)}
 
         for pol in ("A+G", "A+P", "C+G", "C+P"):
             viol, misses, fsel, infeas = 0, [], [], 0
             curve = {"D_ms": [], "miss_pct": [], "f_mhz": []}
+            per_D_miss = []
             for D in deadlines:
                 feasible = [g for g in GPUS
                             if pred[pol](g) * (1 + margins[g][pol]) <= D]
@@ -161,6 +168,7 @@ def main():
                     infeas += 1
                 fsel.append(g)
                 miss = (cells[(2133, g)] > D).mean()
+                per_D_miss.append(miss)
                 curve["D_ms"].append(round(D / 1000, 4))
                 curve["miss_pct"].append(round(miss * 100, 4))
                 curve["f_mhz"].append(g)
@@ -168,7 +176,11 @@ def main():
                     viol += 1
                     misses.append(miss)
             n = len(deadlines)
+            violF = sum(1 for D, m in zip(deadlines, per_D_miss)
+                        if D in feasible_D and m > 1.0 / 300)
+            nF = max(len(feasible_D), 1)
             DUMP.setdefault(wl, {})[pol] = {
+                "violF_pct": round(violF / nF * 100, 1),
                 "curve": curve,
                 "viol_pct": round(viol / n * 100, 1),
                 "miss_on_viol_pct": round(float(np.mean(misses)) * 100, 1) if misses else 0.0,
@@ -178,7 +190,8 @@ def main():
             }
             print(f"{wl:<10} {pol:<6} {viol/n*100:>6.0f}% "
                   f"{np.mean(misses)*100 if misses else 0:>12.2f} "
-                  f"{np.mean(fsel):>10.0f} {infeas/n*100:>7.0f}%")
+                  f"{np.mean(fsel):>10.0f} {infeas/n*100:>7.0f}% "
+                  f"{violF/nF*100:>6.0f}%")
         print()
 
 

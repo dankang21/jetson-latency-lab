@@ -1,0 +1,18 @@
+== 25W profile (CPU 1344 / GPU 918 MHz pinned): p50 by EMC ==
+workload        204      665     2133     3199  2133 vs 3199
+mobilenet     22.87     8.72     5.08     4.60        +10.4%
+proxy         68.66    21.19     6.61     4.98        +32.7%
+cproxyv2     140.24    43.31    18.19    17.11         +6.3%
+inversion at GPU 918MHz: NO (+6.3% — MAXN/GPU1020 showed -9.1%)
+
+== stock-governor EMC traces (rates observed @10Hz sampling) ==
+  MAXN_SUPER  idle       n= 273 rates={2133: 273} transitions=0
+  MAXN_SUPER  mobilenet  n=1730 rates={2133: 1730} transitions=0
+  MAXN_SUPER  proxy      n= 704 rates={2133: 704} transitions=0
+  MAXN_SUPER  slm        n= 162 rates={2133: 162} transitions=0
+  25W         governor   n= 983 rates={3199: 983} transitions=0
+  15W         idle       n= 273 rates={2133: 273} transitions=0
+  15W         mobilenet  n= 569 rates={2133: 569} transitions=0
+  15W         proxy      n= 568 rates={2133: 568} transitions=0
+  15W         slm        n= 143 rates={2133: 143} transitions=0
+

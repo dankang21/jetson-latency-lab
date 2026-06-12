@@ -119,7 +119,7 @@ def main():
     print("== 4. margin policy -> achieved QoS (deadline set from first 50k, "
           "applied to last 50k; design target 0.1% miss) ==")
     print(f"{'cell':<26} {'gauss DL us':>12} {'miss%':>8} "
-          f"{'evt DL us':>10} {'miss%':>8}")
+          f"{'evt DL us':>10} {'miss%':>8} {'emp DL us':>10} {'miss%':>8}")
     for f in files:
         resp = np.loadtxt(f, delimiter=",", skiprows=1)[:, 3]
         a, b = resp[:50000], resp[50000:]
@@ -127,13 +127,15 @@ def main():
         u = np.percentile(a, 99.0)
         xi, sg = gpd_pwm(a[a > u] - u)
         dl_e = gpd_q(u, xi, sg, (a > u).mean(), 1e-3)
+        dl_q = np.percentile(a, 99.9)   # plain empirical quantile competitor
         miss_g = (b > dl_g).mean() * 100
         miss_e = (b > dl_e).mean() * 100
+        miss_q = (b > dl_q).mean() * 100
         print(f"{f.stem:<26} {dl_g:>12.1f} {miss_g:>8.3f} "
-              f"{dl_e:>10.1f} {miss_e:>8.3f}")
+              f"{dl_e:>10.1f} {miss_e:>8.3f} {dl_q:>10.1f} {miss_q:>8.3f}")
 
 
-def declustered(resp, q=99.0, gap=2):
+def declustered(resp, q=99.0, gap=2):  # gap sensitivity exercised in section5
     """Runs-declustering: exceedance clusters separated by >= gap
     non-exceedances; fit GPD on cluster MAXIMA. Returns predicted p99.99
     using the cluster rate. Marginal-quantile heuristic under dependence."""
@@ -163,21 +165,19 @@ def section5():
     print()
     print("== 5. declustering sensitivity (runs method, gap=2): predicted "
           "p99.99 ==")
-    print(f"{'cell':<26} {'raw fit':>9} {'declustered':>12} {'delta%':>7} "
-          f"{'clusters/exceed':>16}")
+    print(f"{'cell':<26} {'raw fit':>9} "
+          + "".join(f"{'gap='+str(g):>8}" for g in (1, 2, 5, 10)))
     for f in files:
         resp = np.loadtxt(f, delimiter=",", skiprows=1)[:, 3]
         u = np.percentile(resp, 99.0)
         exc = resp[resp > u] - u
         xi, sg = gpd_pwm(exc)
         raw = gpd_q(u, xi, sg, (resp > u).mean(), 1e-4)
-        d = declustered(resp)
-        if d is None:
-            print(f"{f.stem:<26} {raw:>9.1f}  (too few clusters)")
-            continue
-        dq, nc, ne = d
-        print(f"{f.stem:<26} {raw:>9.1f} {dq:>12.1f} "
-              f"{(dq-raw)/raw*100:>+6.1f}% {nc:>7}/{ne:<8}")
+        row = f"{f.stem:<26} {raw:>9.1f}"
+        for gap in (1, 2, 5, 10):
+            d = declustered(resp, gap=gap)
+            row += f" {((d[0]-raw)/raw*100 if d else float('nan')):>+6.1f}%"
+        print(row)
 
 
 

@@ -27,7 +27,7 @@ cd "$ROOT"
 
 PARTS="${1:-AB}"
 case "$PARTS" in A|B|AB) ;; *) echo "usage: $0 [A|B|AB]" >&2; exit 1 ;; esac
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
 EMC_CTL="$ROOT/pilot_emc/emc_ctl.sh"
 MEMBW="$ROOT/tools/membw"
 SLM_BENCH="$ROOT/tools/slm_decode_bench"

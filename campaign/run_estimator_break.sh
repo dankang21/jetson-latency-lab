@@ -20,7 +20,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 [ "$(id -u)" = 0 ] || { echo "run as root" >&2; exit 1; }
 
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
 EMC_CTL="$ROOT/pilot_emc/emc_ctl.sh"
 SLM_BENCH="$ROOT/tools/slm_decode_bench"
 SLM_MODEL=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf

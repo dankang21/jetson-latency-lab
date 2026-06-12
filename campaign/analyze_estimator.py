@@ -123,6 +123,19 @@ def main():
               f"{np.median(eC2)*100:>5.1f}/{np.max(eC2)*100:<6.1f}")
     print()
 
+    print("== model C (2-cell refit) at the OTHER held-out point, EMC 665.6 ==")
+    print(f"{'workload':<10} {'C@665 med/max %':>16}")
+    for wl in WLS:
+        cells = data[wl]
+        f1, f2 = 1e3 / 1020, 1e3 / 306
+        y1, y2 = cells[(665, 1020)], cells[(665, 306)]
+        kC = (y2 - y1) / (f2 - f1)
+        bC = y1 - kC * f1
+        eC = [abs(kC * 1e3 / g + bC - cells[(665, g)]) / cells[(665, g)]
+              for g in GPUS]
+        print(f"{wl:<10} {np.median(eC)*100:>7.1f}/{np.max(eC)*100:<7.1f}")
+    print()
+
     print("== governor consequence: sign of model-A error at 2133 ==")
     print("(positive = overestimates latency -> conservative;")
     print(" negative = underestimates -> picks a frequency that misses)")
