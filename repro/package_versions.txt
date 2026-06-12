@@ -1,0 +1,7 @@
+ii  cuda-toolkit-12-6                            12.6.11-1                                        arm64        CUDA Toolkit 12.6 meta-package
+ii  cuda-toolkit-12-6-config-common              12.6.68-1                                        all          Common config package for CUDA Toolkit 12.6.
+ii  cuda-toolkit-12-config-common                12.6.68-1                                        all          Common config package for CUDA Toolkit 12.
+ii  cuda-toolkit-config-common                   12.6.68-1                                        all          Common config package for CUDA Toolkit.
+ii  nvidia-jetpack                               6.2.2+b24                                        arm64        NVIDIA Jetpack Meta Package
+onnxruntime 1.23.0 ['TensorrtExecutionProvider', 'CUDAExecutionProvider', 'CPUExecutionProvider']
+llama.cpp commit ac4cdde (2026-06-10 22:28:03 +0200)

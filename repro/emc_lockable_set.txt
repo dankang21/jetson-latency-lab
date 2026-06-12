@@ -1,0 +1,12 @@
+# EMC lockable-set probe (2026-06-12): requested -> actual (Hz)
+requested=204000000 actual=204000000
+requested=408000000 actual=665600000
+requested=665600000 actual=665600000
+requested=1062400000 actual=2133000000
+requested=1600000000 actual=2133000000
+requested=1866000000 actual=2133000000
+requested=2133000000 actual=2133000000
+requested=2400000000 actual=3199000000
+requested=2750000000 actual=3199000000
+requested=3000000000 actual=3199000000
+requested=3199000000 actual=3199000000

@@ -283,3 +283,29 @@ MobileNetV2 ONNX model is not redistributed here; fetch it from the
 *Built by Daniel Kang (dk). Background: ARM Linux mach #184, iriver Clix kernel +
 graphics stack, now real-time ML for robots @ Cleinsoft. Writeup:
 [cleinsoft.com/dk](https://cleinsoft.com/dk).*
+
+---
+
+## Paper artifacts (arXiv preprint)
+
+> **Beyond CPU–GPU Frequency: Memory-Clock and Tail Effects in Edge Inference
+> Latency Estimation** — Jaehoon Kang. arXiv link forthcoming.
+
+Everything needed to reproduce the paper lives in this repo:
+
+| Directory | Contents |
+|---|---|
+| `pilot_emc/` | EMC (memory clock) locking via BPMP debugfs, roofline-anchor proxy generators, EMC sensitivity pilot |
+| `pilot_trans/` | Per-domain frequency-transition probes (CPU chain / `clock64` GPU spin / DRAM streaming) and actuation-lag measurement |
+| `pilot_contention/` | IsolBench-style memory-bandwidth adversary validation |
+| `campaign/` | The main campaign (`run_g2.sh`), estimator-break sweep, power-mode replications, all analysis scripts, figure generation |
+| `tools/` | `membw.c` (bandwidth adversary), `slm_decode_bench.cpp` (per-token SLM latency via llama.cpp) |
+| `results/` | Raw data: 822k timed cycles (campaign), pilots, replications — including the RT-throttling-contaminated `pilot_trans_run1/` kept as a methodology-pitfall exhibit |
+| `repro/` | Platform provenance (L4T, nvpmodel, EMC lockable-set probe) and a ~20-min **community replication kit** (`replicate.sh`) — please run it on your Orin and open an issue with the result! |
+| `CITATIONS.md` | Source-verification audit of every external claim in the paper |
+
+Bulk probe traces (60–230 MB CSVs) exceed GitHub limits and are archived
+separately — Zenodo DOI will be linked here.
+
+Generated proxy models are deterministic (seed 42): rebuild with
+`pilot_emc/make_decode_proxy.py` / `make_compute_proxy.py`.

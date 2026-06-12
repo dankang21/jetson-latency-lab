@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-06-12T03:16:05+0000",
+  "probe_cpu": 5,
+  "settle_s": 0.25,
+  "matrix": [
+    [
+      "cpu",
+      1728000,
+      729600,
+      300
+    ],
+    [
+      "cpu",
+      1728000,
+      115200,
+      300
+    ],
+    [
+      "gpu",
+      1020000000,
+      612000000,
+      400
+    ],
+    [
+      "gpu",
+      1020000000,
+      306000000,
+      400
+    ],
+    [
+      "emc",
+      3199000000,
+      2133000000,
+      400
+    ],
+    [
+      "emc",
+      3199000000,
+      665600000,
+      400
+    ]
+  ],
+  "readback_semantics": {
+    "cpu": "scaling_cur_freq = cpufreq driver cached value (not hardware)",
+    "gpu": "devfreq cur_freq = clk framework software state (not hardware)",
+    "emc": "debugfs rate = BPMP bookkeeping; pto_counter snapshots in <pair>.meta.json are the hardware truth"
+  },
+  "note": "probes run SCHED_FIFO 50 on the probe core; orchestrator pinned to cores 0-3. CPU+GPU otherwise dynamic; EMC locked only during emc pairs. Run with the board otherwise idle."
+}

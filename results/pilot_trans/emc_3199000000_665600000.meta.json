@@ -1,0 +1,7 @@
+{
+  "hw_counter_before": 3191896064,
+  "loop_end_ns": 580823764431080,
+  "probe_alive_at_loop_end": true,
+  "hw_counter_after": 3191875584,
+  "probe_returncode": 0
+}

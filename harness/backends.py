@@ -69,7 +69,10 @@ class OnnxRuntimeBackend:
                                          providers=[provider])
         actual = self.sess.get_providers()[0]
         if actual != provider:
-            sys.stderr.write(f"WARNING: requested {provider} got {actual}\n")
+            # Hard error, not a warning: a silent CPU-EP fallback overnight
+            # writes complete, plausible-looking JSONs measured on the wrong
+            # device, and campaign resume logic then keeps them forever.
+            raise RuntimeError(f"requested {provider} but session uses {actual}")
         self.name = f"onnxruntime-{provider_key}"
 
         self.input_name, self.x = _make_dummy_input(self.sess)

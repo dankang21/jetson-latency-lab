@@ -1,0 +1,51 @@
+== burst structure at quantile-anchored deadlines ==
+cell                           q  misses  bursts  meanlen  maxlen  len>=5  P[cont]  indep
+emc2133_adv0_mobilenet      99.0     999     910     1.10      12       5    0.089  1.010
+emc2133_adv0_mobilenet      99.9     100      46     2.17      11       5    0.540  1.001
+emc2133_adv0_proxy          99.0    1000     963     1.04       4       0    0.037  1.010
+emc2133_adv0_proxy          99.9     100      99     1.01       2       0    0.010  1.001
+emc2133_adv2_mobilenet      99.0    1000     725     1.38      26      14    0.275  1.010
+emc2133_adv2_mobilenet      99.9     100      26     3.85      16       9    0.740  1.001
+emc2133_adv4_mobilenet      99.0    1000     849     1.18      10       7    0.151  1.010
+emc2133_adv4_mobilenet      99.9     100      66     1.52       7       3    0.340  1.001
+emc2133_adv4_proxy          99.0    1000     937     1.07       4       0    0.063  1.010
+emc2133_adv4_proxy          99.9     100      95     1.05       3       0    0.050  1.001
+emc3199_adv0_mobilenet      99.0    1000     938     1.07       4       0    0.062  1.010
+emc3199_adv0_mobilenet      99.9     100      96     1.04       4       0    0.040  1.001
+emc3199_adv2_mobilenet      99.0    1000     885     1.13      14      10    0.115  1.010
+emc3199_adv2_mobilenet      99.9     100      69     1.45       7       4    0.310  1.001
+emc3199_adv4_mobilenet      99.0    1000     874     1.14      14       4    0.126  1.010
+emc3199_adv4_mobilenet      99.9     100      62     1.61      11       2    0.380  1.001
+
+== burst arrival pattern (q99.9; inter-burst-start intervals, s) ==
+cell                        bursts  median_s     CV  interpretation
+emc2133_adv0_mobilenet          46      4.04   1.85  clustered arrivals
+emc2133_adv0_proxy              99      2.00   2.24  clustered arrivals
+emc2133_adv2_mobilenet          26      0.38   2.57  clustered arrivals
+emc2133_adv4_mobilenet          66     28.08   0.81  ~Poisson
+emc2133_adv4_proxy              95     15.48   1.43  ~Poisson
+emc3199_adv0_mobilenet          96     10.00   1.07  ~Poisson
+emc3199_adv2_mobilenet          69     21.92   0.88  ~Poisson
+emc3199_adv4_mobilenet          62     22.82   1.08  ~Poisson
+
+== board state during bursts vs baseline (q99.9, bursts len>=2) ==
+cell                        join  EMC% burst/base  gputemp burst/base  RAM MB burst/base
+emc2133_adv0_mobilenet        51     8.0/8.0           52.3/50.7          3133/3125     
+emc2133_adv0_proxy             4    14.5/14.0          50.4/50.6          3043/3044     
+emc2133_adv2_mobilenet        32    37.0/37.0          54.3/54.2          3335/3329     
+emc2133_adv4_mobilenet        26    37.0/37.0          55.4/55.4          3886/3883     
+emc2133_adv4_proxy            16    43.9/42.0          53.0/55.2          4019/4023     
+emc3199_adv0_mobilenet         9     5.0/5.0           52.3/52.3          2876/2877     
+emc3199_adv2_mobilenet        24    29.0/29.0          56.5/56.9          3381/3381     
+emc3199_adv4_mobilenet        57    29.0/29.0          57.6/57.6          3888/3889     
+
+== EVT (GPD over p99 exceedances) + Gaussian-margin kill check ==
+cell                            xi   p99.99 evt/emp us   mean+3s     p99.9 3s covers?
+emc2133_adv0_mobilenet       0.503    5038.5/5113.3       4767.9    4850.4         NO
+emc2133_adv0_proxy          -0.210    6746.6/6755.8       6601.5    6697.6         NO
+emc2133_adv2_mobilenet       0.390    5940.0/5827.2       5405.9    5625.6         NO
+emc2133_adv4_mobilenet       0.407    5779.0/5819.1       5440.7    5549.6         NO
+emc2133_adv4_proxy          -0.028    8961.7/8965.8       8824.0    8891.8         NO
+emc3199_adv0_mobilenet      -0.246    4345.1/4356.0       4254.8    4305.0         NO
+emc3199_adv2_mobilenet       0.189    4739.9/4784.7       4528.4    4624.1         NO
+emc3199_adv4_mobilenet       0.449    4803.5/4875.5       4545.8    4624.3         NO

@@ -1,0 +1,9 @@
+cpu-thermal	49000
+gpu-thermal	50000
+cv0-thermal	48187
+cv1-thermal	49125
+cv2-thermal	48031
+soc0-thermal	49718
+soc1-thermal	
+soc2-thermal	
+tj-thermal	

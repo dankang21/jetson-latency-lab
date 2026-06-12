@@ -1,0 +1,21 @@
+== model A (CPU x GPU-only, fit @EMC3199): relative p50 error ==
+workload    in-scope@3199    @2133 med/max   @665.6 med/max
+mobilenet            0.4%     5.3/12.8       37.7/51.6   
+vit                  0.4%     5.1/17.6       50.1/63.7   
+proxy                0.3%     3.4/32.2       68.5/79.0   
+cproxyv2             2.5%     1.5/2.8        47.1/64.5   
+
+== model comparison on held-out EMC 2133 (median/max |rel err| %) ==
+workload     A: GPU-only   B: +m/f_emc  C1: b offset  C2: 2-cell refit
+mobilenet    5.3/12.8     5.4/7.1      4.2/4.9      2.4/3.4   
+vit          5.1/17.6    10.5/14.1     6.7/9.4      4.2/6.7   
+proxy        3.4/32.2    19.9/30.9    17.2/29.2     9.2/20.9  
+cproxyv2     1.5/2.8     17.8/34.5     2.0/4.0      2.5/4.8   
+
+== governor consequence: sign of model-A error at 2133 ==
+(positive = overestimates latency -> conservative;
+ negative = underestimates -> picks a frequency that misses)
+  mobilenet  median signed err -5.3% -> UNDERestimates
+  vit        median signed err -5.1% -> UNDERestimates
+  proxy      median signed err -3.4% -> UNDERestimates
+  cproxyv2   median signed err -0.4% -> UNDERestimates

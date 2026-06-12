@@ -1,0 +1,52 @@
+== Part A: RQ1 EMC curve (compute p50 ms; shift vs next-lower point) ==
+workload       204      Δ%     665      Δ%    2133      Δ%    3199      Δ%  p99/p50@3199
+mobilenet    22.46            8.53   +163%    4.70    +82%    4.20    +12%         1.008
+vit          90.38           30.65   +195%   13.45   +128%   11.40    +18%         1.011
+proxy        68.56           21.16   +224%    6.57   +222%    4.54    +45%         1.019
+cproxyv1    118.59           37.00   +220%   12.95   +186%   10.96    +18%         1.011
+cproxyv2    140.39           43.37   +224%   16.91   +156%   18.60     -9%         1.017
+slm         181.37           57.00   +218%   27.96   +104%   24.26    +15%         1.006
+
+== Part B: RQ2 tail under contention (response_us from raw 100k) ==
+cell                             n      p50      p99    p99.9   p99.99       max  p9999/p50  advGB/s
+emc2133_adv0_mobilenet   100000     4.70     4.81     4.85     5.11      5.25      1.087         
+emc2133_adv0_proxy       100000     6.55     6.63     6.70     6.76      6.99      1.032         
+emc2133_adv2_mobilenet   100000     5.30     5.43     5.63     5.83      5.98      1.099     19.7
+emc2133_adv4_mobilenet   100000     5.32     5.46     5.55     5.82      6.56      1.093    19.68
+emc2133_adv4_proxy       100000     8.72     8.84     8.89     8.97      9.30      1.029    18.94
+emc3199_adv0_mobilenet   100000     4.22     4.26     4.31     4.36      4.68      1.033         
+emc3199_adv2_mobilenet   100000     4.45     4.55     4.62     4.78      4.90      1.074    24.63
+emc3199_adv4_mobilenet   100000     4.46     4.56     4.62     4.88      5.03      1.092    24.48
+
+== Part B: post-hoc deadline-miss rate (%) ==
+-- mobilenet: deadlines 5.0ms  5.5ms  6.0ms  7.0ms  8.0ms  10.0ms  20.0ms
+  emc2133_adv0:    0.030    0.000    0.000    0.000    0.000    0.000    0.000
+  emc2133_adv2:  100.000    0.264    0.000    0.000    0.000    0.000    0.000
+  emc2133_adv4:  100.000    0.253    0.002    0.000    0.000    0.000    0.000
+  emc3199_adv0:    0.000    0.000    0.000    0.000    0.000    0.000    0.000
+  emc3199_adv2:    0.000    0.000    0.000    0.000    0.000    0.000    0.000
+  emc3199_adv4:    0.006    0.000    0.000    0.000    0.000    0.000    0.000
+
+-- proxy: deadlines 7.0ms  8.0ms  9.0ms  10.0ms  12.0ms  20.0ms  40.0ms
+  emc2133_adv0:    0.000    0.000    0.000    0.000    0.000    0.000    0.000
+  emc2133_adv4:  100.000  100.000    0.007    0.000    0.000    0.000    0.000
+
+== Part B: miss burstiness at tight deadline (P[miss|prev miss] / P[miss]; >1 = clustered) ==
+  emc2133_adv0_mobilenet  P[miss]=0.100% P[miss|prev]=54.000% ratio=540.0
+  emc2133_adv0_proxy      P[miss]=0.100% P[miss|prev]=1.000% ratio=10.0
+  emc2133_adv2_mobilenet  P[miss]=0.100% P[miss|prev]=74.000% ratio=740.0
+  emc2133_adv4_mobilenet  P[miss]=0.100% P[miss|prev]=34.000% ratio=340.0
+  emc2133_adv4_proxy      P[miss]=0.100% P[miss|prev]=5.000% ratio=50.0
+  emc3199_adv0_mobilenet  P[miss]=0.100% P[miss|prev]=4.000% ratio=40.0
+  emc3199_adv2_mobilenet  P[miss]=0.100% P[miss|prev]=31.000% ratio=310.0
+  emc3199_adv4_mobilenet  P[miss]=0.100% P[miss|prev]=38.000% ratio=380.0
+
+== Part B: release jitter vs compute share of tail (p99.9 decomposition, us) ==
+  emc2133_adv0_mobilenet  jitter p99.9=    28.0 compute p99.9=   4830.0 response p99.9=   4850.4
+  emc2133_adv0_proxy      jitter p99.9=    29.5 compute p99.9=   6684.7 response p99.9=   6697.6
+  emc2133_adv2_mobilenet  jitter p99.9=    37.3 compute p99.9=   5591.3 response p99.9=   5625.6
+  emc2133_adv4_mobilenet  jitter p99.9=    36.9 compute p99.9=   5515.8 response p99.9=   5549.6
+  emc2133_adv4_proxy      jitter p99.9=    36.6 compute p99.9=   8872.3 response p99.9=   8891.8
+  emc3199_adv0_mobilenet  jitter p99.9=    23.2 compute p99.9=   4282.6 response p99.9=   4305.0
+  emc3199_adv2_mobilenet  jitter p99.9=    31.6 compute p99.9=   4599.6 response p99.9=   4624.1
+  emc3199_adv4_mobilenet  jitter p99.9=    32.5 compute p99.9=   4592.9 response p99.9=   4624.3

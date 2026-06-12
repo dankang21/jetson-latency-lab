@@ -6,3 +6,19 @@ models/*.onnx
 results/*.png
 !results/.gitkeep
 imgs/
+
+# paper manuscript lives on arXiv/Overleaf, not in the artifact repo
+paper/
+paper.zip
+
+# bulk probe traces (60-230MB files) -> archived via Zenodo, linked in README
+*.probe.csv
+
+# deterministic proxy models: regenerate via pilot_emc/make_*.py (seed 42)
+pilot_emc/models/
+
+# build artifacts
+tools/membw
+tools/slm_decode_bench
+pilot_trans/freq_probe
+pilot_trans/gpu_probe

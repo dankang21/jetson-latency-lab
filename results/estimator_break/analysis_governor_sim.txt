@@ -1,0 +1,22 @@
+workload   policy   viol%  miss% (viol)  f_avg MHz  infeas%
+mobilenet  A+G        25%        68.51        474       0%
+mobilenet  A+P        22%        70.51        481       0%
+mobilenet  C+G         3%       100.00        507       3%
+mobilenet  C+P         3%       100.00        517       5%
+
+vit        A+G        22%        80.82        466       0%
+vit        A+P        18%        77.33        469       0%
+vit        C+G         5%        67.56        508       3%
+vit        C+P         5%        67.56        542       7%
+
+proxy      A+G         7%        55.42        440       0%
+proxy      A+P         7%        55.42        442       0%
+proxy      C+G         5%        66.89        502       3%
+proxy      C+P         5%        66.89        502       3%
+
+cproxyv2   A+G         8%        80.00        496       2%
+cproxyv2   A+P         8%        80.00        498       2%
+cproxyv2   C+G         3%        99.83        508       3%
+cproxyv2   C+P         3%        99.83        510       3%
+
+curves -> /home/dk/mobile/jetson-latency-lab/results/estimator_break/govsim_curves.json
