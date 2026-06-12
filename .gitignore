@@ -22,3 +22,6 @@ tools/membw
 tools/slm_decode_bench
 pilot_trans/freq_probe
 pilot_trans/gpu_probe
+
+# community replication kit output (per-user, never committed)
+repro/replication_out/
