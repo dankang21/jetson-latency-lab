@@ -302,7 +302,6 @@ Everything needed to reproduce the paper lives in this repo:
 | `tools/` | `membw.c` (bandwidth adversary), `slm_decode_bench.cpp` (per-token SLM latency via llama.cpp) |
 | `results/` | Raw data: 822k timed cycles (campaign), pilots, replications — including the RT-throttling-contaminated `pilot_trans_run1/` kept as a methodology-pitfall exhibit |
 | `repro/` | Platform provenance (L4T, nvpmodel, EMC lockable-set probe) and a ~20-min **community replication kit** (`replicate.sh`) — please run it on your Orin and open an issue with the result! |
-| `CITATIONS.md` | Source-verification audit of every external claim in the paper |
 
 Bulk probe traces (60–230 MB CSVs) exceed GitHub limits and are archived
 separately — Zenodo DOI will be linked here.
