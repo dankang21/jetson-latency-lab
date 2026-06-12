@@ -288,11 +288,5 @@ graphics stack, now real-time ML for robots @ Cleinsoft. Writeup:
 
 ## Paper
 
-Measurement harness, raw data, and analysis scripts for:
-*"Beyond CPU–GPU Frequency: Memory-Clock and Tail Effects in Edge
-Inference Latency Estimation"* (Jaehoon Kang) — arXiv link TBD.
-
-- Bulk probe traces (60–230 MB CSVs) exceed GitHub limits — archive link TBD.
-- Proxy models are regenerated deterministically (seed 42):
-  `pilot_emc/make_decode_proxy.py`, `pilot_emc/make_compute_proxy.py`.
-- ~20-min replication kit: `repro/replicate.sh`.
+This repository backs *"Beyond CPU--GPU Frequency: Memory-Clock and Tail
+Effects in Edge Inference Latency Estimation"* (Jaehoon Kang) — arXiv link TBD.
