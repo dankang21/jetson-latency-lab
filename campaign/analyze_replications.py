@@ -41,7 +41,8 @@ def governor_traces():
     print("== stock-governor EMC traces (rates observed @10Hz sampling) ==")
     cases = [
         ("MAXN_SUPER", ROOT / "results/e1_governor", ["idle", "mobilenet", "proxy", "slm"]),
-        ("25W", ROOT / "results/replication_25w", ["governor"]),
+        ("25W", ROOT / "results/replication_25w",
+         ["governor", "gov_idle", "gov_mobilenet", "gov_proxy", "gov_slm"]),
         ("15W", ROOT / "results/replication_15w", ["idle", "mobilenet", "proxy", "slm"]),
     ]
     for mode, base, names in cases:

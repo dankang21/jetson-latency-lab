@@ -263,3 +263,76 @@ def fig_govsim():
                  fontsize=8)
     ax.legend(frameon=False, fontsize=6.5, ncol=2)
     save(fig, "govsim")
+
+
+def fig_evtval():
+    """Out-of-sample EVT validation: first-50k GPD prediction vs last-50k
+    empirical quantiles, per Part B cell. Replaces the in-sample survival
+    plot as the main Fig 5 (review: figure must show the validation the
+    text claims)."""
+    import math
+    def gpd_q(u, xi, sigma, zeta, p):
+        r = p / zeta
+        if abs(xi) < 1e-6:
+            return u - sigma * math.log(r)
+        return u + sigma / xi * (r ** (-xi) - 1.0)
+    import re as _re
+    cells, preds, emps, marks = [], [], [], []
+    for f in sorted((G2 / "partB").glob("emc*_adv*_*.csv")):
+        if not _re.match(r"emc\d+_adv\d+_\w+\.csv$", f.name):
+            continue
+        resp = np.loadtxt(f, delimiter=",", skiprows=1)[:, 3]
+        a, b = resp[:50000], resp[50000:]
+        u = np.percentile(a, 99.0)
+        xi, sigma = gpd_pwm(a[a > u] - u)
+        zeta = (a > u).mean()
+        for q, p_t, mk in ((99.9, 1e-3, "o"), (99.99, 1e-4, "s")):
+            preds.append(gpd_q(u, xi, sigma, zeta, p_t) / 1000)
+            emps.append(np.percentile(b, q) / 1000)
+            marks.append(mk)
+        cells.append(f.stem)
+    fig, ax = plt.subplots(figsize=FIGSIZE)
+    pr, em, mk = np.array(preds), np.array(emps), np.array(marks)
+    for m, lab in (("o", "p99.9"), ("s", "p99.99")):
+        sel = mk == m
+        ax.plot(em[sel], pr[sel], m, ms=4, mfc="none",
+                color="#369" if m == "o" else "#c44", label=lab)
+    lo, hi = min(em.min(), pr.min()) * 0.98, max(em.max(), pr.max()) * 1.02
+    xs = np.linspace(lo, hi, 10)
+    ax.plot(xs, xs, "-", color="gray", lw=0.7)
+    ax.fill_between(xs, xs * 0.94, xs * 1.06, color="gray", alpha=0.15,
+                    label=r"$\pm$6% band")
+    ax.set_xlabel("observed quantile, last 50k cycles (ms)")
+    ax.set_ylabel("GPD prediction from first 50k (ms)")
+    ax.set_title("Out-of-sample tail validation, all 8 cells", fontsize=8)
+    ax.legend(frameon=False, fontsize=6.5)
+    save(fig, "rq2_evtval")
+
+
+def fig_govsim_all():
+    """Appendix: governor outcome curves for all four workloads."""
+    import json
+    data = json.loads((ROOT / "results" / "estimator_break" /
+                       "govsim_curves.json").read_text())
+    fig, axes = plt.subplots(2, 2, figsize=(7.0, 4.4))
+    styles = {"A+G": ("#c44", "-"), "A+P": ("#c44", "--"),
+              "C+G": ("#369", "-"), "C+P": ("#369", "--")}
+    names = {"A+G": "blind+G", "A+P": "blind+P",
+             "C+G": "aware+G", "C+P": "aware+P"}
+    for ax, wl in zip(axes.flat, ["mobilenet", "vit", "proxy", "cproxyv2"]):
+        for pol, (c, ls) in styles.items():
+            cur = data[wl][pol]["curve"]
+            miss = [max(m, 1e-2) for m in cur["miss_pct"]]
+            ax.plot(cur["D_ms"], miss, color=c, ls=ls, lw=0.9)
+        ax.axhline(100 / 300, color="gray", lw=0.5, ls=":")
+        ax.set_yscale("log")
+        ax.set_ylim(8e-3, 130)
+        ax.set_title(WL_LABEL.get(wl, wl), fontsize=8)
+        ax.set_xlabel("deadline (ms)", fontsize=7)
+        ax.set_ylabel("miss %", fontsize=7)
+    handles = [plt.Line2D([0], [0], color=c, ls=ls, label=names[p])
+               for p, (c, ls) in styles.items()]
+    fig.legend(handles=handles, ncol=4, frameon=False, fontsize=7,
+               loc="lower center", bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout()
+    save(fig, "govsim_all")

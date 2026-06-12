@@ -11,6 +11,10 @@ inversion at GPU 918MHz: NO (+6.3% — MAXN/GPU1020 showed -9.1%)
   MAXN_SUPER  proxy      n= 704 rates={2133: 704} transitions=0
   MAXN_SUPER  slm        n= 162 rates={2133: 162} transitions=0
   25W         governor   n= 983 rates={3199: 983} transitions=0
+  25W         gov_idle   n= 273 rates={3199: 273} transitions=0
+  25W         gov_mobilenet n= 577 rates={3199: 577} transitions=0
+  25W         gov_proxy  n= 570 rates={3199: 570} transitions=0
+  25W         gov_slm    n= 104 rates={3199: 104} transitions=0
   15W         idle       n= 273 rates={2133: 273} transitions=0
   15W         mobilenet  n= 569 rates={2133: 569} transitions=0
   15W         proxy      n= 568 rates={2133: 568} transitions=0
