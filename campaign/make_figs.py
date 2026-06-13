@@ -57,7 +57,7 @@ def load_part_a():
 
 
 def fig_rq1_curves(cells):
-    fig, ax = plt.subplots(figsize=FIGSIZE)
+    fig, ax = plt.subplots(figsize=(3.45, 2.7))
     for wl in WL_ORDER:
         p50 = np.array([cells[wl][m]["p50"] for m in EMC])
         norm = p50 / p50[-1]
@@ -70,7 +70,10 @@ def fig_rq1_curves(cells):
     ax.minorticks_off()
     ax.set_xlabel("EMC frequency (MHz, locked; CPU/GPU pinned)")
     ax.set_ylabel("p50 latency / p50 at 3199 MHz")
-    ax.legend(ncol=2, frameon=False, loc="upper right")
+    # legend below the plot box so it never overlaps the curves
+    ax.legend(ncol=3, frameon=False, fontsize=6.5,
+              loc="upper center", bbox_to_anchor=(0.5, -0.24),
+              handlelength=1.4, columnspacing=1.0)
     save(fig, "rq1_curves")
 
 
