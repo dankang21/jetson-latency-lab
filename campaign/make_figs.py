@@ -104,7 +104,7 @@ def load_cell(name):
 
 
 def fig_rq2_cliffs():
-    fig, ax = plt.subplots(figsize=FIGSIZE)
+    fig, ax = plt.subplots(figsize=(3.45, 2.7))
     dls = np.linspace(4.0, 7.0, 121)
     styles = {(2133, 0): ("#369", ":"), (2133, 2): ("#369", "--"),
               (2133, 4): ("#369", "-"), (3199, 0): ("#c44", ":"),
@@ -119,8 +119,11 @@ def fig_rq2_cliffs():
     ax.set_ylim(8e-4, 120)
     ax.set_xlabel("deadline (ms)")
     ax.set_ylabel("miss rate (%), 100k cycles")
-    ax.legend(frameon=False, ncol=2)
     ax.set_title("MobileNetV2 @ 50 Hz: the miss cliff", fontsize=8)
+    # legend below the plot box (3 cols) so it never overlaps the curves
+    ax.legend(frameon=False, ncol=3, fontsize=6.5,
+              loc="upper center", bbox_to_anchor=(0.5, -0.22),
+              handlelength=1.6, columnspacing=1.0)
     save(fig, "rq2_cliffs")
 
 
@@ -208,7 +211,7 @@ def fig_rq2_tailfit():
 
 
 def fig_actuation():
-    fig, ax = plt.subplots(figsize=(3.45, 1.9))
+    fig, ax = plt.subplots(figsize=(3.45, 2.2))
     domains = ["CPU", "GPU", "EMC"]
     settle = [1.2, 5.0, 8.0]       # workload-observed settle p50 (ms), n=150-200/dir
     stall = [0.0491, 0.0916, 0.0235]  # worst RAW stall p95 (ms)
@@ -222,9 +225,12 @@ def fig_actuation():
     ax.set_xscale("log")
     ax.set_xlim(1e-3, 30)
     ax.axvline(0.1, color="gray", lw=0.6, ls=":")
-    ax.text(0.1, 2.45, "100 µs kill line", fontsize=6, ha="center")
+    ax.text(0.115, 2.35, "100 µs kill line", fontsize=6, ha="left")
     ax.set_xlabel("ms (log)")
-    ax.legend(frameon=False, loc="lower right", fontsize=6.5)
+    # legend above the plot box so it never overlaps the bars
+    ax.legend(frameon=False, ncol=2, fontsize=6.5,
+              loc="lower center", bbox_to_anchor=(0.5, 1.02),
+              handlelength=1.4, columnspacing=1.2)
     save(fig, "rq3_actuation")
 
 
