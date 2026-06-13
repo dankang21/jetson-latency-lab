@@ -179,7 +179,7 @@ def gpd_pwm(excess):
 
 
 def fig_rq2_tailfit():
-    fig, ax = plt.subplots(figsize=FIGSIZE)
+    fig, ax = plt.subplots(figsize=(3.45, 2.7))
     resp = load_cell("emc2133_adv2_mobilenet") / 1000.0
     n = len(resp)
     srt = np.sort(resp)
@@ -206,7 +206,10 @@ def fig_rq2_tailfit():
     ax.set_xlabel("response time (ms)")
     ax.set_ylabel("P(response > x)")
     ax.set_title("MobileNetV2, EMC 2133 + adversary: tail fits", fontsize=8)
-    ax.legend(frameon=False, loc="lower left", fontsize=6.5)
+    # legend below the plot box so it never overlaps the fits
+    ax.legend(frameon=False, fontsize=6.5, ncol=2,
+              loc="upper center", bbox_to_anchor=(0.5, -0.22),
+              handlelength=1.6, columnspacing=1.2)
     save(fig, "rq2_tailfit")
 
 
@@ -252,7 +255,7 @@ def fig_govsim():
     import json
     data = json.loads((ROOT / "results" / "estimator_break" /
                        "govsim_curves.json").read_text())["mobilenet"]
-    fig, ax = plt.subplots(figsize=FIGSIZE)
+    fig, ax = plt.subplots(figsize=(3.45, 2.7))
     styles = {"A+G": ("#c44", "-"), "A+P": ("#c44", "--"),
               "C+G": ("#369", "-"), "C+P": ("#369", "--")}
     names = {"A+G": "blind + Gauss", "A+P": "blind + GPD",
@@ -270,7 +273,10 @@ def fig_govsim():
     ax.set_ylabel("achieved miss rate (%) at EMC 2133")
     ax.set_title("MobileNetV2: governor outcomes, profiled @3199",
                  fontsize=8)
-    ax.legend(frameon=False, fontsize=6.5, ncol=2)
+    # legend below the plot box so it never overlaps the curves
+    ax.legend(frameon=False, fontsize=6.5, ncol=2,
+              loc="upper center", bbox_to_anchor=(0.5, -0.22),
+              handlelength=1.6, columnspacing=1.2)
     save(fig, "govsim")
 
 
