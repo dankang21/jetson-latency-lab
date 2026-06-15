@@ -290,3 +290,6 @@ graphics stack, now real-time ML for robots @ Cleinsoft. Writeup:
 
 This repository backs *"Beyond CPU--GPU Frequency: Memory-Clock and Tail
 Effects in Edge Inference Latency Estimation"* (Jaehoon Kang) — arXiv link TBD.
+
+Bulk probe traces (too large for GitHub) are archived on Zenodo:
+[10.5281/zenodo.20694688](https://doi.org/10.5281/zenodo.20694688).
