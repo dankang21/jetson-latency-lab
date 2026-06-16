@@ -62,6 +62,7 @@ EMC_MID=${LOCKABLE[$(( ${#LOCKABLE[@]} / 2 ))]}
 
 # ---------- clock pinning ----------
 TEGRA_PID=""; ADV_PID=""; WL_PID=""
+SWAP_WAS_ON=$(swapon --show=NAME --noheadings | head -1)
 cleanup() {
   for v in WL_PID ADV_PID TEGRA_PID; do
     [ -n "${!v}" ] && kill "${!v}" 2>/dev/null || true
@@ -73,12 +74,19 @@ cleanup() {
   done
   echo "$GPU_MIN" > "$GPU_DIR/min_freq" 2>/dev/null || true
   echo "$GPU_MAX" > "$GPU_DIR/max_freq" 2>/dev/null || true
+  [ -n "$SWAP_WAS_ON" ] && swapon -a 2>/dev/null || true
   chown -R "$(stat -c %U "$ROOT")" "$OUT" 2>/dev/null || true
   echo "[nx] cleanup done"
 }
 trap cleanup EXIT
 trap 'exit 143' TERM INT
 log() { echo "[nx $(date +%H:%M:%S)] $*"; }
+
+# The NX unit has a slower SSD than the Nano (fio: 793 vs 1365 MB/s); disable
+# swap during measurement so disk latency can never leak into a timed window.
+# (Models are RAM/GPU-resident after warmup + mlockall, so this is belt-and-
+# braces, but it makes the no-SSD-confound claim airtight across both boards.)
+swapoff -a 2>/dev/null && log "swap disabled for the run" || log "no swap to disable"
 
 pin_all() {
   for c in /sys/devices/system/cpu/cpu*/cpufreq; do
