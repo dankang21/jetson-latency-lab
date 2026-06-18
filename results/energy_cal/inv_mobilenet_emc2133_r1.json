@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "label": "inv_mobilenet_emc2133_r1",
+    "backend": "onnxruntime-cuda",
+    "model": "mobilenetv2-12.onnx",
+    "hz": 120.0,
+    "period_us": 8333.333,
+    "deadline_us": 8333.333,
+    "iters": 600,
+    "warmup": 60,
+    "cpu": 7,
+    "prio": 80,
+    "mlock": true,
+    "host": "jetson-orin",
+    "kernel": "5.15.185-tegra",
+    "python": "3.10.12",
+    "timestamp": "2026-06-18T00:56:41.539417+00:00",
+    "rt_warnings": [
+      "set_realtime failed: [Errno 22] Invalid argument",
+      "mlockall failed: [Errno 12] Cannot allocate memory"
+    ]
+  },
+  "deadline_miss_count": 0,
+  "deadline_miss_rate": 0.0,
+  "response_us": {
+    "p50": 4444.523999999999,
+    "p90": 4737.6139,
+    "p99": 4789.55819,
+    "p99.9": 5386.264695000004,
+    "p99.99": 5418.985369499995,
+    "mean": 4504.500225,
+    "std": 132.92200878179545,
+    "min": 4420.663,
+    "max": 5422.621
+  },
+  "compute_us": {
+    "p50": 4382.643,
+    "p90": 4675.867,
+    "p99": 4724.7419199999995,
+    "p99.9": 5306.612073000002,
+    "p99.99": 5321.638407299998,
+    "mean": 4441.881614999999,
+    "std": 132.01671876030238,
+    "min": 4360.242,
+    "max": 5323.308
+  },
+  "release_jitter_us": {
+    "p50": 61.2345,
+    "p90": 66.8823,
+    "p99": 83.47326999999997,
+    "p99.9": 118.36813900000192,
+    "p99.99": 133.75351389999759,
+    "mean": 62.61861,
+    "std": 5.530054937753031,
+    "min": 58.853,
+    "max": 135.463
+  }
+}

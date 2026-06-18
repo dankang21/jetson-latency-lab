@@ -65,8 +65,26 @@ class OnnxRuntimeBackend:
         so.intra_op_num_threads = 1
         so.inter_op_num_threads = 1
 
+        if provider_key == "trt":
+            # TensorRT EP: build an fp16 engine (the deployment-realistic,
+            # fused/optimized path) and cache it so repeat cells reuse it.
+            # Falls back to CUDA EP for ops TRT cannot place.
+            import os
+            cache = os.environ.get("TRT_CACHE", "/tmp/trt_cache")
+            os.makedirs(cache, exist_ok=True)
+            providers = [
+                ("TensorrtExecutionProvider", {
+                    "trt_fp16_enable": True,
+                    "trt_engine_cache_enable": True,
+                    "trt_engine_cache_path": cache,
+                }),
+                ("CUDAExecutionProvider", {}),
+            ]
+        else:
+            providers = [provider]
+
         self.sess = ort.InferenceSession(str(model_path), sess_options=so,
-                                         providers=[provider])
+                                         providers=providers)
         actual = self.sess.get_providers()[0]
         if actual != provider:
             # Hard error, not a warning: a silent CPU-EP fallback overnight
@@ -107,6 +125,8 @@ class YourBaselineBackend:
 def make_backend(kind: str, model_path: str):
     if kind == "onnxruntime":
         return OnnxRuntimeBackend(model_path)
+    if kind == "onnxruntime-trt":
+        return OnnxRuntimeBackend(model_path, "trt")
     if kind == "baseline":
         return YourBaselineBackend(model_path)
     raise ValueError(f"unknown backend: {kind}")

@@ -9,6 +9,15 @@
 # the BPMP rounds to the nearest entry in its frequency table, so always read
 # the rate back instead of trusting the value you wrote.
 #
+# CRITICAL (R36): mrq_rate_locked alone is NOT enough. The BPMP bandwidth
+# manager keeps arbitrating EMC from live bandwidth votes and will override the
+# lock back to the demand-driven rate (e.g. the 204 MHz floor under light load),
+# so the requested rate is silently ignored. You must also halt the bandwidth
+# manager: /sys/kernel/debug/bpmp/debug/bwmgr/bwmgr_halt = 1. jetson_clocks sets
+# this implicitly, which is why a board that has run jetson_clocks locks fine
+# while a fresh one does not. We set/clear bwmgr_halt here so locking is
+# self-contained and does not depend on ambient jetson_clocks state.
+#
 # Root only (debugfs). Always `unlock` when done — a locked-low EMC under GPU
 # load is the failure mode the Part 2 comment warned about.
 #
@@ -16,6 +25,7 @@
 set -euo pipefail
 
 EMC=/sys/kernel/debug/bpmp/debug/clk/emc
+BWMGR=/sys/kernel/debug/bpmp/debug/bwmgr/bwmgr_halt
 
 die() { echo "emc_ctl: $*" >&2; exit 1; }
 
@@ -40,6 +50,8 @@ case "${1:-}" in
     ;;
   lock)
     [ -n "${2:-}" ] || die "lock needs a rate in Hz"
+    # Halt the bandwidth manager first, or it overrides the lock (see header).
+    [ -e "$BWMGR" ] && echo 1 > "$BWMGR" || echo "emc_ctl: WARN no bwmgr_halt node — lock may be overridden by bandwidth manager" >&2
     echo 1  > $EMC/mrq_rate_locked
     echo "$2" > $EMC/rate
     sleep 1
@@ -48,6 +60,7 @@ case "${1:-}" in
     ;;
   unlock)
     echo 0 > $EMC/mrq_rate_locked
+    [ -e "$BWMGR" ] && echo 0 > "$BWMGR"   # restore dynamic EMC bandwidth management
     status
     ;;
   *) echo "usage: $0 {status|points|lock <rate_hz>|unlock}"; exit 1 ;;

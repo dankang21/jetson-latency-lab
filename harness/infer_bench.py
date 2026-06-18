@@ -133,7 +133,7 @@ def run(args) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", default="onnxruntime",
-                    choices=["onnxruntime", "baseline"])
+                    choices=["onnxruntime", "onnxruntime-trt", "baseline"])
     ap.add_argument("--model", required=True)
     ap.add_argument("--hz", type=float, default=100.0)
     ap.add_argument("--iters", type=int, default=100_000)

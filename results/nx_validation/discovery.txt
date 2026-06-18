@@ -1,0 +1,6 @@
+model: NVIDIA Jetson Orin NX Engineering Reference Developer Kit Super
+ncpu: 8  cpu_max_khz: 1984000
+gpu_dir: /sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
+gpu_freqs: 306000000 408000000 510000000 612000000 714000000 816000000 918000000 1020000000 1122000000 1173000000
+emc_lockable: 204000000 665600000 2133000000 3199000000
+emc_max: 3199000000 emc_mid: 2133000000

@@ -1,0 +1,48 @@
+#!/bin/bash
+# Qwen2.5-1.5B-Instruct (Q4_K_M) deployed-governor generalization on the NX
+# (hebesu) with calibrated 1 ms-sampled onboard-INA energy. Token decode is saturated
+# (back-to-back); miss@D = P(per-token decode > D); energy/token = mean active
+# VDD_IN power x p50 decode time. Estimator sweep @{2133,3199} fits blind/aware.
+set -u
+PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
+LAB=/home/dk/mobile/jetson-latency-lab
+BENCH=$LAB/tools/slm_decode_bench
+MODEL=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
+G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
+cd "$LAB" || exit 1; mkdir -p results/qwen_deploy
+restore(){ sudo bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1
+  echo 306000000 > $G/min_freq; echo 1173000000 > $G/max_freq
+  echo 950000 > /proc/sys/kernel/sched_rt_runtime_us
+  for c in /sys/devices/system/cpu/cpu*/cpufreq; do echo schedutil > \$c/scaling_governor; done
+  chown -R dk:dk results/qwen_deploy 2>/dev/null"; }
+trap restore EXIT
+sudo bash -c "echo -1 > /proc/sys/kernel/sched_rt_runtime_us
+for c in /sys/devices/system/cpu/cpu*/cpufreq; do echo performance > \$c/scaling_governor; done"
+setclk(){ sudo bash -c "echo ${1}000000 > $G/min_freq; echo ${1}000000 > $G/max_freq"; }
+
+echo "=== PHASE 1: estimator sweep ==="
+for EMC in 3199 2133; do
+  sudo bash -c "$LAB/pilot_emc/emc_ctl.sh lock ${EMC}000000 >/dev/null"
+  for f in 510 612 714 816 918 1020 1122 1173; do
+    setclk "$f"; sleep 0.4
+    "$BENCH" --model "$MODEL" --tokens 150 --warmup 40 --cpu 7 --prio 80 \
+      --out results/qwen_deploy/qsweep_emc${EMC}_gpu${f} >/dev/null 2>&1
+    echo "  sweep emc${EMC} gpu${f}: $([ -s results/qwen_deploy/qsweep_emc${EMC}_gpu${f}.json ] && echo OK || echo FAIL)"
+  done
+done
+
+echo "=== PHASE 2: 3-repeat deployment @ EMC 2133 + 1 ms-sampled INA ==="
+sudo bash -c "$LAB/pilot_emc/emc_ctl.sh lock 2133000000 >/dev/null"
+for f in 714 816 918 1020 1122 1173; do
+  for r in 1 2 3; do
+    setclk "$f"; sleep 0.4
+    local_tag=qdep_g${f}_r${r}
+    taskset -c 0 "$PY" campaign/ina_log.py results/qwen_deploy/${local_tag}.power.csv 40 &
+    LP=$!
+    "$BENCH" --model "$MODEL" --tokens 300 --warmup 40 --cpu 7 --prio 80 \
+      --out results/qwen_deploy/${local_tag} >/dev/null 2>&1
+    kill -TERM $LP 2>/dev/null; wait $LP 2>/dev/null
+    echo "  dep g${f}_r${r}: $([ -s results/qwen_deploy/${local_tag}.json ] && echo OK || echo FAIL)"
+  done
+done
+echo "QWEN_DEPLOY DONE"

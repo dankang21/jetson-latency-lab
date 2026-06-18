@@ -288,9 +288,71 @@ graphics stack, now real-time ML for robots @ Cleinsoft. Writeup:
 
 ## Paper
 
-This repository backs *"Beyond CPU--GPU Frequency: Memory-Clock and Tail
-Effects in Edge Inference Latency Estimation"* (Jaehoon Kang) —
-[arXiv:2606.16106](https://arxiv.org/abs/2606.16106).
+This repository backs **"Edge-Inference Governors Need Memory-Clock State"**
+(Jaehoon Kang) — [arXiv:2606.16106](https://arxiv.org/abs/2606.16106). Bulk
+probe traces (too large for GitHub) are archived on Zenodo:
+[10.5281/zenodo.20694687](https://doi.org/10.5281/zenodo.20694687).
 
-Bulk probe traces (too large for GitHub) are archived on Zenodo:
-[10.5281/zenodo.20694688](https://doi.org/10.5281/zenodo.20694688).
+The core result: a CPU×GPU-only latency estimator cannot see the memory clock
+(EMC), so a deployed deadline governor picks an **infeasible** operating point;
+only an EMC-aware model finds the **feasible** side of the energy frontier.
+
+### Environment snapshot
+
+The exact board/software state the paper was measured on is captured under
+[`repro/`](repro/): `kernel.txt`, `l4t_version.txt`, `package_versions.txt`,
+`nvpmodel_active.txt`, and `emc_lockable_set.txt` — the four lockable EMC points
+{204, 665.6, 2133, 3199} MHz (JetPack snaps off-grid requests **up** to the next
+table entry, so always confirm the *actual* locked rate, not the requested one).
+
+### Clock-lock preflight — read before any EMC measurement
+
+EMC pinning goes through BPMP debugfs via
+[`pilot_emc/emc_ctl.sh`](pilot_emc/emc_ctl.sh):
+
+```bash
+sudo ./pilot_emc/emc_ctl.sh points            # list lockable EMC rates
+sudo ./pilot_emc/emc_ctl.sh lock 2133000000   # pin EMC to 2133 MHz
+sudo ./pilot_emc/emc_ctl.sh status            # confirm rate= and locked=
+sudo ./pilot_emc/emc_ctl.sh unlock            # ALWAYS unlock when done
+```
+
+> **`bwmgr_halt` is mandatory (L4T R36).** `mrq_rate_locked=1` alone is *not*
+> enough — the BPMP bandwidth manager silently re-pulls EMC back to the
+> demand-driven rate (e.g. the 204 MHz floor under light load) unless you also
+> set `/sys/kernel/debug/bpmp/debug/bwmgr/bwmgr_halt=1`. `emc_ctl.sh` sets and
+> clears it for you. A board that has run `jetson_clocks` locks fine (it sets the
+> flag implicitly); a fresh one silently does not. Always `unlock` — a locked-low
+> EMC under GPU load can stall the board.
+
+### Reproducing the deployed-governor tables
+
+| paper artifact | committed data | data-gen → analysis |
+|---|---|---|
+| Table II — MobileNetV2 governor | `results/govrep/` (miss), `results/energy_cal/` (energy), `results/nx_validation/` (fits) | `govrep.sh` + `energy_cal_gov.sh`; governor compute mirrors [`analyze_vit_gov.py`](campaign/analyze_vit_gov.py) |
+| Table III — ViT-Small governor | `results/govrep_vit/` | `vit_deploy.sh` → `analyze_vit_gov.py` |
+| Table IV — Qwen2.5 decode governor | `results/qwen_deploy/` | `qwen_deploy.sh` → `analyze_qwen_deploy.py` |
+| Table V — offset-calibrator estimator | `results/nx_validation/` | `run_estimator_break.sh` → `analyze_estimator.py` |
+
+Energy is calibrated 1 ms-sampled onboard-INA `VDD_IN` integration
+([`campaign/ina_log.py`](campaign/ina_log.py),
+[`campaign/power_probe.py`](campaign/power_probe.py)); `analyze_energy_cal.py`
+converts power traces to per-inference joules.
+
+### Raw vs processed data
+
+Under `results/<campaign>/`: `*.csv` are **raw per-cycle / per-token traces**
+(`response_us`, `dur_ns`); `*.json` are **per-run summaries**
+(`p50` / `p99` / `compute_us`); `*.meta.json` records the clock state, power
+mode, and command, so every run is self-describing. Bulk probe traces that
+exceed GitHub limits live on Zenodo (above).
+
+### Community replication (~20 min on your own Orin)
+
+[`repro/replicate.sh`](repro/replicate.sh) reproduces the two most-scrutinized
+RQ1 results — the EMC latency shift (MobileNetV2, 2133 vs 3199 MHz) and the
+L2-GEMM inversion — on your board, writing `repro/replication_result.json`:
+
+```bash
+sudo PY=/path/to/python-with-ort GENPY=/path/to/python-with-onnx ./repro/replicate.sh
+```

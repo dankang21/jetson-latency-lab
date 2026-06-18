@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "label": "inv_cproxyv2_emc3199_r1",
+    "backend": "onnxruntime-cuda",
+    "model": "compute_proxy_fp16.onnx",
+    "hz": 120.0,
+    "period_us": 8333.333,
+    "deadline_us": 8333.333,
+    "iters": 600,
+    "warmup": 60,
+    "cpu": 7,
+    "prio": 80,
+    "mlock": true,
+    "host": "jetson-orin",
+    "kernel": "5.15.185-tegra",
+    "python": "3.10.12",
+    "timestamp": "2026-06-18T00:55:38.559563+00:00",
+    "rt_warnings": [
+      "set_realtime failed: [Errno 22] Invalid argument",
+      "mlockall failed: [Errno 12] Cannot allocate memory"
+    ]
+  },
+  "deadline_miss_count": 600,
+  "deadline_miss_rate": 1.0,
+  "response_us": {
+    "p50": 2980910.8095000004,
+    "p90": 5343341.1537,
+    "p99": 5874959.18723,
+    "p99.9": 5928081.346911001,
+    "p99.99": 5933373.967091099,
+    "mean": 2977137.90267,
+    "std": 1711461.2455363548,
+    "min": 18438.374,
+    "max": 5933962.036
+  },
+  "compute_us": {
+    "p50": 18106.394,
+    "p90": 18287.774999999998,
+    "p99": 18384.89001,
+    "p99.9": 20843.310701000362,
+    "p99.99": 23730.89257009955,
+    "mean": 18152.351980000003,
+    "std": 267.9661852332671,
+    "min": 17978.327,
+    "max": 24051.735
+  },
+  "release_jitter_us": {
+    "p50": 2962773.3894999996,
+    "p90": 5325307.4778,
+    "p99": 5856924.487609999,
+    "p99.9": 5909950.1009140005,
+    "p99.99": 5915301.3767914,
+    "mean": 2958985.55069,
+    "std": 1711467.2091804415,
+    "min": 62.404,
+    "max": 5915895.963
+  }
+}

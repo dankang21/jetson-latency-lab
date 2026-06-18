@@ -10,9 +10,20 @@ imgs/
 # paper manuscript lives on arXiv/Overleaf, not in the artifact repo
 paper/
 paper.zip
+paperv1_submit/
+paperv2_submit/
+v2_paper/
+
+# manuscript figure rendering (writes to paper/figs/) -> lives with the paper, not the artifact repo
+campaign/make_frontier_fig.py
+campaign/make_figs_cal.py
+campaign/make_figs_v2.py
 
 # bulk probe traces (60-230MB files) -> archived via Zenodo, linked in README
 *.probe.csv
+
+# stale Nano leftover sweep (~255 MB), superseded by results/nx_validation; never published
+results/nx_pilot_trans/
 
 # deterministic proxy models: regenerate via pilot_emc/make_*.py (seed 42)
 pilot_emc/models/

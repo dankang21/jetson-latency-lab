@@ -227,8 +227,11 @@ def fig_actuation():
     ax.set_yticklabels(domains)
     ax.set_xscale("log")
     ax.set_xlim(1e-3, 30)
-    ax.axvline(0.1, color="gray", lw=0.6, ls=":")
-    ax.text(0.115, 2.35, "100 µs kill line", fontsize=6, ha="left")
+    ax.set_ylim(-0.95, 2.5)   # headroom below the bars for the kill-line label
+    ax.axvline(0.1, color="#555", lw=0.9, ls=(0, (4, 2)))
+    ax.annotate( "100 µs relevance line", xy=(0.1, -0.45),
+            xytext=(0.115, -0.72), fontsize=6, ha="left", va="center",
+            color="#555", arrowprops=dict(arrowstyle="-", color="#555", lw=0.7))
     ax.set_xlabel("ms (log)")
     # legend above the plot box so it never overlaps the bars
     ax.legend(frameon=False, ncol=2, fontsize=6.5,
