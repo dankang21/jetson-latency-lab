@@ -41,3 +41,6 @@ repro/replication_out/
 CITATIONS.md
 references.bib
 paper_submit/
+
+# stressor / run stderr logs (regenerated; not analysis inputs)
+*.log
