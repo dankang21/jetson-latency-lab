@@ -1,7 +1,6 @@
 # Analysis-side deps (install anywhere):
 numpy
 matplotlib
-pyyaml
 
 # Inference deps are assumed already present in your working Jetson env and are
 # intentionally NOT pinned here, because on Jetson they come from NVIDIA's
