@@ -18,6 +18,7 @@ v2_paper/
 campaign/make_frontier_fig.py
 campaign/make_figs_cal.py
 campaign/make_figs_v2.py
+campaign/make_fig_mech2.py
 
 # bulk probe traces (60-230MB files) -> archived via Zenodo, linked in README
 *.probe.csv
@@ -48,4 +49,5 @@ paper_submit/
 # exploratory / Zenodo-bound bulk -- not part of the public artifact
 results/e3_governor/
 results/e4_replication/
-results/e5_tensorrt/
+results/partb_ext/
+results/soak_qwen/soak.power.csv

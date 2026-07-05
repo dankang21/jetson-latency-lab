@@ -114,8 +114,12 @@ def main():
             t = cells[(2133, g)]
             eA.append(abs(kA * 1e3 / g + bA - t) / t)
             eB.append(abs(kB * 1e3 / g + mB * 1e3 / 2133.0 + bB - t) / t)
-            eC.append(abs(kA * 1e3 / g + bA + offC - t) / t)
-            eC2.append(abs(kC2 * 1e3 / g + bC2 - t) / t)
+            # score C variants on NON-TRAINING cells only (no leakage):
+            # C1's offset is fitted on gpu=1020; C2's (k,b) on gpu={306,1020}.
+            if g != 1020:
+                eC.append(abs(kA * 1e3 / g + bA + offC - t) / t)
+            if g not in (306, 1020):
+                eC2.append(abs(kC2 * 1e3 / g + bC2 - t) / t)
         print(f"{wl:<10} "
               f"{np.median(eA)*100:>5.1f}/{np.max(eA)*100:<6.1f} "
               f"{np.median(eB)*100:>5.1f}/{np.max(eB)*100:<6.1f} "
@@ -132,7 +136,7 @@ def main():
         kC = (y2 - y1) / (f2 - f1)
         bC = y1 - kC * f1
         eC = [abs(kC * 1e3 / g + bC - cells[(665, g)]) / cells[(665, g)]
-              for g in GPUS]
+              for g in GPUS if g not in (306, 1020)]   # non-training cells
         print(f"{wl:<10} {np.median(eC)*100:>7.1f}/{np.max(eC)*100:<7.1f}")
     print()
 

@@ -37,7 +37,16 @@ PROVIDER_MAP = {
 def _make_dummy_input(sess):
     """Identical logic to bench.py make_dummy_input (fixed seed=42)."""
     inp = sess.get_inputs()[0]
-    shape = [1 if (d is None or isinstance(d, str)) else d for d in inp.shape]
+    # symbolic dims -> 1, except the leading (batch) dim, which honors
+    # BENCH_BATCH (default 1) so batch sweeps need no per-batch model files
+    import os as _os
+    _b = int(_os.environ.get("BENCH_BATCH", "1"))
+    shape = []
+    for _j, d in enumerate(inp.shape):
+        if d is None or isinstance(d, str):
+            shape.append(_b if _j == 0 else 1)
+        else:
+            shape.append(d)
     dtype_map = {
         "tensor(float)": np.float32,
         "tensor(float16)": np.float16,
