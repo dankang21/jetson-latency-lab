@@ -1,0 +1,8 @@
+{
+  "meta": {"model": "/home/dk/mobile/models/qwen2.5-3b-instruct-q4_k_m.gguf", "ngl": 99, "prompt_tokens": 64,
+    "warmup": 40, "tokens": 300, "prefill_ms": 122.92,
+    "kv_range": [104, 404], "cpu": 7, "prio": 80},
+  "compute_us": {"p50": 44320.132, "p90": 44545.736, "p99": 44619.913,
+    "p99.9": 46386.320, "p99.99": 46386.320, "mean": 44339.452,
+    "min": 44093.788, "max": 48978.600}
+}
