@@ -106,3 +106,26 @@ def hxt():
                   f"  (runs {' '.join(f'{p:.2f}' for p in per)}; UB {np.quantile(boot,.95):.2f})")
 
 hxt()
+
+def guard():
+    """Probe-uncertainty guard: admit with the probe's bootstrap 95% UB on M
+    (probe data only). Promotes D=12 to 918 (decisive), declines D=9,
+    leaves the joint-stress acceptance unchanged."""
+    rng = np.random.default_rng(42)
+    pv = np.array([float(x["response_us"]) for x in
+                   csv.DictReader(open(f"{LAB}/results/joint_gov/probe_co_g1173.csv")) if x.get("response_us")])
+    M = np.quantile(pv, .98) - np.median(pv)
+    Mub = np.quantile([np.quantile(s, .98) - np.median(s)
+                       for s in (rng.choice(pv, len(pv), replace=True) for _ in range(20000))], .95)
+    print(f"\n=== probe-uncertainty guard: M={M/1e3:.2f} ms, bootstrap UB={Mub/1e3:.2f} ms ===")
+    pts = {int(re.search(r"gpu(\d+)", f).group(1)): json.load(open(f))["response_us"]["p50"]
+           for f in glob.glob(f"{LAB}/results/nx_validation/nx_est_emc2133_gpu*_mobilenet.json")}
+    lo, hi = min(pts), max(pts)
+    k = (pts[lo] - pts[hi]) / (1e3/lo - 1e3/hi); b = pts[hi] - k * (1e3/hi)
+    grid = [510, 612, 714, 816, 918, 1020, 1122, 1173]
+    for D in (9000, 12000):
+        for tag, m in (("point", M), ("guard", Mub)):
+            pick = next((g for g in grid if (k*1e3/g + b)*R + m*1173/g <= D), None)
+            print(f"  D={D//1000:>2} {tag}: pick={pick if pick else 'DECLINED'}")
+
+guard()
