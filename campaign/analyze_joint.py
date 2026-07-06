@@ -115,9 +115,13 @@ def guard():
     pv = np.array([float(x["response_us"]) for x in
                    csv.DictReader(open(f"{LAB}/results/joint_gov/probe_co_g1173.csv")) if x.get("response_us")])
     M = np.quantile(pv, .98) - np.median(pv)
-    Mub = np.quantile([np.quantile(s, .98) - np.median(s)
-                       for s in (rng.choice(pv, len(pv), replace=True) for _ in range(20000))], .95)
-    print(f"\n=== probe-uncertainty guard: M={M/1e3:.2f} ms, bootstrap UB={Mub/1e3:.2f} ms ===")
+    # distribution-free order-statistic bound: from 200 samples, the sample
+    # maximum is the smallest order statistic that upper-bounds the true p98
+    # with >=95% confidence (0.98^200 ~ 0.018; second-largest reaches only
+    # 91%). Deterministic -- no bootstrap, no RNG-seed dependence. (A p98
+    # bootstrap on n=200 is lumpy and its .95 quantile is seed-unstable.)
+    Mub = pv.max() - np.median(pv)
+    print(f"\n=== probe-uncertainty guard: M={M/1e3:.2f} ms, order-statistic UB (max-p50)={Mub/1e3:.2f} ms ===")
     pts = {int(re.search(r"gpu(\d+)", f).group(1)): json.load(open(f))["response_us"]["p50"]
            for f in glob.glob(f"{LAB}/results/nx_validation/nx_est_emc2133_gpu*_mobilenet.json")}
     lo, hi = min(pts), max(pts)
