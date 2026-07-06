@@ -1,0 +1,7 @@
+tenancy probe: n=200  M_tail=3.52 ms
+  D=9ms  blind     -> 510  (T_hat=7.61ms)
+  D=9ms  emc-solo  -> 510  (T_hat=8.13ms)
+  D=9ms  joint     -> 1020  (T_hat=5.13ms)
+  D=12ms  blind     -> 510  (T_hat=7.61ms)
+  D=12ms  emc-solo  -> 510  (T_hat=8.13ms)
+  D=12ms  joint     -> 510  (T_hat=8.13ms)
