@@ -52,8 +52,8 @@ def box(x0, y0, wd, ht, text, fc="#eaf2f8"):
 box(0.1, 7.4, 3.3, 2.2, "EMC state\n2-cell refit\n$\\to \\hat{T}(f)$")
 box(0.1, 4.2, 3.3, 2.2, "horizon state\nmeasured drift\n$\\to \\gamma$")
 box(0.1, 0.6, 3.3, 2.6, "occupancy state\n200-cycle probe $\\to M$\nguard: $\\max{-}p50$")
-box(4.6, 3.4, 3.5, 3.4,
-    "admit lowest $f$:\n$\\hat{T}(f)(1{+}\\gamma H)\\,r$\n$+\\;M\\,f_{probe}/f \\leq D$",
+box(4.6, 3.2, 3.5, 3.8,
+    "admit lowest $f$:\n$\\hat{T}(f)(1{+}\\gamma H)\\,r$\n$+\\;M_g\\,f_{probe}/f + h \\leq D$\n($h{=}2\\sigma_{probe}$)",
     fc="#fdf2e9")
 box(9.0, 5.8, 1.9, 1.8, "admit", fc="#d5f5e3")
 box(9.0, 2.2, 1.9, 1.8, "decline", fc="#fadbd8")
@@ -65,7 +65,7 @@ b.add_patch(FancyArrowPatch((8.25, 4.6), (9.0, 3.1), arrowstyle="->", mutation_s
 b.set_title("(b) bounded-probe contract admission", fontsize=8)
 # (c) joint stress
 c = ax[2]
-vals = [32.4, 0.10]; ubs = [32.5, 0.17]
+vals = [32.3, 0.11]; ubs = [32.4, 0.14]
 xc = [0, 1]
 c.bar(xc, vals, 0.55, color=["#c0392b", "#1e8449"])
 for i, (v, u) in enumerate(zip(vals, ubs)):
@@ -102,8 +102,8 @@ a.text(3900, 28.06, "D=28", fontsize=6.5, ha="right", color="#7d6608")
 a.set_xlabel("token index", fontsize=7); a.set_ylabel("median ms/token")
 a.set_title("(a) decode-length erosion (1173 MHz)", fontsize=8)
 a.legend(fontsize=6.5, frameon=False, loc="upper left")
-a.annotate("0.84% miss\n(tokens 1–500)", xy=(520, 26.55), fontsize=6, ha="center")
-a.annotate("8.5% miss\n(1501–2000)", xy=(1650, 27.12), fontsize=6, ha="center")
+a.annotate("0.83% miss\n(tokens 1–500)", xy=(520, 26.55), fontsize=6, ha="center")
+a.annotate("9.9% miss\n(1501–2000)", xy=(1650, 27.12), fontsize=6, ha="center")
 # (b) co-tenant bimodal histogram
 b = ax[1]
 allv = np.concatenate(co)
@@ -118,8 +118,8 @@ b.set_title("(b) decode under ViT co-tenant", fontsize=8)
 # (c) admission at the cliff
 c = ax[2]
 labels = ["blind\nD=28", "declined\n1122@43", "declined\n1173@43", "accepted\n1173@44"]
-vals = [32.4, 9.03, 0.30, 0.10]
-ubs = [32.5, 9.50, 0.40, 0.17]
+vals = [32.3, 9.03, 0.41, 0.11]
+ubs = [32.4, 9.50, 0.49, 0.14]
 cols = ["#c0392b", "#e67e22", "#f4d03f", "#1e8449"]
 xc = np.arange(4)
 c.bar(xc, vals, 0.6, color=cols)
