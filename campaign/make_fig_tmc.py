@@ -42,7 +42,8 @@ a.set_yscale("log"); a.set_ylim(0.05, 60)
 a.set_xticks(x); a.set_xticklabels([f"D={d}" for d in D], fontsize=7)
 a.set_ylabel("deadline miss (%)")
 a.set_title("(a) solo: blind vs aware (MNv2, NX)", fontsize=8)
-a.legend(fontsize=6, frameon=False, loc="upper right", handlelength=1.2)
+a.legend(fontsize=6.5, frameon=False, loc="lower center",
+         bbox_to_anchor=(0.5, -0.42), ncol=2, columnspacing=1.0, handlelength=1.2)
 # (b) pipeline schematic
 b = ax[1]; b.axis("off"); b.set_xlim(0, 11.2); b.set_ylim(0, 10.5)
 def box(x0, y0, wd, ht, text, fc="#eaf2f8"):
@@ -85,7 +86,7 @@ solo = dur_cells(f"{LAB}/results/boundary_stats/q15_g1173_r*.csv")[1173]
 h4 = dur_cells(f"{LAB}/results/horizon_4k/q15h4k_g1173_r*.csv")[1173]
 co = dur_cells(f"{LAB}/results/joint_hxt/q15co_g1173_r*.csv")[1173]
 
-fig, ax = plt.subplots(1, 3, figsize=(7.0, 1.95))
+fig, ax = plt.subplots(1, 3, figsize=(7.0, 2.1))
 # (a) horizon erosion: rolling median per token
 a = ax[0]
 m2 = np.median(np.vstack([r[:2000] for r in solo]), axis=0)
@@ -101,17 +102,20 @@ a.axhline(28, ls=":", lw=0.8, color="#7d6608")
 a.text(3900, 28.06, "D=28", fontsize=6.5, ha="right", color="#7d6608")
 a.set_xlabel("token index", fontsize=7); a.set_ylabel("median ms/token")
 a.set_title("(a) decode-length erosion (1173 MHz)", fontsize=8)
-a.legend(fontsize=6.5, frameon=False, loc="upper left")
-a.annotate("0.83% miss\n(tokens 1–500)", xy=(520, 26.55), fontsize=6, ha="center")
-a.annotate("9.9% miss\n(1501–2000)", xy=(1650, 27.12), fontsize=6, ha="center")
+a.set_ylim(25.7, 28.15)
+a.legend(fontsize=6, frameon=False, loc="lower right", handlelength=1.4)
+a.text(120, 27.62, "miss at D=27:\n0.83% (tokens 1–500)\n9.9% (tokens 1501–2000)",
+       fontsize=6, ha="left", va="center")
+
 # (b) co-tenant bimodal histogram
 b = ax[1]
 allv = np.concatenate(co)
 b.hist(allv, bins=120, color="#2471a3", log=True)
 b.axvline(np.median(allv), color="k", lw=0.8, ls="--")
 b.text(np.median(allv)+0.8, 40, f"p50 {np.median(allv):.1f} ms", fontsize=6.2)
+b.set_ylim(0.7, 8e3)
 b.annotate(f"{np.mean(allv>32)*100:.0f}% of tokens\ncollide (42–43 ms)",
-           xy=(41.8, 200), xytext=(31.5, 250), fontsize=6.2,
+           xy=(41.8, 300), xytext=(31.0, 2.2e3), fontsize=6.2,
            arrowprops=dict(arrowstyle="->", lw=0.7))
 b.set_xlabel("ms/token", fontsize=7); b.set_ylabel("tokens")
 b.set_title("(b) decode under ViT co-tenant", fontsize=8)
