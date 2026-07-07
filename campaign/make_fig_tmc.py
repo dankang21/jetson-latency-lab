@@ -37,7 +37,8 @@ a.bar(x + w/2, aware, w, color="#2471a3", label="EMC-aware")
 for i, (v, u) in enumerate(zip(aware, aub)):
     a.plot([x[i]+w/2]*2, [v, u], color="#1a5276", lw=1)
 a.axhline(BUDGET, ls="--", lw=0.8, color="k")
-a.text(2.52, BUDGET*1.18, r"$\tau$=2%", fontsize=6.5, ha="right")
+a.set_xlim(-0.55, 3.0)
+a.text(2.95, BUDGET*1.18, r"$\tau$=2%", fontsize=6.5, ha="right")
 a.set_yscale("log"); a.set_ylim(0.05, 60)
 a.set_xticks(x); a.set_xticklabels([f"D={d}" for d in D], fontsize=7)
 a.set_ylabel("deadline miss (%)")
@@ -53,16 +54,16 @@ def box(x0, y0, wd, ht, text, fc="#eaf2f8"):
 box(0.15, 7.7, 3.1, 2.0, "EMC state\n2-cell refit $\\to \\hat{T}(f)$")
 box(0.15, 4.6, 3.1, 2.0, "horizon state\ndrift $\\to \\gamma$")
 box(0.15, 1.5, 3.1, 2.0, "occupancy state\nprobe $\\to M_g$")
-box(4.5, 3.3, 3.9, 3.9,
+box(4.35, 3.0, 4.15, 4.5,
     "admit lowest $f$:\n$\\hat{T}(f)(1{+}\\gamma H)\\,r$\n$+\;M_g\\,f_{probe}/f + h \\leq D$\n($h{=}2\\sigma_{probe}$)",
     fc="#fdf2e9")
 box(9.2, 6.1, 1.85, 1.7, "admit", fc="#d5f5e3")
 box(9.2, 2.7, 1.85, 1.7, "decline", fc="#fadbd8")
 for y in (8.7, 5.6, 2.5):
-    b.add_patch(FancyArrowPatch((3.45, y), (4.5, 5.25), arrowstyle="->",
+    b.add_patch(FancyArrowPatch((3.45, y), (4.35, 5.25), arrowstyle="->",
                 mutation_scale=7, lw=0.7, color="#5d6d7e"))
-b.add_patch(FancyArrowPatch((8.4, 5.8), (9.2, 6.95), arrowstyle="->", mutation_scale=7, lw=0.7, color="#5d6d7e"))
-b.add_patch(FancyArrowPatch((8.4, 4.7), (9.2, 3.55), arrowstyle="->", mutation_scale=7, lw=0.7, color="#5d6d7e"))
+b.add_patch(FancyArrowPatch((8.55, 5.8), (9.2, 6.95), arrowstyle="->", mutation_scale=7, lw=0.7, color="#5d6d7e"))
+b.add_patch(FancyArrowPatch((8.55, 4.7), (9.2, 3.55), arrowstyle="->", mutation_scale=7, lw=0.7, color="#5d6d7e"))
 b.set_title("(b) bounded-probe contract admission", fontsize=8)
 # (c) joint stress
 c = ax[2]
@@ -104,15 +105,21 @@ a.set_xlabel("token index", fontsize=7); a.set_ylabel("median ms/token")
 a.set_title("(a) decode-length erosion (1173 MHz)", fontsize=8)
 a.set_ylim(25.7, 28.15)
 a.legend(fontsize=6, frameon=False, loc="lower right", handlelength=1.4)
-a.text(120, 27.62, "miss at D=27:\n0.83% (tokens 1–500)\n9.9% (tokens 1501–2000)",
-       fontsize=6, ha="left", va="center")
+a.annotate("D=27, H=2,000:\n0.83% miss (tok 1–500)", xy=(300, float(roll2[250])),
+           xytext=(430, 27.55), fontsize=6, ha="left",
+           arrowprops=dict(arrowstyle="->", lw=0.6))
+a.annotate("9.9% miss\n(tok 1501–2000)", xy=(1800, float(roll2[1680])),
+           xytext=(2200, 26.35), fontsize=6, ha="left",
+           arrowprops=dict(arrowstyle="->", lw=0.6))
 
 # (b) co-tenant bimodal histogram
 b = ax[1]
 allv = np.concatenate(co)
 b.hist(allv, bins=120, color="#2471a3", log=True)
 b.axvline(np.median(allv), color="k", lw=0.8, ls="--")
-b.text(np.median(allv)+0.8, 40, f"p50 {np.median(allv):.1f} ms", fontsize=6.2)
+b.annotate(f"p50 {np.median(allv):.1f} ms", xy=(np.median(allv), 60),
+           xytext=(np.median(allv)+3.2, 25), fontsize=6.2,
+           arrowprops=dict(arrowstyle="->", lw=0.6))
 b.set_ylim(0.7, 8e3)
 b.annotate(f"{np.mean(allv>32)*100:.0f}% of tokens\ncollide (42–43 ms)",
            xy=(41.8, 300), xytext=(31.0, 2.2e3), fontsize=6.2,
