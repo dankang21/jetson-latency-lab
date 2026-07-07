@@ -37,7 +37,7 @@ a.bar(x + w/2, aware, w, color="#2471a3", label="EMC-aware")
 for i, (v, u) in enumerate(zip(aware, aub)):
     a.plot([x[i]+w/2]*2, [v, u], color="#1a5276", lw=1)
 a.axhline(BUDGET, ls="--", lw=0.8, color="k")
-a.text(-0.42, BUDGET*1.18, r"$\tau$=2%", fontsize=6.5, ha="left")
+a.text(2.52, BUDGET*1.18, r"$\tau$=2%", fontsize=6.5, ha="right")
 a.set_yscale("log"); a.set_ylim(0.05, 60)
 a.set_xticks(x); a.set_xticklabels([f"D={d}" for d in D], fontsize=7)
 a.set_ylabel("deadline miss (%)")
@@ -49,20 +49,20 @@ b = ax[1]; b.axis("off"); b.set_xlim(0, 11.2); b.set_ylim(0, 10.5)
 def box(x0, y0, wd, ht, text, fc="#eaf2f8"):
     b.add_patch(FancyBboxPatch((x0, y0), wd, ht, boxstyle="round,pad=0.15",
                 fc=fc, ec="#5d6d7e", lw=0.8))
-    b.text(x0 + wd/2, y0 + ht/2, text, ha="center", va="center", fontsize=6.3)
-box(0.1, 7.4, 3.3, 2.2, "EMC state\n2-cell refit\n$\\to \\hat{T}(f)$")
-box(0.1, 4.2, 3.3, 2.2, "horizon state\nmeasured drift\n$\\to \\gamma$")
-box(0.1, 0.6, 3.3, 2.6, "occupancy state\n200-cycle probe $\\to M$\nguard: $\\max{-}p50$")
-box(4.6, 3.2, 3.5, 3.8,
-    "admit lowest $f$:\n$\\hat{T}(f)(1{+}\\gamma H)\\,r$\n$+\\;M_g\\,f_{probe}/f + h \\leq D$\n($h{=}2\\sigma_{probe}$)",
+    b.text(x0 + wd/2, y0 + ht/2, text, ha="center", va="center", fontsize=6.2)
+box(0.15, 7.7, 3.1, 2.0, "EMC state\n2-cell refit $\\to \\hat{T}(f)$")
+box(0.15, 4.6, 3.1, 2.0, "horizon state\ndrift $\\to \\gamma$")
+box(0.15, 1.5, 3.1, 2.0, "occupancy state\nprobe $\\to M_g$")
+box(4.5, 3.3, 3.9, 3.9,
+    "admit lowest $f$:\n$\\hat{T}(f)(1{+}\\gamma H)\\,r$\n$+\;M_g\\,f_{probe}/f + h \\leq D$\n($h{=}2\\sigma_{probe}$)",
     fc="#fdf2e9")
-box(9.0, 5.8, 1.9, 1.8, "admit", fc="#d5f5e3")
-box(9.0, 2.2, 1.9, 1.8, "decline", fc="#fadbd8")
-for y in (8.5, 5.3, 1.9):
-    b.add_patch(FancyArrowPatch((3.55, y), (4.6, 5.1), arrowstyle="->",
+box(9.2, 6.1, 1.85, 1.7, "admit", fc="#d5f5e3")
+box(9.2, 2.7, 1.85, 1.7, "decline", fc="#fadbd8")
+for y in (8.7, 5.6, 2.5):
+    b.add_patch(FancyArrowPatch((3.45, y), (4.5, 5.25), arrowstyle="->",
                 mutation_scale=7, lw=0.7, color="#5d6d7e"))
-b.add_patch(FancyArrowPatch((8.25, 5.6), (9.0, 6.7), arrowstyle="->", mutation_scale=7, lw=0.7, color="#5d6d7e"))
-b.add_patch(FancyArrowPatch((8.25, 4.6), (9.0, 3.1), arrowstyle="->", mutation_scale=7, lw=0.7, color="#5d6d7e"))
+b.add_patch(FancyArrowPatch((8.4, 5.8), (9.2, 6.95), arrowstyle="->", mutation_scale=7, lw=0.7, color="#5d6d7e"))
+b.add_patch(FancyArrowPatch((8.4, 4.7), (9.2, 3.55), arrowstyle="->", mutation_scale=7, lw=0.7, color="#5d6d7e"))
 b.set_title("(b) bounded-probe contract admission", fontsize=8)
 # (c) joint stress
 c = ax[2]
