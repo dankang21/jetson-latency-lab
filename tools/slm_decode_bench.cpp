@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 
     llama_context_params cparams = llama_context_default_params();
     cparams.n_ctx = prompt_len + n_warmup + n_tokens + 16;
-    cparams.n_batch = 512;
+    cparams.n_batch = (uint32_t)(prompt_len > 496 ? prompt_len + 16 : 512);
     llama_context *ctx = llama_init_from_model(model, cparams);
     if (!ctx) { fprintf(stderr, "slm_bench: context init failed\n"); return 1; }
 
