@@ -13,7 +13,10 @@ calibrated module-rail energy.
 This repository holds the measurement harness, the per-run data behind the
 paper's tables, and a community replication kit. Bulk raw traces that exceed
 GitHub's file-size limits are archived on Zenodo:
-[10.5281/zenodo.20694687](https://doi.org/10.5281/zenodo.20694687)
+[10.5281/zenodo.21236659](https://doi.org/10.5281/zenodo.21236659) (v3:
+tail-cell extension, NX burst replication, governor auxiliaries, 1 kHz
+soak power trace, NX transition probes; earlier versions carry the Nano
+probe traces)
 (concept DOI — always resolves to the latest version).
 
 ---
