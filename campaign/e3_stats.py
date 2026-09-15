@@ -27,9 +27,10 @@ Endpoints (§5):
 Diagnostic (not a protocol quantity): a probe whose M_g is at most twice the
   solo cell's own max - p50 at f_probe is flagged 'probe~solo' (the probe did
   not see the co-tenant); the threshold is printed in the block header.
-Verdict (§6): 'supported' / 'not supported' / 'band idle'; if P1 = 0 and P2
-  holds but only some removed point admissions failed, the §6 supported clause
-  is not met and the line says so; without a reference sweep the verdict is
+Verdict (§6, amended 2026-09-15): 'supported' iff P1 = 0 and P2 holds; 'not
+  supported' if P1 > 0 or P2 fails; 'band idle' if f_pt = f_b on every trial.
+  Band necessity (removed admissions failed/passed) is reported, not judged;
+  without a reference sweep the verdict is
   'pending reference' unless P2 already fails.
 numpy only (no scipy in the venv); cp_upper is imported from launch_ext_stats.py.
 
@@ -388,11 +389,12 @@ def analyse(cdir, cond_id, tau, B, seed, D_override=None):
         verdict = f"NOT SUPPORTED - P1 = {P1}/{n_adm} banded picks below f_oracle = {f_oracle}"
     elif not active:
         verdict = f"BAND IDLE - P1 = 0, P2 holds ({pct(P2['pooled'])}), f_pt = f_b on every trial: condition did not exercise the band"
-    elif with_pt and len(pt_fail) == len(with_pt) and len(with_pt) == len(active):
-        verdict = f"SUPPORTED - P1 = 0, P2 holds ({pct(P2['pooled'])}), all {len(pt_fail)}/{len(active)} removed point admissions failed"
     else:
-        verdict = (f"P1 = 0 and P2 holds ({pct(P2['pooled'])}), but band necessity is partial: "
-                   f"{len(pt_fail)}/{len(with_pt)} removed point admissions failed - §6 'supported' clause not met")
+        # §6 as amended 2026-09-15 (E3_protocol.md §8): supported iff P1 = 0 and P2 holds;
+        # band necessity is reported as (removed admissions that failed / that passed) and
+        # enters the utilization cost, not the verdict.
+        verdict = (f"SUPPORTED - P1 = 0, P2 holds ({pct(P2['pooled'])}); band active on {len(active)}/{len(done)} trials, "
+                   f"removed point admissions: {len(pt_fail)} failed / {len(with_pt) - len(pt_fail)} passed")
     if diag["probe_solo_ks"]:
         verdict += f"  [diag: {len(diag['probe_solo_ks'])}/{len(done)} probes indistinguishable from solo]"
 
