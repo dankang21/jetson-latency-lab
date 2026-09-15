@@ -53,7 +53,7 @@ if [ "$MODE" = refit ]; then
   echo "REFIT DONE $(date -Is)" | tee -a "$OUT/session.log"; exit 0
 fi
 CLOCKS=${CLOCKS:?set CLOCKS}
-OUT=results/govrep_rev/${BOARD}_${MODEL}; mkdir -p "$OUT"
+OUT=${OUTDIR:-results/govrep_rev/${BOARD}_${MODEL}}; mkdir -p "$OUT"
 lock_emc 2133
 echo "board=$BOARD host=$(hostname) commit=$(git rev-parse --short HEAD) model=$MODEL pairs=$PAIRS clocks=$CLOCKS hz=$HZ start=$(date -Is)" >> "$OUT/session.log"
 for p in $(seq 1 "$PAIRS"); do tgate
