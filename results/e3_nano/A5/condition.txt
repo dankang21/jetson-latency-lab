@@ -1,0 +1,1 @@
+board=nano primary=vit pri_hz=20 co=yolov8s co_hz=5 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/vit/est_emc2133_gpu306.json,results/nano_grid/vit/est_emc2133_gpu1020.json

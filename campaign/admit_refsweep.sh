@@ -57,7 +57,7 @@ run(){ if $DRY; then echo "+ $*" >&3; return 0; fi; "$@"; }
 nap(){ $DRY || sleep "$1"; }
 log(){ if $DRY; then echo "$*"; else echo "$*" | tee -a "$OUT/session.log"; fi; }
 CO_PID=""; LP=""
-restore(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null
+restore(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; pkill -f "[c]o_${CO}" 2>/dev/null
   [ -n "$LP" ] && kill -TERM "$LP" 2>/dev/null
   $DRY && return 0
   sudo -n bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1
@@ -79,7 +79,7 @@ co_start(){
     --hz "$CO_HZ" --iters 100000 --warmup 30 --cpu "$CCPU" --label co_${CO} \
     --out /tmp/co_e3_${COND}_ref >/dev/null 2>&1 & CO_PID=$!
   nap 20; }
-co_stop(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; wait "$CO_PID" 2>/dev/null; CO_PID=""; nap 2; }
+co_stop(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; pkill -f "[c]o_${CO}" 2>/dev/null; wait "$CO_PID" 2>/dev/null; CO_PID=""; nap 2; }
 score(){ $DRY && { echo "-"; return; }; [ -s "$1" ] && "$PY" campaign/admit_pick.py --score "$1" --D-ms "$D_MS" --brief || echo FAIL; }
 
 run sudo -n bash -c "echo -1 > /proc/sys/kernel/sched_rt_runtime_us
