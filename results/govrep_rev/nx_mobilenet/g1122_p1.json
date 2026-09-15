@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "label": "g1122_p1",
+    "backend": "onnxruntime-cuda",
+    "model": "mobilenetv2-12.onnx",
+    "hz": 33.0,
+    "period_us": 30303.03,
+    "deadline_us": 30303.03,
+    "iters": 1000,
+    "warmup": 120,
+    "cpu": 7,
+    "prio": 80,
+    "mlock": true,
+    "host": "Pandora",
+    "kernel": "5.15.148-tegra",
+    "python": "3.10.12",
+    "timestamp": "2026-09-15T08:33:02.416656+00:00",
+    "rt_warnings": [
+      "SCHED_FIFO/affinity denied (need sudo) -> ran SCHED_OTHER",
+      "mlockall failed: [Errno 12] Cannot allocate memory"
+    ]
+  },
+  "deadline_miss_count": 0,
+  "deadline_miss_rate": 0.0,
+  "response_us": {
+    "p50": 4468.275,
+    "p90": 4481.3514,
+    "p99": 4500.05373,
+    "p99.9": 4672.738762000001,
+    "p99.99": 4682.4148761999995,
+    "mean": 4469.7306770000005,
+    "std": 13.827116038663684,
+    "min": 4441.122,
+    "max": 4683.49
+  },
+  "compute_us": {
+    "p50": 4408.2605,
+    "p90": 4421.3649000000005,
+    "p99": 4439.90996,
+    "p99.9": 4594.4285930000015,
+    "p99.99": 4611.145559299999,
+    "mean": 4409.749106,
+    "std": 13.277602564799267,
+    "min": 4381.54,
+    "max": 4613.003
+  },
+  "release_jitter_us": {
+    "p50": 59.7455,
+    "p90": 60.847100000000005,
+    "p99": 65.92761,
+    "p99.9": 70.4948310000007,
+    "p99.99": 77.53568309999962,
+    "mean": 59.981570999999995,
+    "std": 1.2915661713435358,
+    "min": 58.142,
+    "max": 78.318
+  }
+}
