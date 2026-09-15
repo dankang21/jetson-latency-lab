@@ -56,6 +56,8 @@ def run(args) -> dict:
                                cpu=args.cpu,
                                lock_mem=not args.no_mlock)
     backend.warmup(args.warmup)
+    if getattr(args, 'ready_file', None):
+        open(args.ready_file, 'w').close()  # co-runner readiness marker (not in the timed loop)
 
     n = args.iters
     period_ns = round(1_000_000_000 / args.hz)
@@ -146,6 +148,8 @@ def main():
     ap.add_argument("--no-mlock", action="store_true")
     ap.add_argument("--no-raw", action="store_true",
                     help="skip per-cycle CSV (keep only summary JSON)")
+    ap.add_argument("--ready-file", default=None,
+                    help="touch this path after warm-up (used by campaign runners to verify co-runner readiness)")
     ap.add_argument("--label", default="run")
     ap.add_argument("--out", default="results/run")
     run(ap.parse_args())

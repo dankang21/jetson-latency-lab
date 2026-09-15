@@ -90,11 +90,12 @@ emc_check(){ $DRY && return 0; local r; r=$(sudo -n cat $EMC_RATE 2>/dev/null)
   [ "$r" = 2133000000 ] && return 0
   log "  WARN EMC rate=$r != 2133000000 -> re-lock"
   sudo -n bash -c "$LAB/pilot_emc/emc_ctl.sh lock 2133000000" | tee -a "$OUT/session.log"; }
-co_start(){ # fresh co-runner process on its own core, trace discarded (fresh_loop.sh:26-28)
+co_start(){ RF=/tmp/co_e3_${COND}_${k:-ref}.ready; rm -f "$RF" # fresh co-runner process on its own core, trace discarded (fresh_loop.sh:26-28)
   run "$PY" -m harness.infer_bench --backend onnxruntime --model "$CO_MODEL" \
     --hz "$CO_HZ" --iters 100000 --warmup 30 --cpu "$CCPU" --label co_${CO} \
-    --out /tmp/co_e3_${COND}_t${k} >/dev/null 2>&1 & CO_PID=$!
-  nap 20; }
+    --out /tmp/co_e3_${COND}_t${k} --ready-file "$RF" >"$OUT/co_${k:-ref}.log" 2>&1 & CO_PID=$!
+  $DRY && return 0; local w=0; until [ -f "$RF" ] || [ $w -ge 120 ]; do sleep 1; w=$((w+1)); done
+  if [ -f "$RF" ]; then log "  co-runner ready after ${w}s"; else log "  WARN co-runner NOT ready after ${w}s"; fi; nap 5; }
 co_stop(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; pkill -f "[c]o_${CO}" 2>/dev/null; wait "$CO_PID" 2>/dev/null; CO_PID=""; nap 2; }
 contract(){ # contract <f> <out_prefix> <kind>: 1000 periodic cycles at f under the co-runner
   setclk "$1"; nap 0.4
