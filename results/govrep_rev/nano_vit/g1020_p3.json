@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "label": "rev_nano_vit_g1020_p3",
+    "backend": "onnxruntime-cuda",
+    "model": "vit_small_patch16_224.onnx",
+    "hz": 20.0,
+    "period_us": 50000.0,
+    "deadline_us": 50000.0,
+    "iters": 1000,
+    "warmup": 100,
+    "cpu": 5,
+    "prio": 80,
+    "mlock": true,
+    "host": "jetson-orin",
+    "kernel": "5.15.185-tegra",
+    "python": "3.10.12",
+    "timestamp": "2026-09-15T00:12:08.842402+00:00",
+    "rt_warnings": [
+      "SCHED_FIFO/affinity denied (need sudo) -> ran SCHED_OTHER",
+      "mlockall failed: [Errno 12] Cannot allocate memory"
+    ]
+  },
+  "deadline_miss_count": 0,
+  "deadline_miss_rate": 0.0,
+  "response_us": {
+    "p50": 13736.1855,
+    "p90": 13899.590100000001,
+    "p99": 14365.836109999998,
+    "p99.9": 15460.884360000091,
+    "p99.99": 16371.097235999952,
+    "mean": 13755.490101,
+    "std": 182.08597217568075,
+    "min": 13517.242,
+    "max": 16472.232
+  },
+  "compute_us": {
+    "p50": 13671.645,
+    "p90": 13825.7364,
+    "p99": 14281.85884,
+    "p99.9": 15364.925701000095,
+    "p99.99": 16300.61997009995,
+    "mean": 13690.032351,
+    "std": 178.32707308905117,
+    "min": 13456.376,
+    "max": 16404.586
+  },
+  "release_jitter_us": {
+    "p50": 64.055,
+    "p90": 70.6773,
+    "p99": 87.41478999999998,
+    "p99.9": 117.83112300002423,
+    "p99.99": 359.79961229998713,
+    "mean": 65.45774999999999,
+    "std": 11.536530087660676,
+    "min": 58.299,
+    "max": 386.685
+  }
+}
