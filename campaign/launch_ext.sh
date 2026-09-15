@@ -97,7 +97,7 @@ run(){ if $DRY; then echo "+ $*" >&3; return 0; fi; "$@"; }
 nap(){ $DRY || sleep "$1"; }
 log(){ if $DRY; then echo "$*"; else echo "$*" | tee -a "$OUT/session.log"; fi; }
 CO_PID=""; LP=""
-restore(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null
+restore(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; pkill -f "[c]o_${CO}" 2>/dev/null
   [ -n "$LP" ] && kill -TERM "$LP" 2>/dev/null
   $DRY && return 0
   sudo -n bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1
@@ -123,7 +123,7 @@ co_start(){ # fresh co-runner process on its own core, trace discarded (launch10
     --hz "$CO_HZ" --iters 100000 --warmup 30 --cpu "$CCPU" --label co_${CO} \
     --out /tmp/co_lext_${TAG}_t${k}; CO_PID=$BG_PID
   nap 20; }
-co_stop(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; wait "$CO_PID" 2>/dev/null; CO_PID=""; nap 2; }
+co_stop(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; pkill -f "[c]o_${CO}" 2>/dev/null; wait "$CO_PID" 2>/dev/null; CO_PID=""; nap 2; }
 score(){ # score <prefix>: CSV re-scored at D (Table-II convention) and the harness's own count at D
   local c j; c=$("$PY" campaign/admit_pick.py --score "$1.csv" --D-ms "$D_MS" --brief 2>/dev/null) || c=NA
   j=$("$PY" -c "import json,sys; print('%.4f' % json.load(open(sys.argv[1]))['deadline_miss_rate'])" "$1.json" 2>/dev/null) || j=NA

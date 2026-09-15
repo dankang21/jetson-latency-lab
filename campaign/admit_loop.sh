@@ -73,7 +73,7 @@ run(){ if $DRY; then echo "+ $*" >&3; return 0; fi; "$@"; }
 nap(){ $DRY || sleep "$1"; }
 log(){ if $DRY; then echo "$*"; else echo "$*" | tee -a "$OUT/session.log"; fi; }
 CO_PID=""; LP=""
-restore(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null
+restore(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; pkill -f "[c]o_${CO}" 2>/dev/null
   [ -n "$LP" ] && kill -TERM "$LP" 2>/dev/null
   $DRY && return 0
   sudo -n bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1
@@ -95,7 +95,7 @@ co_start(){ # fresh co-runner process on its own core, trace discarded (fresh_lo
     --hz "$CO_HZ" --iters 100000 --warmup 30 --cpu "$CCPU" --label co_${CO} \
     --out /tmp/co_e3_${COND}_t${k} >/dev/null 2>&1 & CO_PID=$!
   nap 20; }
-co_stop(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; wait "$CO_PID" 2>/dev/null; CO_PID=""; nap 2; }
+co_stop(){ [ -n "$CO_PID" ] && kill "$CO_PID" 2>/dev/null; pkill -f "[c]o_${CO}" 2>/dev/null; wait "$CO_PID" 2>/dev/null; CO_PID=""; nap 2; }
 contract(){ # contract <f> <out_prefix> <kind>: 1000 periodic cycles at f under the co-runner
   setclk "$1"; nap 0.4
   if $INA; then run taskset -c 0 "$PY" campaign/ina_log.py "$2.power.csv" "$INA_S" & LP=$!; fi
