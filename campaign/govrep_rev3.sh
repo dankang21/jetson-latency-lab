@@ -18,6 +18,7 @@ case $MODEL in
   resnet50)  MP=$M/resnet50-v1-12.onnx;        HZ=20; WARM=100;;
   *) echo "unknown MODEL $MODEL"; exit 1;;
 esac
+HZ=${HZ_OVERRIDE:-$HZ}   # rate override (e.g. Nano MobileNetV2 sessions run at 50 Hz)
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 GMAX=$(( $(tr ' ' '\n' < $G/available_frequencies | sort -n | tail -1) / 1000000 ))
 if [ "$GMAX" -ge 1100 ]; then BOARD=nx; CPU=7; INA=40; else BOARD=nano; CPU=5; INA=30; fi
