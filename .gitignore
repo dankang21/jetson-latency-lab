@@ -52,3 +52,4 @@ results/e3_governor/
 results/e4_replication/
 results/partb_ext/
 results/soak_qwen/soak.power.csv
+campaign/make_tab_*.py
