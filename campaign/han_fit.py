@@ -60,6 +60,8 @@ Usage
     python3 campaign/han_fit.py --inventory                    # EMC levels per board/model
     python3 campaign/han_fit.py --reproduce                    # supplementary numbers, reported vs reproduced
     python3 campaign/han_fit.py --board nano --model mobilenet # fit on the Nano estimator_break grid
+    python3 campaign/han_fit.py --loco-table --key compute_us  # Supp. S3 per-workload in-sample + leave-one-cell-out
+    python3 campaign/han_fit.py --board nano --model gemm --loco --no-scipy   # per-cell LOCO listing
     python3 campaign/han_fit.py --board nx --model mobilenet --holdout-emc 2133 --key response_us
     python3 campaign/han_fit.py --board nx --model vit --source nx_validation   # refuses: 2 EMC levels
     python3 campaign/han_fit.py --board nx --model vit         # auto -> nx_validation_r33 (3 levels, rate-matched)
@@ -506,6 +508,71 @@ def err_stats(rows):
     return float(np.median(e)), float(np.max(e)), float(np.mean(e))
 
 
+def loco(cells, keys=None, **fit_kw):
+    """Leave-one-cell-out: for every cell, refit on all the other cells and score that cell.
+
+    Returns rows (key, measured, predicted, rel_err, params) in the order of `keys`
+    (default: every cell).  `fit_kw` is passed to fit_han; polish defaults to
+    False so the figures come from the scipy-free numpy grid fitter and are
+    reproducible on the on-device venv.
+    """
+    d = cells if isinstance(cells, dict) else cells_dict(cells)
+    keys = sorted(d) if keys is None else [k for k in keys if k in d]
+    fit_kw = dict({"polish": False}, **fit_kw)
+    rows = []
+    for k in keys:
+        p = fit_han(d, train=[q for q in sorted(d) if q != k], **fit_kw)
+        t = predict(p, k[1], k[0])
+        rows.append((k, d[k], t, (t - d[k]) / d[k], p))
+    return rows
+
+
+def loco_table(key="compute_us", weight="abs", models=("mobilenet", "vit", "proxy", "cproxyv2"),
+               nonneg=True, with_c=True, beta_max=6.0):
+    """Supp. S3 per-workload figures under ONE protocol on the Nano estimator_break grid
+    (24 cells = EMC {3199, 2133, 665.6} x GPU {306..1020}): full-grid in-sample median / max
+    |rel err| and leave-one-cell-out median / max, numpy grid fitter only (no scipy polish).
+
+    beta_max: the grid searches beta in [0.05, beta_max].  The GEMM's least-squares
+    optimum sits at beta ~ 3.65 (its 665.6 MHz row is nearly a step), above the
+    fitter's default cap of 3.0; the SSE is flat to < 0.1 % for beta >= 3, which
+    leaves every median/max figure unchanged (< 0.3 pp) but moves the GEMM's
+    in-sample T(2133)-T(3199) from +0.38 ms (beta capped at 3) to +0.21 ms (the
+    optimum, also what the scipy polish reaches).  Default 6.0 so the numpy-only
+    run reproduces the optimum.  Returns {model: {...}}.
+    """
+    out = {}
+    fk = dict(with_c=with_c, weight=weight, nonneg=nonneg, beta_range=(0.05, float(beta_max)))
+    print(f"Nano estimator_break grid, p50 {key}, weight {weight}, A,B>=0={nonneg}, C free={with_c}, "
+          f"fitter numpy-grid (polish off), alpha in [0.05, 3], beta in [0.05, {beta_max:g}]")
+    hdr = (f"{'workload':<18} {'n':>3} | {'in-sample med/max %':>20} {'(max cell)':<16} | "
+           f"{'LOCO med/max %':>15} {'(max cell)':<16} | {'dT(2133-3199)@1020 ms: meas / in / loco':>40}")
+    print(hdr)
+    print("-" * len(hdr))
+    for m in models:
+        d = cells_dict(_load_estimator_break(m, key))
+        p = fit_han(d, polish=False, **fk)
+        ins = score(p, d)
+        lo = loco(d, **fk)
+        i_med, i_max, _ = err_stats(ins)
+        l_med, l_max, _ = err_stats(lo)
+        i_cell = max(ins, key=lambda r: abs(r[3]))[0]
+        l_cell = max(lo, key=lambda r: abs(r[3]))[0]
+        top = max(k[1] for k in d)
+        dm = (d[(2133.0, top)] - d[(3199.0, top)]) / 1e3
+        dp_in = (predict(p, top, 2133.0) - predict(p, top, 3199.0)) / 1e3
+        lo_by = {r[0]: r for r in lo}
+        # leave-(2133, top)-out prediction of the inversion step, as in protocol P2
+        dp_lo = (lo_by[(2133.0, top)][2] - predict(lo_by[(2133.0, top)][4], top, 3199.0)) / 1e3
+        out[m] = {"n": len(d), "in_med": i_med, "in_max": i_max, "in_max_cell": i_cell,
+                  "loco_med": l_med, "loco_max": l_max, "loco_max_cell": l_cell,
+                  "d_meas_ms": dm, "d_in_ms": dp_in, "d_loco_ms": dp_lo, "params": p,
+                  "loco_rows": [(r[0], r[1], r[2], r[3]) for r in lo]}
+        print(f"{PRETTY[m]:<18} {len(d):>3} | {i_med:8.1f} / {i_max:<8.1f} {str(i_cell):<16} | "
+              f"{l_med:5.1f} / {l_max:<7.1f} {str(l_cell):<16} | {dm:+6.2f} / {dp_in:+6.2f} / {dp_lo:+6.2f}")
+    return out
+
+
 def two_cell_kb(cells, f_emc):
     """Endpoint two-cell refit T = k*1e3/f_gpu + b at one EMC level (banded_pick.py lines 14-17)."""
     d = cells if isinstance(cells, dict) else cells_dict(cells)
@@ -841,9 +908,24 @@ def main(argv=None):
     ap.add_argument("--save", help="write params JSON here")
     ap.add_argument("--inventory", action="store_true")
     ap.add_argument("--reproduce", action="store_true")
+    ap.add_argument("--loco", action="store_true",
+                    help="also score leave-one-cell-out: refit on all other cells, predict each cell in turn "
+                         "(numpy grid fitter, no scipy polish)")
+    ap.add_argument("--loco-table", action="store_true",
+                    help="Supp. S3 per-workload table for the four Nano estimator_break workloads: full-grid "
+                         "in-sample and leave-one-cell-out median/max |rel err| under one protocol (numpy only)")
+    ap.add_argument("--no-scipy", action="store_true", help="never polish with scipy (numpy grid fitter only)")
+    ap.add_argument("--beta-max", type=float, default=None,
+                    help="upper end of the numpy grid's beta search (fitter default 3.0; --loco-table uses 6.0 "
+                         "so the GEMM optimum beta ~ 3.65 is reachable without scipy)")
     a = ap.parse_args(argv)
 
-    if a.inventory or (not a.reproduce and not (a.board and a.model)):
+    if a.loco_table:
+        loco_table(a.key, a.weight, nonneg=not a.allow_negative, with_c=not a.no_c,
+                   **({"beta_max": a.beta_max} if a.beta_max is not None else {}))
+        if not (a.board and a.model):
+            return 0
+    if a.inventory or (not a.reproduce and not a.loco_table and not (a.board and a.model)):
         inventory(a.key)
         if not a.reproduce and not (a.board and a.model):
             return 0
@@ -887,8 +969,9 @@ def main(argv=None):
               f"beta needs >= 3.  Sweep {', '.join(f'{e:g}' for e in missing)} MHz on this board/model first "
               f"(or pass --fix-beta / --no-c / --source all to see a provisional fit).")
         return 2
+    brange = {"beta_range": (0.05, a.beta_max)} if a.beta_max is not None else {}
     p = fit_han(d, train=train, with_c=not a.no_c, weight=a.weight, nonneg=not a.allow_negative,
-                fix_beta=a.fix_beta)
+                fix_beta=a.fix_beta, polish=False if a.no_scipy else "auto", **brange)
     print(f"\nfit ({p['fitter']}; {p['n_train']} cells, {p['n_emc_levels']} EMC x {p['n_gpu_levels']} GPU levels; "
           f"weight={a.weight}; A,B>=0={not a.allow_negative})")
     print(f"  T_hat(f_gpu,f_emc) = {p['A']:.1f}*(f_gpu/1000)^-{p['alpha']:.3f} + {p['B']:.1f}*(f_emc/1000)^-{p['beta']:.3f}"
@@ -903,6 +986,15 @@ def main(argv=None):
         print(f"  held-out EMC {a.holdout_emc}: median {st[0]:.1f}%  max {st[1]:.1f}%  mean {st[2]:.1f}%")
         for k, meas, pred_, e in out:
             print(f"    EMC {k[0]:g} GPU {k[1]:>4}: measured {meas / 1e3:7.2f} ms  Han {pred_ / 1e3:7.2f} ms  ({e * 100:+.1f}%)")
+    if a.loco:
+        lo = loco(d, keys=train, with_c=not a.no_c, weight=a.weight, nonneg=not a.allow_negative,
+                  fix_beta=a.fix_beta, **brange)
+        st = err_stats(lo)
+        worst = max(lo, key=lambda r: abs(r[3]))
+        print(f"  leave-one-cell-out over the {len(lo)} training cells (numpy grid, no polish): "
+              f"median {st[0]:.1f}%  max {st[1]:.1f}% at EMC {worst[0][0]:g} GPU {worst[0][1]}  mean {st[2]:.1f}%")
+        for k, meas, pred_, e, _ in lo:
+            print(f"    EMC {k[0]:g} GPU {k[1]:>4}: measured {meas / 1e3:7.2f} ms  LOCO {pred_ / 1e3:7.2f} ms  ({e * 100:+.1f}%)")
     top = max(k[1] for k in d)
     if (2133.0, top) in d and (3199.0, top) in d:
         dm = (d[(2133.0, top)] - d[(3199.0, top)]) / 1e3
