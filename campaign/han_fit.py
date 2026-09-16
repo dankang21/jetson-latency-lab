@@ -31,8 +31,12 @@ Data sources (all offline, nothing is run on the clocks):
     nx_validation    results/nx_validation/nx_est_emc{3199,2133}_gpu{306..1173}_{mobilenet,vit,resnet50,yolov8s,proxy}.json
                      plus nx_est_emc665_gpu*_mobilenet.json (800 iters @ 33 Hz; the 3199/2133 sweeps are
                      300 iters @ 8 Hz for mobilenet/proxy and 800 iters @ 20/10/5 Hz for vit/resnet50/yolov8s)
+    nx_validation_r33 results/nx_validation_r33/nx_est_emc{3199,2133,665}_gpu{306..1173}_{mobilenet,vit,resnet50,yolov8s}.json
+                     3 EMC x 10 GPU per model, 800 iters at the DEPLOYMENT release rate (33/20/10/20 Hz),
+                     one session 2026-09-15 (the rate-matched E5 grid; `--source nx_validation_r33`)
     nx_catalogue     results/nx_validation/nx_emc{204,665,2133,3199}_{mobilenet,proxy,cproxyv2,slm}.json  GPU 1173, 500 iters
     nx_pairs         results/nx_pairs/e{3199,665}_g{612..1173}_r{1,2,3}.json (mobilenet), 1000 iters @ 33 Hz
+  Any directory     --sweep-dir DIR (or load_sweep_dir(DIR, model)): every [nx_][est_]emc<tok>_gpu<f>_<model>.json in DIR
 
 Workload aliases: mobilenet|mnv2|cnn, vit, proxy|gemv|decode (GEMV 12x4096^2
 decode proxy), cproxyv2|gemm|l2|cproxy (L2-resident GEMM 64x1024^3),
@@ -57,7 +61,9 @@ Usage
     python3 campaign/han_fit.py --reproduce                    # supplementary numbers, reported vs reproduced
     python3 campaign/han_fit.py --board nano --model mobilenet # fit on the Nano estimator_break grid
     python3 campaign/han_fit.py --board nx --model mobilenet --holdout-emc 2133 --key response_us
-    python3 campaign/han_fit.py --board nx --model vit         # refuses: only 2 EMC levels (needs 665.6)
+    python3 campaign/han_fit.py --board nx --model vit --source nx_validation   # refuses: 2 EMC levels
+    python3 campaign/han_fit.py --board nx --model vit         # auto -> nx_validation_r33 (3 levels, rate-matched)
+    python3 campaign/han_fit.py --board nx --model yolov8s --sweep-dir results/nx_validation_r33 --holdout-emc 2133
     python3 campaign/han_fit.py --board nano --model gemm --train-emc 3199,665.6 --holdout-emc 2133
     python3 campaign/han_fit.py --board nx --model mobilenet --save results/han_fit/nx_mobilenet.json
 
@@ -238,6 +244,29 @@ def _load_nx_validation(model, key):
     return out
 
 
+def _load_sweep_dir(dirname, model, key, source=None):
+    """Every [nx_][est_]emc<tok>_gpu<f>_<model>.json under `dirname` (one sweep directory)."""
+    src = source or os.path.basename(os.path.normpath(dirname))
+    out = []
+    for f in glob.glob(os.path.join(dirname, f"*emc*_gpu*_{model}.json")):
+        m = re.match(r"(?:nx_)?(?:est_)?emc(\d+)_gpu(\d+)_(\w+)\.json$", os.path.basename(f))
+        if m and m.group(3) == model and m.group(1) in EMC_TOKEN:
+            c = _cell(f, EMC_TOKEN[m.group(1)], m.group(2), src, key)
+            if c:
+                out.append(c)
+    return out
+
+
+def load_sweep_dir(dirname, model, key="response_us"):
+    """Cells of one sweep directory (e.g. results/nx_validation_r33) for `model`, sorted like load_cells."""
+    cells = _load_sweep_dir(dirname, canon(model), key)
+    return sorted(cells, key=lambda c: (-c.f_emc, c.f_gpu, c.source))
+
+
+def _load_nx_validation_r33(model, key):
+    return _load_sweep_dir(os.path.join(RES, "nx_validation_r33"), model, key, "nx_validation_r33")
+
+
 def _load_nx_catalogue(model, key):
     out = []
     for f in glob.glob(os.path.join(RES, "nx_validation", f"nx_emc*_{model}.json")):
@@ -273,6 +302,7 @@ SOURCES = {
     },
     "nx": {
         "nx_validation": (_load_nx_validation, "sweep"),
+        "nx_validation_r33": (_load_nx_validation_r33, "sweep"),   # listed after nx_validation: ties under "auto" keep the old source
         "nx_pairs": (_load_nx_pairs, "sweep"),
         "nx_catalogue": (_load_nx_catalogue, "point"),
     },
@@ -795,6 +825,9 @@ def main(argv=None):
     ap.add_argument("--key", default="response_us", choices=["response_us", "compute_us"],
                     help="p50 source (pick scripts use response_us; analyze_estimator.py uses compute_us)")
     ap.add_argument("--source", default="auto", help="auto | all | comma-separated source names")
+    ap.add_argument("--sweep-dir", default=None,
+                    help="read the cells from this directory instead of the named sources "
+                         "([nx_][est_]emc<tok>_gpu<f>_<model>.json; e.g. results/nx_validation_r33)")
     ap.add_argument("--train-emc", default="", help="EMC levels (MHz) to train on, e.g. 3199,665.6")
     ap.add_argument("--holdout-emc", default="", help="EMC levels (MHz) to hold out and score")
     ap.add_argument("--weight", default="abs", choices=["abs", "rel"])
@@ -820,7 +853,12 @@ def main(argv=None):
             return 0
 
     model = canon(a.model)
-    cells = load_cells(a.board, model, a.key, a.source)
+    if a.sweep_dir:
+        cells = load_sweep_dir(a.sweep_dir, model, a.key)
+        if not cells:
+            sys.exit(f"no *emc*_gpu*_{model}.json cells under {a.sweep_dir}")
+    else:
+        cells = load_cells(a.board, model, a.key, a.source)
     if not cells:
         sys.exit(f"no cells for board={a.board} model={model} source={a.source}"
                  + (" (no multi-GPU sweep exists for this model on this board; --source all shows the "
