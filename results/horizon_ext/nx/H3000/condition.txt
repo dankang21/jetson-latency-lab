@@ -1,0 +1,1 @@
+board=nx H=3000 model=qwen2.5-1.5b-instruct-q4_k_m.gguf warmup=40 vcpu=7 prio=80 co=vit co_model=vit_small_patch16_224.onnx co_hz=10 co_iters=100000 co_warmup=30 ccpu=5 gpu=1173 emc=2133000000
