@@ -20,6 +20,7 @@ campaign/make_figs_cal.py
 campaign/make_figs_v2.py
 campaign/make_fig_mech2.py
 campaign/make_fig_tmc.py
+campaign/make_fig_layers.py
 
 # bulk probe traces (60-230MB files) -> archived via Zenodo, linked in README
 *.probe.csv
