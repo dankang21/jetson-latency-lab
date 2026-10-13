@@ -1,0 +1,1 @@
+board=nx tag=mobilenet_vit10_g1020_D12 primary=mobilenet pri_model=mobilenetv2-12.onnx pri_hz=33 iters=1000 warmup=60 vcpu=7 co=vit co_model=vit_small_patch16_224.onnx co_hz=10 co_iters=100000 co_warmup=30 ccpu=5 f=1020 D_ms=12 emc=2133000000
