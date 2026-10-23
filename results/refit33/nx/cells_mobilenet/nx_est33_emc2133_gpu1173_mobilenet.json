@@ -1,0 +1,26 @@
+{
+ "meta": {
+  "derived": "median over r1-r3 of per-run response_us.p50",
+  "source": [
+   "results/refit33/nx/emc2133_g1173_r1.json",
+   "results/refit33/nx/emc2133_g1173_r2.json",
+   "results/refit33/nx/emc2133_g1173_r3.json"
+  ],
+  "per_run_p50": [
+   4365.8904999999995,
+   4408.8565,
+   4384.818499999999
+  ],
+  "source_timestamps": [
+   "2026-09-15T00:14:02.053590+00:00",
+   "2026-09-15T00:15:07.210790+00:00",
+   "2026-09-15T00:16:12.290924+00:00"
+  ],
+  "hz": 33.0,
+  "created": "2026-10-23",
+  "purpose": "post-hoc r33 sensitivity runs (E3_protocol.md \u00a78, 2026-10-23)"
+ },
+ "response_us": {
+  "p50": 4384.818499999999
+ }
+}

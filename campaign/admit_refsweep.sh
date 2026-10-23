@@ -21,7 +21,7 @@ INA_S=120; TAU=0.02
 PRIMARY=""; CO=""; CO_HZ=""; D_MS=""; COND=""; INA=false; FORCE=false; DRY=false
 while [ $# -gt 0 ]; do case "$1" in
   --primary) PRIMARY=$2; shift 2;;  --co) CO=$2; shift 2;;  --co-hz) CO_HZ=$2; shift 2;;
-  --D) D_MS=$2; shift 2;;  --cond) COND=$2; shift 2;;
+  --D) D_MS=$2; shift 2;;  --cond) COND=$2; shift 2;;  --outroot) OUTROOT=$2; shift 2;;
   --ina) INA=true; shift;;  --force) FORCE=true; shift;;  --dry-run) DRY=true; shift;;
   *) echo "unknown arg $1"; exit 2;; esac; done
 [ -n "$PRIMARY" ] && [ -n "$CO" ] && [ -n "$CO_HZ" ] && [ -n "$D_MS" ] && [ -n "$COND" ] || \
@@ -43,7 +43,7 @@ case $CO in
   resnet50) CO_MODEL=$MDIR/resnet50-v1-12.onnx;;
   vit)      CO_MODEL=$MDIR/vit_small_patch16_224.onnx;;
   *) echo "--co must be yolov8s|resnet50|vit"; exit 2;; esac
-OUT=results/e3_$BOARD/$COND
+OUT=${OUTROOT:-results/e3_$BOARD}/$COND
 cd "$LAB" || exit 1; $DRY || mkdir -p "$OUT"
 for f in "$PRI_MODEL" "$CO_MODEL"; do [ -s "$f" ] || { echo "missing $f"; exit 1; }; done
 SIG="board=$BOARD primary=$PRIMARY pri_hz=$PRI_HZ co=$CO co_hz=$CO_HZ D_ms=$D_MS fprobe=$FPROBE grid=${GRID// /,}"

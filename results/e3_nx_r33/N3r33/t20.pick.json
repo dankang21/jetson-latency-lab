@@ -1,0 +1,123 @@
+{
+ "n_cycles": 200,
+ "p50_us": 4543.624,
+ "max_us": 8648.957,
+ "Mg_us": 4105.3330000000005,
+ "D_us": 12000.0,
+ "fprobe": 1173,
+ "grid": [
+  510,
+  612,
+  714,
+  816,
+  918,
+  1020,
+  1122,
+  1173
+ ],
+ "R": 1.035,
+ "h_us": 400.0,
+ "cells": {
+  "306": 11634.242999999999,
+  "1173": 4384.818499999999
+ },
+ "cell_lo": 306,
+ "cell_hi": 1173,
+ "k_us_GHz": 3001.2617429999996,
+ "b_us": 1826.198088235294,
+ "per_f": [
+  {
+   "f": 510,
+   "T_hat_us": 7711.025035294117,
+   "s_us": -5423.176811529411,
+   "mstar_us": 1747.430038465474,
+   "margin_mg_us": -2357.9029615345266,
+   "h_in_s_us": 920.0,
+   "ok_h0": false,
+   "ok_hb": false
+  },
+  {
+   "f": 612,
+   "T_hat_us": 6730.220544117647,
+   "s_us": -2834.3331798284307,
+   "mstar_us": 2626.550471393862,
+   "margin_mg_us": -1478.7825286061384,
+   "h_in_s_us": 766.6666666666666,
+   "ok_h0": false,
+   "ok_hb": false
+  },
+  {
+   "f": 714,
+   "T_hat_us": 6029.645907563025,
+   "s_us": -985.159157184873,
+   "mstar_us": 3505.6709043222513,
+   "margin_mg_us": -599.6620956777492,
+   "h_in_s_us": 657.1428571428571,
+   "ok_h0": false,
+   "ok_hb": false
+  },
+  {
+   "f": 816,
+   "T_hat_us": 5504.214930147058,
+   "s_us": 401.72135979779523,
+   "mstar_us": 4384.79133725064,
+   "margin_mg_us": 279.4583372506395,
+   "h_in_s_us": 575.0,
+   "ok_h0": true,
+   "ok_hb": false
+  },
+  {
+   "f": 918,
+   "T_hat_us": 5095.546392156863,
+   "s_us": 1480.4062063398706,
+   "mstar_us": 5263.911770179028,
+   "margin_mg_us": 1158.5787701790277,
+   "h_in_s_us": 511.1111111111111,
+   "ok_h0": true,
+   "ok_hb": true
+  },
+  {
+   "f": 1020,
+   "T_hat_us": 4768.611561764706,
+   "s_us": 2343.3540835735294,
+   "mstar_us": 6143.032203107418,
+   "margin_mg_us": 2037.6992031074178,
+   "h_in_s_us": 460.0,
+   "ok_h0": true,
+   "ok_hb": true
+  },
+  {
+   "f": 1122,
+   "T_hat_us": 4501.119427807486,
+   "s_us": 3049.4023467647057,
+   "mstar_us": 7022.152636035807,
+   "margin_mg_us": 2916.819636035806,
+   "h_in_s_us": 418.1818181818182,
+   "ok_h0": true,
+   "ok_hb": true
+  },
+  {
+   "f": 1173,
+   "T_hat_us": 4384.818499999999,
+   "s_us": 3356.3798525,
+   "mstar_us": 7461.712852500001,
+   "margin_mg_us": 3356.3798525,
+   "h_in_s_us": 400.0,
+   "ok_h0": true,
+   "ok_hb": true
+  }
+ ],
+ "f_pt": 816,
+ "f_b": 918,
+ "band_active": true,
+ "s_at_f_pt_us": 401.72135979779523,
+ "s_at_f_b_us": 1480.4062063398706,
+ "probe_csv": "results/e3_nx_r33/N3r33/t20.probe.csv",
+ "board": "nx",
+ "primary": "mobilenet",
+ "cell_files": [
+  "results/refit33/nx/cells_mobilenet/nx_est33_emc2133_gpu306_mobilenet.json",
+  "results/refit33/nx/cells_mobilenet/nx_est33_emc2133_gpu1173_mobilenet.json"
+ ],
+ "rule": "banded_pick.py:20-23 / fresh_pick.py:17-18 (see admit_pick.py docstring)"
+}

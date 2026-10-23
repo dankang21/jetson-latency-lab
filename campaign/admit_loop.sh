@@ -30,10 +30,12 @@ EMC_RATE=/sys/kernel/debug/bpmp/debug/clk/emc/rate
 H_US=400; INA_S=120
 
 PRIMARY=""; CO=""; CO_HZ=""; D_MS=""; TRIALS=""; COND=""; T0=1; INA=false; FORCE=false; DRY=false
+CELLS_OVR=""; OUTROOT=""   # 2026-10-23: optional --cells "a.json b.json" and --outroot DIR (post-hoc r33 runs)
 while [ $# -gt 0 ]; do case "$1" in
   --primary) PRIMARY=$2; shift 2;;  --co) CO=$2; shift 2;;  --co-hz) CO_HZ=$2; shift 2;;
   --D) D_MS=$2; shift 2;;  --trials) TRIALS=$2; shift 2;;  --cond) COND=$2; shift 2;;
   --t0) T0=$2; shift 2;;  --ina) INA=true; shift;;  --force) FORCE=true; shift;;  --dry-run) DRY=true; shift;;
+  --cells) CELLS_OVR=$2; shift 2;;  --outroot) OUTROOT=$2; shift 2;;
   *) echo "unknown arg $1"; exit 2;; esac; done
 [ -n "$PRIMARY" ] && [ -n "$CO" ] && [ -n "$CO_HZ" ] && [ -n "$D_MS" ] && [ -n "$TRIALS" ] && [ -n "$COND" ] || \
   { sed -n '/^# Usage/,/^set -u/p' "$0" | head -2; exit 2; }
@@ -49,6 +51,7 @@ else
   CELLS="results/nano_grid/${PRIMARY}/est_emc2133_gpu306.json results/nano_grid/${PRIMARY}/est_emc2133_gpu1020.json"
 fi
 [ "$FPROBE" -eq "$GMAX" ] || { echo "devfreq max ${GMAX} != f_probe ${FPROBE}"; exit 1; }
+[ -n "$CELLS_OVR" ] && CELLS="$CELLS_OVR"
 case $PRIMARY in
   mobilenet) PRI_MODEL=$MDIR/mobilenetv2-12.onnx;        PRI_HZ=33;;
   vit)       PRI_MODEL=$MDIR/vit_small_patch16_224.onnx; PRI_HZ=20;;
@@ -58,7 +61,7 @@ case $CO in
   resnet50) CO_MODEL=$MDIR/resnet50-v1-12.onnx;;
   vit)      CO_MODEL=$MDIR/vit_small_patch16_224.onnx;;
   *) echo "--co must be yolov8s|resnet50|vit"; exit 2;; esac
-OUT=results/e3_$BOARD/$COND
+OUT=${OUTROOT:-results/e3_$BOARD}/$COND
 cd "$LAB" || exit 1; $DRY || mkdir -p "$OUT"
 for f in "$PRI_MODEL" "$CO_MODEL" $CELLS; do [ -s "$f" ] || { echo "missing $f"; exit 1; }; done
 SIG="board=$BOARD primary=$PRIMARY pri_hz=$PRI_HZ co=$CO co_hz=$CO_HZ D_ms=$D_MS fprobe=$FPROBE grid=${GRID// /,} h_us=$H_US R=1.035 cells=${CELLS// /,}"
