@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Co-tenancy numbers of the article that the other analysis scripts do not print:
 the MobileNetV2 victim under the 10 Hz ViT-Small co-runner and the decode token
-distribution under the same co-runner (main text Sec. V, Sec. VI, Fig. 4b), the drift
+distribution under the same co-runner (main text Sec. V, Sec. VI, Figs. 3 and 4b), the drift
 under the co-tenant (Sec. VI, VII), the decode probe's autocorrelation (Sec. VI), the
 tenants' GPU duty and the primary's inference-occupied fraction against the June
 tegrastats GPU load (Sec. VIII-A, Supp. Sec. S2 'Acceptance, occupancy and probe cost'),
@@ -29,10 +29,13 @@ Data (results/) and definitions:
   decode     boundary_stats/q15_g1173_r*.csv (solo, eight 2,000-token runs) and
              joint_hxt/q15co_g1173_r*.csv (nine runs under the co-runner), dur_ns per token,
              Qwen2.5-1.5B Q4_K_M, GPU 1173 MHz, EMC 2133 MHz.  Medians are pooled over the
-             runs' tokens: all 2,000 tokens, and the first 300 (the solo short-window level
-             T_short of campaign/analyze_joint.py).  A token is on the collision plateau
-             when it exceeds 32 ms, a cut inside the empty gap between the two modes
-             (the token counts in that gap are printed).
+             runs' tokens and compared like for like, the co-tenant median against the solo
+             median of the same tokens of same-length runs: all 2,000 tokens (the token
+             distribution of Sec. V and VI and of Figs. 3 and 4b), and the first 300 (the solo
+             short-window level T_short of campaign/analyze_joint.py).  A token is on the
+             collision plateau when it exceeds 32 ms, a cut inside the empty gap between the
+             two modes (the token counts in that gap are printed); the plateau's location is
+             given by its percentiles and by 1 ms bins (b, b + 1] ms.
   drift      the same runs at 1173 MHz and joint_hxt/q15co_g1122_r*, boundary_stats/
              q15_g1122_r*.  Pooled drift (analyze_joint.py; the drift behind gamma):
              median(tokens 1501-2000 of all runs) / median(tokens 1-500 of all runs) - 1.
@@ -149,7 +152,7 @@ def sec_victim(R):
 
 # --------------------------------------------------------------------------- decode
 def sec_decode(R):
-    print("== [main Sec. V, Sec. VI; Fig. 4b] Qwen2.5-1.5B decode at 1173 MHz, solo and under the "
+    print("== [main Sec. V, Sec. VI; Figs. 3 and 4b] Qwen2.5-1.5B decode at 1173 MHz, solo and under the "
           "10 Hz ViT-Small co-runner ==")
     so = [dur_csv(p) for p in runs(f"{R}/boundary_stats/q15_g1173_r*.csv")]
     co = [dur_csv(p) for p in runs(f"{R}/joint_hxt/q15co_g1173_r*.csv")]
@@ -160,29 +163,38 @@ def sec_decode(R):
     s_all, c_all = float(np.median(S)), float(np.median(C))
     s300 = float(np.median(np.concatenate([r[:300] for r in so])))
     c300 = float(np.median(np.concatenate([r[:300] for r in co])))
-    print(f"  runs: solo {len(so)}, co-tenant {len(co)}, tokens per run {len(so[0])}")
-    print(f"  all-token median: solo {s_all:.3f} -> co-tenant {c_all:.3f} ms ({(c_all / s_all - 1) * 100:+.2f} %)")
-    print(f"  first-300-token median: solo {s300:.3f} (T_short) -> co-tenant {c300:.3f} ms "
-          f"({(c300 / s300 - 1) * 100:+.2f} %)")
-    print(f"  solo T_short against the co-tenant all-token median: {s300:.3f} -> {c_all:.3f} ms "
-          f"({(c_all / s300 - 1) * 100:+.2f} %)")
-    for k in (3,):
-        c_k = float(np.median(np.concatenate(co[:k])))
-        print(f"  co-tenant all-token median over its first {k} runs only: {c_k:.3f} ms")
-    gap = [np.count_nonzero((C > lo) & (C <= lo + 1.0)) for lo in range(30, 39)]
-    print("  co-tenant tokens per 1 ms bin from 30 to 39 ms (the gap between the modes): "
-          + " ".join(map(str, gap)))
     cut = 32.0
     hi = C[C > cut]
-    print(f"  plateau (tokens > {cut:.0f} ms): {len(hi)} of {len(C)} = {len(hi) / len(C) * 100:.2f} %; "
-          f"per run {min(np.mean(r > cut) for r in co) * 100:.2f}-{max(np.mean(r > cut) for r in co) * 100:.2f} %")
-    print(f"  plateau location: median {np.median(hi):.2f} ms, IQR {np.percentile(hi, 25):.2f}-"
-          f"{np.percentile(hi, 75):.2f}, p5-p95 {np.percentile(hi, 5):.2f}-{np.percentile(hi, 95):.2f} ms; "
-          "share of all tokens per 1 ms bin: " + ", ".join(
-              f"{b}-{b + 1}: {np.mean((C > b) & (C <= b + 1)) * 100:.1f}" for b in range(39, 44)))
-    for c2 in (30.0, 35.0, 38.0):
-        print(f"    (cut at {c2:.0f} ms: {np.mean(C > c2) * 100:.2f} %)")
-    print(f"  tokens over 28 ms under the co-runner (the tenancy-blind D = 28 ms contract): "
+    p5, p25, p50, p75, p95 = (float(v) for v in np.percentile(hi, [5, 25, 50, 75, 95]))
+    per_run = [float(np.mean(r > cut)) * 100 for r in co]
+    lens = sorted({len(r) for r in so + co})
+    print(f"  runs: solo {len(so)}, co-tenant {len(co)}, tokens per run {'/'.join(map(str, lens))}")
+    print("  like for like (co-tenant against solo over the same tokens of same-length runs):")
+    print(f"    median, all tokens:       solo {s_all:.3f} -> co-tenant {c_all:.3f} ms "
+          f"({c_all - s_all:+.3f} ms, {(c_all / s_all - 1) * 100:+.2f} %)")
+    print(f"    median, first 300 tokens: solo {s300:.3f} (T_short) -> co-tenant {c300:.3f} ms "
+          f"({c300 - s300:+.3f} ms, {(c300 / s300 - 1) * 100:+.2f} %)")
+    print(f"    plateau (tokens > {cut:.0f} ms): {len(hi)} of {len(C)} = {len(hi) / len(C) * 100:.2f} % of the "
+          f"co-tenant tokens; per run {min(per_run):.2f}-{max(per_run):.2f} %")
+    print(f"    plateau location: median {p50:.2f} ms, IQR {p25:.2f}-{p75:.2f}, p5-p95 {p5:.2f}-{p95:.2f} ms; "
+          f"{np.mean((hi > 40.0) & (hi <= 43.0)) * 100:.1f} % of its tokens lie in 40-43 ms")
+    print("    1 ms bins (b, b+1] ms, share of all co-tenant tokens [share of the plateau]: " + ", ".join(
+        f"{b}-{b + 1}: {np.mean((C > b) & (C <= b + 1)) * 100:.1f} "
+        f"[{np.count_nonzero((hi > b) & (hi <= b + 1)) / len(hi) * 100:.1f}]" for b in range(39, 44)))
+    print("  other views of the same runs:")
+    print(f"    solo T_short against the co-tenant all-token median: {s300:.3f} -> {c_all:.3f} ms "
+          f"({(c_all / s300 - 1) * 100:+.2f} %; two token windows, so it includes the solo drift from the "
+          f"first 300 tokens to the whole run, {s300:.3f} -> {s_all:.3f} ms, {(s_all / s300 - 1) * 100:+.2f} %)")
+    for k in (3,):
+        c_k = float(np.median(np.concatenate(co[:k])))
+        print(f"    co-tenant all-token median over its first {k} runs only: {c_k:.3f} ms")
+    print(f"    Fig. 4b labels: p50 {c_all:.1f} ms; {len(hi) / len(C) * 100:.0f} % of tokens above {cut:.0f} ms")
+    gap = [np.count_nonzero((C > lo) & (C <= lo + 1.0)) for lo in range(30, 39)]
+    print("    co-tenant tokens per 1 ms bin from 30 to 39 ms (the gap between the modes): "
+          + " ".join(map(str, gap)))
+    print("    plateau share with other cuts in the gap: " + ", ".join(
+        f"{c2:.0f} ms: {np.mean(C > c2) * 100:.2f} %" for c2 in (30.0, 35.0, 38.0)))
+    print(f"    tokens over 28 ms under the co-runner (the tenancy-blind D = 28 ms contract): "
           f"{np.mean(C > 28.0) * 100:.2f} %")
     print()
 

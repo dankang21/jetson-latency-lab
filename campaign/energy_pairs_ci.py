@@ -24,25 +24,71 @@ The blocked pairings are the only pairing the data admit; with n=2 or n=3 the
 t-interval is dominated by the t critical value and the bootstrap is degenerate
 (3 or 10 distinct resamples).  Both are printed anyway.
 --md also prints the summary as a markdown table.
+Without scipy the t critical values come from t975() below (the exact finite-series form of
+the t distribution for integer df, inverted to double precision), so the printed numbers are
+the same; only the header's scipy flag changes.
 """
 import csv, json, os, sys, math
 import numpy as np
 try:
     from scipy import stats as sps
-except Exception:  # fall back to a small table of t_{0.975,df}
+except Exception:  # no scipy: tcrit() uses t975() below
     sps = None
 
 ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
 SEED = 20260914          # fixed bootstrap seed
 NBOOT = 10000
-T975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365,
-        8: 2.306, 9: 2.262, 10: 2.228, 11: 2.201, 12: 2.179, 19: 2.093}
+
+
+def t975(df):
+    """Two-sided 95 % critical value t_{0.975,df} of Student's t, any integer df >= 1, no scipy.
+
+    For integer df the central probability A = P(|T| <= t) is a finite sum in
+    theta = arctan(t / sqrt(df)), with c = cos(theta):
+      odd df:  A = (2/pi) [theta + sin(theta) (c + (2/3) c^3 + (2*4)/(3*5) c^5 + ...)],
+      even df: A = sin(theta) [1 + (1/2) c^2 + (1*3)/(2*4) c^4 + ...],
+    both sums ending at the c^(df-2) term (df = 1: A = 2 theta / pi; df = 2: A = sin(theta)).
+    A = 0.95 is solved for theta by bisection down to adjacent doubles, t = sqrt(df) tan(theta).
+    For df = 1..2000 the result is within 1e-13 (relative) of a 40-digit reference computed
+    independently (mpmath, inverse of the regularized incomplete beta function); scipy 1.8.0's
+    t.ppf(0.975, df) is within 5e-9 of the same reference, far below the printed digits.
+    """
+    if df != int(df) or df < 1:
+        raise ValueError(f"t975 needs an integer df >= 1, got {df!r}")
+    df = int(df)
+
+    def central(th):
+        """A(t|df) at t = sqrt(df) tan(th)."""
+        s, c = math.sin(th), math.cos(th)
+        acc = 0.0
+        if df % 2:                      # odd df: (2/pi) [th + sin (cos + 2/3 cos^3 + ...)]
+            term = c
+            for j in range(1, (df - 1) // 2 + 1):
+                acc += term
+                term *= c * c * (2 * j) / (2 * j + 1)
+            return 2.0 / math.pi * (th + s * acc)
+        term = 1.0                      # even df: sin (1 + 1/2 cos^2 + 1*3/(2*4) cos^4 + ...)
+        for j in range(1, df // 2 + 1):
+            acc += term
+            term *= c * c * (2 * j - 1) / (2 * j)
+        return s * acc
+
+    lo, hi = 0.0, math.pi / 2           # A rises from 0 to 1 on [0, pi/2)
+    while True:
+        mid = 0.5 * (lo + hi)
+        if not lo < mid < hi:
+            break
+        if central(mid) < 0.95:
+            lo = mid
+        else:
+            hi = mid
+    return math.sqrt(df) * math.tan(0.5 * (lo + hi))
 
 
 def tcrit(df):
     if sps is not None:
         return float(sps.t.ppf(0.975, df))
-    return T975[df]
+    return t975(df)
 
 
 def meanpow(path, rail="vdd_in_mw", trim=True):

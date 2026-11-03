@@ -25,10 +25,10 @@ What the logs hold:
     Gated starts are identified from the file names (new pair / new (EMC, repeat) / every sweep cell / new round).
   * launches, admission trials, reference sweeps: 'tgate=<millideg>' is re-read right after the gate (the unit's start
     reading), 'tend='/'t=' at the end, and a 'WARN thermal gate timed out' line precedes each timed-out unit.
-Read-only over results/ (needs the session.log files; the pre-September tegrastats summary scans every
-results/**/*.tegra, including results/e4_replication and results/partb_ext from the Zenodo deposit, so extract those
-in place first; a WARN line names either folder when it is absent).  Prints the markdown record; --md also writes it
-to a file and --tex writes the supplementary float (label tab:thermal):
+Read-only over results/ (needs the session.log files).  The pre-September tegrastats summary counts every
+results/**/*.tegra except those of NOT_COUNTED (below), so it also needs the Zenodo folders results/e4_replication,
+results/partb_ext and results/e4_nx (ZENODO_TEGRA) extracted in place; a WARN line names every one that is absent.
+Prints the markdown record; --md also writes it to a file and --tex writes the supplementary float (label tab:thermal):
     python3 campaign/thermal_record.py [--tex OUT.tex] [--md OUT.md]
 """
 import argparse
@@ -46,8 +46,17 @@ LAB = os.path.dirname(HERE)
 RES = os.path.join(LAB, "results")
 TO_S = 1190.0
 WAIT_S = 15.0
-# Zenodo folders (10.5281/zenodo.21236659) whose tegrastats traces the pre-September summary includes
-ZENODO_TEGRA = (("e4_replication", "e4_replication_nano.tar.gz"), ("partb_ext", "partb_ext_nano.tar.gz"))
+# Zenodo folders (10.5281/zenodo.21236659) whose tegrastats traces the pre-September summary counts: the runs behind
+# Supp. S5-S6 (Nano worst-cell repeats, Nano ViT-Small and L2-resident GEMM tail cells, NX Part-B and replication cells)
+ZENODO_TEGRA = (("e4_replication", "e4_replication_nano.tar.gz"), ("partb_ext", "partb_ext_nano.tar.gz"),
+                ("e4_nx", "partb_nx.tar.gz"))
+# Not counted even when extracted: e3_governor/ (e3_governor_nx.tar.gz), four NX governor cells of 2026-06-17 at
+# 200 and 83 Hz that no table, figure or number of the article uses, and eight empty sweep traces
+NOT_COUNTED = (("e3_governor", "e3_governor_nx.tar.gz"),)
+
+
+def _and(xs):
+    return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1]
 
 
 def _pair(n):
@@ -224,9 +233,14 @@ def e3_rows(group):
 
 
 def early_traces():
-    """tegrastats traces of the sessions before September 2026: start/end/max of the hottest zone per trace."""
-    st, en, mx, dirs = [], [], [], set()
+    """tegrastats traces of the sessions before September 2026 (every results/**/*.tegra outside NOT_COUNTED):
+    start/end/max of the hottest zone per trace, and the number of traces per results/ folder."""
+    st, en, mx, per = [], [], [], defaultdict(int)
+    skip = {d for d, _ in NOT_COUNTED}
     for f in glob.glob(os.path.join(RES, "**", "*.tegra"), recursive=True):
+        parts = os.path.relpath(f, RES).split(os.sep)
+        if parts[0] in skip:
+            continue
         vals = []
         for line in open(f, errors="ignore"):
             v = [float(x) for x in re.findall(r"@(-?\d+(?:\.\d+)?)C", line)]
@@ -234,8 +248,10 @@ def early_traces():
             if v:
                 vals.append(max(v))
         if vals:
-            st.append(vals[0]); en.append(vals[-1]); mx.append(max(vals)); dirs.add(os.path.relpath(f, RES).split("/")[0])
-    return dict(n=len(st), start=(min(st), max(st)), over=sum(1 for x in st if x > 55.0), max=max(mx), dirs=sorted(dirs))
+            st.append(vals[0]); en.append(vals[-1]); mx.append(max(vals))
+            per[parts[0] if len(parts) > 1 else "top-level " + parts[0].split("_")[0] + "_*"] += 1
+    return dict(n=len(st), start=(min(st), max(st)), over=sum(1 for x in st if x > 55.0), max=max(mx),
+                per=", ".join(f"{k} {v}" for k, v in sorted(per.items())))
 
 
 def g2_traces():
@@ -259,10 +275,13 @@ def main():
     a = ap.parse_args()
     absent = [(d, t) for d, t in ZENODO_TEGRA if not os.path.isdir(os.path.join(RES, d))]
     if absent:
-        print("WARN " + " and ".join(f"results/{d}" for d, _ in absent)
+        print("WARN " + _and([f"results/{d}" for d, _ in absent])
               + (" is" if len(absent) == 1 else " are") + " absent, so the pre-September tegrastats summary"
               " leaves out " + ("its" if len(absent) == 1 else "their") + " traces: extract "
-              + " and ".join(t for _, t in absent) + " of the Zenodo deposit 10.5281/zenodo.21236659 into results/")
+              + _and([t for _, t in absent]) + " of the Zenodo deposit 10.5281/zenodo.21236659 into results/")
+    for d, t in NOT_COUNTED:
+        if os.path.isdir(os.path.join(RES, d)):
+            print(f"note: results/{d} (from {t}) is present and not counted in the pre-September tegrastats summary")
     md = ["## Thermal-gate record (campaign/thermal_record.py; do not edit by hand)", "",
           "### Characterization sessions (end-of-cell readings; waits reconstructed)", "",
           "| session | runs | gated unit | gated starts | waited / timed out | wait s | end-of-cell T °C | cells > 55 °C | first-unit wait s |",
@@ -322,9 +341,11 @@ def main():
             f"launches: {sum(LG[k]['timeouts'] for k in LG)} timeouts, {len(l_over)} starts > 55 C ({', '.join(f'{v:.2f}' for _, v in l_over)}); "
             f"max in these logs {mx_logs:.1f} C (vision {mx_vision:.1f}); first-unit waits >= 15 s: "
             + ", ".join(f"{k} {v:.0f} s" for k, v in first_waits.items())
-            + f"; pre-September tegrastats traces: {early['n']} (dirs {', '.join(early['dirs'])}), starts {early['start'][0]:.1f}--{early['start'][1]:.1f} C, "
+            + f"; pre-September tegrastats traces: {early['n']} ({early['per']}), starts {early['start'][0]:.1f}--{early['start'][1]:.1f} C, "
             f"{early['over']} above 55, max {early['max']:.1f} C; June 11 Nano cells: {g2['n']} traces, starts {g2['start'][0]:.1f}--{g2['start'][1]:.1f} C, {g2['over']} above 55")
     md += ["", "Headline: " + head]
+    kz = len(ZENODO_TEGRA) - len(absent)            # the ZENODO_TEGRA folders present (all of them for Table S18)
+    nz = ("no", "one", "two", "three", "four", "five", "six")[kz] + " Zenodo folder" + ("" if kz == 1 else "s")
     cap = (
         "Thermal-gate record of the sessions behind the main text and supplement from September 2026 on. Before every "
         "gated unit (an interleaved pair, an endpoint-refit repeat, a rate-matched sweep cell, an EMC-free re-run round, an "
@@ -357,7 +378,8 @@ def main():
         "this per-unit gate: the June 11 Nano characterization cells waited before each cell for the GPU zone to read "
         "below $55\\,^\\circ$C (at most 5\\,min, reading not logged), the July 3 session repeats of "
         "\\S\\ref{sec:rq1} ran this gate once per session, and the other June and July sessions ran ungated. "
-        f"Where they kept a \\texttt{{tegrastats}} trace ({early['n']} cells and runs), the hottest zone read "
+        f"Where they kept a \\texttt{{tegrastats}} trace ({early['n']} cells and runs, {nz} included), "
+        "the hottest zone read "
         f"${early['start'][0]:.1f}$--${early['start'][1]:.1f}\\,^\\circ$C at the start ({early['over']} starts above "
         f"$55\\,^\\circ$C) and at most ${early['max']:.1f}\\,^\\circ$C.")
     L = [r"\begin{table*}[!t]", r"  \centering", "  \\caption{" + cap + "}", r"  \label{tab:thermal}",

@@ -3,13 +3,14 @@
 """Deployment numbers of the article and its supplement that the other analysis
 scripts do not print: the one-hour saturated-decode soak (main text Sec. III), the six
 directed profile pairs (Supp. Table S2), the maximum clock's energy premium over the
-aware picks and the deployed medians of the blind breadth violations (main text Sec. IV),
-and the thermal-order figures of the deployment sessions and of the EMC-free re-run
-(Supp. Sec. S2, thermal-gate record and E5-B protocol).
+aware picks, the deployed medians of the blind breadth violations and the tail state of
+the June NX session against the three later sessions (main text Sec. IV), and the
+thermal-order figures of the deployment sessions and of the EMC-free re-run (Supp. Sec.
+S2, thermal-gate record and E5-B protocol).
 
 Read-only over results/ (python3 + numpy; nothing is written).  Run from anywhere:
     python3 campaign/deployment_stats.py [--section NAME ...] [--results DIR]
-Sections: soak, pairs, maxclock, breadth, thermal (default: all).
+Sections: soak, pairs, maxclock, breadth, june, thermal (default: all).
 
 Data (results/) and definitions:
   soak       soak_qwen/seg<k>.csv (k = 1..60; 2,000 tokens each, dur_ns), soak_qwen/soak.tegra
@@ -36,6 +37,19 @@ Data (results/) and definitions:
              is over budget when more than 2 % of its cycles exceed D.  Deployed median of a
              cell: the median of the ten run medians (and, printed alongside, the median of
              all 10,000 pooled cycles).
+  june       govrep/g<f>_r{1,2,3}.csv: the June session (2026-06-17) of NX MobileNetV2 at
+             33 Hz and EMC 2133 MHz, three blocked 1,000-cycle runs per GPU clock 510-1173
+             MHz; later sessions govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3} (the
+             interleaved sessions of Table II, same cells).  Slow mode of a run: its cycles
+             whose response_us exceeds the run's p50 by more than 80 us (in the sparse valley
+             between the two modes; the shares under 60, 100 and 120 us cuts are printed
+             too); share = their fraction of the run, offset = their median minus the run's
+             p50.  'Same p50': per clock, the median of the June run p50s minus the median
+             of the later runs' p50s.  Picks: the full-sweep fits of 'pairs' (blind at EMC
+             3199, aware at EMC 2133 MHz), r = 1.035, grid {510, ..., 1173}; when no clock
+             qualifies the model declines and the top clock (1173 MHz) runs as the fallback.
+             Miss % per run = share of cycles with response_us > D; the mean over the three
+             runs equals the pooled miss (1,000 cycles each); budget tau = 2 % per run.
   thermal    session.log end-of-cell readings ('t=' in millidegrees) of the deployment
              sessions govrep_rev/<s>/ (cells of one pair run back to back in ascending clock
              order) and of the EMC-free re-run e5b_live/nx/ (seven cells per round in a fixed
@@ -297,6 +311,134 @@ def sec_breadth(R):
     print()
 
 
+# --------------------------------------------------------------------------- june
+LATER = ("nx", "nx_mobilenet", "nx_mobilenet_s3")
+SLOW_CUT = 80.0
+JUNE_D = (4.6, 4.8, 5.0)
+
+
+def slow_mode(x, cut=SLOW_CUT):
+    """Share (%) of the cycles more than `cut` us above the run's p50; their median minus the p50 (us)."""
+    m = float(np.median(x))
+    s = x[x > m + cut]
+    return 100.0 * len(s) / len(x), (float(np.median(s)) - m) if len(s) else float("nan")
+
+
+def mode_band(x):
+    """Share (%) of the cycles 120-200 us above the run's p50, where the June slow mode sits."""
+    m = float(np.median(x))
+    return 100.0 * float(np.mean((x > m + 120) & (x <= m + 200)))
+
+
+def run_dates(paths):
+    out = set()
+    for p in paths:
+        try:
+            out.add(json.load(open(p[:-4] + ".json"))["meta"]["timestamp"][:10])
+        except (OSError, KeyError, ValueError):
+            pass
+    return "..".join(sorted(out)[::max(1, len(out) - 1)]) if out else "date not recorded"
+
+
+def rng(v, fmt="{:.1f}"):
+    return (fmt + "-" + fmt).format(min(v), max(v))
+
+
+def sec_june(R):
+    print("== [main Sec. IV] tail state of the June session against the three later sessions "
+          "(NX MobileNetV2, 33 Hz, EMC 2133 MHz) ==")
+    jp = {f: runs(f"{R}/govrep/g{f}_r*.csv") for f in NX_GRID}
+    jp = {f: v for f, v in jp.items() if v}
+    if not jp:
+        print("  no govrep/g*_r*.csv\n")
+        return
+    J = {f: [resp(p) for p in v] for f, v in jp.items()}
+    allj = [x for rs in J.values() for x in rs]
+    print(f"  June session: {len(allj)} runs ({run_dates([p for v in jp.values() for p in v])}), clocks "
+          f"{min(J)}-{max(J)} MHz.  Slow mode of a run: its cycles more than {SLOW_CUT:.0f} us above the run's "
+          "response-time p50; share = their fraction, offset = their median minus the run's p50")
+    for f, rs in J.items():
+        so = [slow_mode(x) for x in rs]
+        print(f"  {f:4d} MHz: p50 " + " ".join(f"{np.median(x) / 1e3:.3f}" for x in rs)
+              + " ms, p90 " + " ".join(f"{np.percentile(x, 90) / 1e3:.3f}" for x in rs)
+              + " ms; slow-mode share " + " ".join(f"{s:.1f}" for s, _ in so)
+              + " %, offset " + " ".join(f"+{o:.0f}" for _, o in so) + " us")
+    so = [slow_mode(x) for x in allj]
+    off = [o for _, o in so]
+    print(f"  all June runs: slow-mode share {rng([s for s, _ in so])} %, offset {rng(off, '{:.0f}')} us (median "
+          f"{np.median(off):.0f}); cycles 120-200 us above the p50 {rng([mode_band(x) for x in allj])} %, p90 - p50 "
+          f"{rng([np.percentile(x, 90) - np.median(x) for x in allj], '{:.0f}')} us")
+    print("  slow-mode share under other cuts: " + ", ".join(
+        f"{c:.0f} us {rng([slow_mode(x, c)[0] for x in allj])} %" for c in (60.0, 100.0, 120.0)))
+    later = {}
+    for s in LATER:
+        ps = {f: runs(f"{R}/govrep_rev/{s}/g{f}_p*.csv") for f in NX_GRID}
+        ps = {f: v for f, v in ps.items() if v}
+        if not ps:
+            print(f"  later session {s}: no runs")
+            continue
+        L = later[s] = {f: [resp(p) for p in v] for f, v in ps.items()}
+        xs = [x for rs in L.values() for x in rs]
+        print(f"  later session {s} ({run_dates([p for v in ps.values() for p in v])}), clocks {min(L)}-{max(L)} "
+              f"MHz, {len(xs)} runs: slow-mode share {rng([slow_mode(x)[0] for x in xs])} % per run, cycles "
+              f"120-200 us above the p50 at most {max(mode_band(x) for x in xs):.1f} %, p90 - p50 "
+              f"{rng([np.percentile(x, 90) - np.median(x) for x in xs], '{:.0f}')} us")
+        if 1122 in L:
+            x = L[1122]
+            print(f"    1122 MHz: p50 {np.median([np.median(v) for v in x]) / 1e3:.3f} ms (median of the runs), "
+                  f"p90 {rng([np.percentile(v, 90) / 1e3 for v in x], '{:.3f}')} ms, cycles above 4.6 ms "
+                  f"{np.mean(np.concatenate(x) > 4600) * 100:.2f} % pooled "
+                  f"({rng([np.mean(v > 4600) * 100 for v in x])} per run)")
+    if later:
+        d = []
+        for f in J:
+            lp = [np.median(x) for L in later.values() for x in L.get(f, [])]
+            d.append(f"{f} {np.median([np.median(x) for x in J[f]]) - np.median(lp):+.0f}" if lp
+                     else f"{f} (not run later)")
+        print("  same p50: June median run p50 minus the later sessions' median run p50, by clock (us): "
+              + ", ".join(d))
+    fits = {arm: sweep_fit(R, emc) for arm, emc in (("blind", 3199), ("aware", 2133))}
+    if min(fits["blind"][1], fits["aware"][1]) < 2:
+        print("  no sweep cells nx_validation/nx_est_emc{3199,2133}_gpu*_mobilenet.json for the full-sweep fits\n")
+        return
+    (kb, bb), nb, hb = fits["blind"]
+    (ka, ba), na, ha = fits["aware"]
+    print(f"  full-sweep fits (as 'pairs'), r = {R_MULT}: blind (EMC 3199, {nb} cells, "
+          f"{'/'.join(f'{h:g}' for h in hb)} Hz) k = {kb:.0f} us*MHz, b = {bb:.0f} us; aware (EMC 2133, {na} cells, "
+          f"{'/'.join(f'{h:g}' for h in ha)} Hz) k = {ka:.0f} us*MHz, b = {ba:.0f} us, "
+          f"T(1173) r = {(ka / 1173 + ba) * R_MULT / 1e3:.3f} ms")
+    bl, picks = [], {}
+    for D in JUNE_D:
+        out = []
+        for arm in ("blind", "aware"):
+            f = pick(fits[arm][0], D * 1e3, NX_GRID)
+            run_f = picks[(arm, D)] = f if f is not None else NX_GRID[-1]
+            if run_f not in J:
+                out.append(f"{arm} {run_f}: no June runs")
+                continue
+            m = [np.mean(x > D * 1e3) * 100 for x in J[run_f]]
+            if arm == "blind":
+                bl += m
+            lab = f"{f}" if f is not None else f"declines, {run_f} MHz runs as the fallback"
+            out.append(f"{arm} {lab}: " + " ".join(f"{v:.1f}" for v in m)
+                       + f" % (mean {np.mean(m):.2f} %, runs over tau {sum(v > TAU for v in m)}/{len(m)})")
+        print(f"  June, D = {D:.1f} ms: " + "; ".join(out))
+    if bl:
+        print(f"  June blind picks at {JUNE_D[0]}-{JUNE_D[-1]} ms: {rng(bl)} % per run")
+    for D in JUNE_D if later else ():
+        f = picks[("blind", D)]
+        row = []
+        for s, L in later.items():
+            if f not in L:
+                row.append(f"{s} not run")
+                continue
+            m = [np.mean(x > D * 1e3) * 100 for x in L[f]]
+            row.append(f"{s} {sum(v > TAU for v in m)}/{len(m)} runs over tau (pooled "
+                       f"{np.mean(np.concatenate(L[f]) > D * 1e3) * 100:.2f} %)")
+        print(f"  the June blind clock at D = {D:.1f} ms, {f} MHz, in the later sessions: " + "; ".join(row))
+    print()
+
+
 # --------------------------------------------------------------------------- thermal
 def end_temps(log):
     T = {}
@@ -392,7 +534,7 @@ def sec_thermal(R):
 
 
 SECTIONS = {"soak": sec_soak, "pairs": sec_pairs, "maxclock": sec_maxclock, "breadth": sec_breadth,
-            "thermal": sec_thermal}
+            "june": sec_june, "thermal": sec_thermal}
 
 
 def main():

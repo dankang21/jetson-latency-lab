@@ -19,9 +19,10 @@ are marked at the median.  The thin dashed line is the blind arm under its origi
 8 Hz-cell picks (Table II, last panel).  Miss is on a symlog axis (linear below 0.1 %,
 the per-run resolution) so zero-miss runs are drawn at 0.
 
-Read-only on results/; writes the PDF to --out (default results/govrep_rev/govdeploy.pdf).
+Read-only on results/; writes the PDF only to --out FILE, which is required (without it the
+script stops with a usage error and writes nothing; FILE's folder is created if absent).
 Run pinned with the system matplotlib:
-    taskset -c 1 nice -n 19 /usr/bin/python3 campaign/make_fig_govdeploy_rev.py [--out FILE] [--png DIR]
+    taskset -c 1 nice -n 19 /usr/bin/python3 campaign/make_fig_govdeploy_rev.py --out FILE [--png DIR]
 Figure size (3.45 x 3.6 in, tight bbox) is that of the July figure so the float layout
 in the main text is unchanged.
 """
@@ -40,12 +41,10 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-LAB = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 from govdeploy_common import BOARDS, load_session, refit_fits, original_fits, pick, that  # noqa: E402
 from e1b_stats import miss_pct, TAU, R  # noqa: E402
 
-OUT = f"{LAB}/results/govrep_rev/govdeploy.pdf"
 C_BLIND, C_AWARE = "#c0392b", "#2471a3"        # same arm colours as Fig. 1
 LINTHRESH = 0.1                                # per-run resolution: 1 miss in 1000 cycles
 TARGET_HW = 272.06 / 276.628                   # tight-bbox h/w of the July govdeploy.pdf (pdfinfo)
@@ -102,7 +101,8 @@ def segments(B, sessions, kb, Ds):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=OUT)
+    ap.add_argument("--out", required=True, metavar="FILE",
+                    help="write the figure PDF to FILE (its folder is created if absent)")
     ap.add_argument("--png", default=None, help="also write a PNG preview into this directory")
     a = ap.parse_args()
 
@@ -226,7 +226,8 @@ def main():
         fig.set_size_inches(w, h + (TARGET_HW - hw) * wpt / 72.0)
     print(f"  figure {fig.get_size_inches()[0]:.2f} x {fig.get_size_inches()[1]:.2f} in, "
           f"saved bbox {wpt:.1f} x {hpt:.1f} pt (h/w {hw:.4f}, target {TARGET_HW:.4f})")
-    os.makedirs(os.path.dirname(a.out), exist_ok=True)
+    if os.path.dirname(a.out):
+        os.makedirs(os.path.dirname(a.out), exist_ok=True)
     fig.savefig(a.out, bbox_inches="tight", pad_inches=PAD)
     print("wrote", a.out)
     if a.png:
