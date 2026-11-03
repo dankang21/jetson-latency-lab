@@ -1,0 +1,95 @@
+requested=2133000000 actual=2133000000
+session cond=A1 host=jetson-orin commit=fa5ca18 board=nano primary=mobilenet pri_hz=33 co=yolov8s co_hz=5 D_ms=13.0 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/mobilenet/est_emc2133_gpu306.json,results/nano_grid/mobilenet/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T01:47:32+00:00
+  skip t1
+  skip t2
+  t3: Mg=5113us f_pt=816 f_b=816 m_b=0.0010 m_pt=- tgate=50812 tend=52312 2026-09-15T01:48:35+00:00
+  t4: Mg=3662us f_pt=714 f_b=714 m_b=0.0310 m_pt=- tgate=52187 tend=52468 2026-09-15T01:49:37+00:00
+  t5: Mg=5431us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=52437 tend=52437 2026-09-15T01:50:40+00:00
+  t6: Mg=4703us f_pt=714 f_b=816 m_b=0.0010 m_pt=0.0200 tgate=52937 tend=53031 2026-09-15T01:52:14+00:00
+  t7: Mg=6601us f_pt=918 f_b=1020 m_b=0.0000 m_pt=0.0000 tgate=52843 tend=53031 2026-09-15T01:53:49+00:00
+  t8: Mg=4401us f_pt=714 f_b=816 m_b=0.0000 m_pt=0.0000 tgate=53312 tend=52968 2026-09-15T01:55:24+00:00
+  t9: Mg=4403us f_pt=714 f_b=816 m_b=0.0000 m_pt=0.0310 tgate=52875 tend=52781 2026-09-15T01:56:58+00:00
+  t10: Mg=5456us f_pt=816 f_b=918 m_b=0.0000 m_pt=0.0000 tgate=52750 tend=52937 2026-09-15T01:58:33+00:00
+ADMIT_LOOP DONE cond=A1 2026-09-15T01:58:33+00:00
+requested=2133000000 actual=2133000000
+session cond=A2 host=jetson-orin commit=48b3582 board=nano primary=mobilenet pri_hz=33 co=yolov8s co_hz=10 D_ms=13.0 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/mobilenet/est_emc2133_gpu306.json,results/nano_grid/mobilenet/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T01:58:34+00:00
+  t1: Mg=7076us f_pt=1020 f_b=1020 m_b=0.0000 m_pt=- tgate=52968 tend=54093 2026-09-15T01:59:37+00:00
+  t2: Mg=6310us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=54312 tend=54281 2026-09-15T02:00:40+00:00
+  t3: Mg=6426us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=54687 tend=54750 2026-09-15T02:01:42+00:00
+  t4: Mg=4339us f_pt=714 f_b=816 m_b=0.0040 m_pt=0.0250 tgate=54718 tend=54593 2026-09-15T02:03:17+00:00
+  t5: Mg=5942us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=55062 tend=54968 2026-09-15T02:04:20+00:00
+  t6: Mg=5294us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=53656 tend=54625 2026-09-15T02:05:43+00:00
+  t7: Mg=5580us f_pt=816 f_b=918 m_b=0.0010 m_pt=0.0010 tgate=54500 tend=55125 2026-09-15T02:07:18+00:00
+  t8: Mg=7221us f_pt=1020 f_b=1020 m_b=0.0010 m_pt=- tgate=55000 tend=55000 2026-09-15T02:08:20+00:00
+  t9: Mg=5761us f_pt=816 f_b=918 m_b=0.0010 m_pt=0.0010 tgate=54000 tend=54906 2026-09-15T02:10:15+00:00
+  t10: Mg=4544us f_pt=714 f_b=816 m_b=0.0040 m_pt=0.0050 tgate=54562 tend=54781 2026-09-15T02:11:51+00:00
+ADMIT_LOOP DONE cond=A2 2026-09-15T02:11:51+00:00
+requested=2133000000 actual=2133000000
+session cond=A3 host=jetson-orin commit=48b3582 board=nano primary=mobilenet pri_hz=33 co=resnet50 co_hz=5 D_ms=13.0 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/mobilenet/est_emc2133_gpu306.json,results/nano_grid/mobilenet/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T02:11:52+00:00
+  t1: Mg=6351us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=54625 tend=53437 2026-09-15T02:12:54+00:00
+  t2: Mg=6110us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=53281 tend=52718 2026-09-15T02:13:56+00:00
+  t3: Mg=4520us f_pt=714 f_b=816 m_b=0.0010 m_pt=0.0010 tgate=52437 tend=52125 2026-09-15T02:15:31+00:00
+  t4: Mg=6020us f_pt=918 f_b=918 m_b=0.0010 m_pt=- tgate=52093 tend=51906 2026-09-15T02:16:34+00:00
+  t5: Mg=5205us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=52187 tend=51593 2026-09-15T02:17:36+00:00
+  t6: Mg=5752us f_pt=816 f_b=918 m_b=0.0010 m_pt=0.0000 tgate=51687 tend=52062 2026-09-15T02:19:11+00:00
+  t7: Mg=6890us f_pt=918 f_b=1020 m_b=0.0000 m_pt=0.0010 tgate=51625 tend=51593 2026-09-15T02:20:45+00:00
+  t8: Mg=5085us f_pt=816 f_b=816 m_b=0.0010 m_pt=- tgate=51531 tend=51437 2026-09-15T02:21:48+00:00
+  t9: Mg=3842us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=51375 tend=51031 2026-09-15T02:22:50+00:00
+  t10: Mg=9409us f_pt=0 f_b=0 m_b=- m_pt=- tgate=51062 tend=51218 2026-09-15T02:23:20+00:00
+ADMIT_LOOP DONE cond=A3 2026-09-15T02:23:20+00:00
+requested=2133000000 actual=2133000000
+session cond=A4 host=jetson-orin commit=abf3e32 board=nano primary=mobilenet pri_hz=33 co=resnet50 co_hz=10 D_ms=13.0 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/mobilenet/est_emc2133_gpu306.json,results/nano_grid/mobilenet/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T02:23:21+00:00
+  t1: Mg=6206us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=50812 tend=51625 2026-09-15T02:24:24+00:00
+  t2: Mg=4476us f_pt=714 f_b=816 m_b=0.0010 m_pt=0.0000 tgate=51718 tend=52156 2026-09-15T02:25:58+00:00
+  t3: Mg=4581us f_pt=714 f_b=816 m_b=0.0000 m_pt=0.0000 tgate=52062 tend=52312 2026-09-15T02:27:33+00:00
+  t4: Mg=6263us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=52187 tend=52218 2026-09-15T02:28:36+00:00
+  t5: Mg=4871us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=52375 tend=52656 2026-09-15T02:29:38+00:00
+  t6: Mg=5146us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=52281 tend=52156 2026-09-15T02:30:40+00:00
+  t7: Mg=7449us f_pt=1020 f_b=1020 m_b=0.0000 m_pt=- tgate=52125 tend=52406 2026-09-15T02:31:43+00:00
+  t8: Mg=6063us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=52500 tend=52343 2026-09-15T02:32:45+00:00
+  t9: Mg=4000us f_pt=714 f_b=714 m_b=0.0300 m_pt=- tgate=52218 tend=52218 2026-09-15T02:33:48+00:00
+  t10: Mg=4331us f_pt=714 f_b=714 m_b=0.0160 m_pt=- tgate=52218 tend=52312 2026-09-15T02:34:50+00:00
+ADMIT_LOOP DONE cond=A4 2026-09-15T02:34:50+00:00
+requested=2133000000 actual=2133000000
+session cond=A5 host=jetson-orin commit=abf3e32 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=5 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/vit/est_emc2133_gpu306.json,results/nano_grid/vit/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T02:34:51+00:00
+  t1: Mg=10460us f_pt=612 f_b=714 m_b=0.0000 m_pt=0.0000 tgate=52125 tend=53781 2026-09-15T02:37:12+00:00
+  t2: Mg=297us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=53562 tend=53625 2026-09-15T02:39:05+00:00
+  t3: Mg=3947us f_pt=408 f_b=510 m_b=0.2510 m_pt=0.7500 tgate=53531 tend=54187 2026-09-15T02:41:27+00:00
+  t4: Mg=2305us f_pt=408 f_b=408 m_b=0.7130 m_pt=- tgate=54093 tend=53656 2026-09-15T02:42:56+00:00
+  t5: Mg=15891us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=53656 tend=54187 2026-09-15T02:44:23+00:00
+  t6: Mg=11225us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=54375 tend=54343 2026-09-15T02:45:50+00:00
+  t7: Mg=11656us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=54312 tend=54125 2026-09-15T02:47:18+00:00
+  t8: Mg=5534us f_pt=510 f_b=510 m_b=0.2500 m_pt=- tgate=54468 tend=53968 2026-09-15T02:48:46+00:00
+  t9: Mg=13297us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=53687 tend=54375 2026-09-15T02:50:13+00:00
+  t10: Mg=12083us f_pt=714 f_b=714 m_b=0.1310 m_pt=- tgate=54281 tend=54093 2026-09-15T02:51:41+00:00
+ADMIT_LOOP DONE cond=A5 2026-09-15T02:51:41+00:00
+requested=2133000000 actual=2133000000
+session cond=A6 host=jetson-orin commit=abf3e32 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=10 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/vit/est_emc2133_gpu306.json,results/nano_grid/vit/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T02:51:42+00:00
+  t1: Mg=277us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=53968 tend=53531 2026-09-15T02:53:45+00:00
+  t2: Mg=318us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=53406 tend=53281 2026-09-15T02:55:46+00:00
+  t3: Mg=299us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=53187 tend=54375 2026-09-15T02:57:48+00:00
+  t4: Mg=245us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=54093 tend=54656 2026-09-15T02:59:50+00:00
+  t5: Mg=4671us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=54531 tend=56125 2026-09-15T03:01:19+00:00
+  t6: Mg=289us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=54687 tend=54625 2026-09-15T03:03:41+00:00
+  t7: Mg=505us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=54437 tend=54656 2026-09-15T03:05:44+00:00
+  t8: Mg=247us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=54625 tend=54625 2026-09-15T03:07:46+00:00
+  t9: Mg=520us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=54656 tend=54718 2026-09-15T03:09:49+00:00
+  t10: Mg=184us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=53562 tend=54937 2026-09-15T03:12:11+00:00
+ADMIT_LOOP DONE cond=A6 2026-09-15T03:12:11+00:00
+requested=2133000000 actual=2133000000
+refsweep cond=A1 host=jetson-orin commit=abf3e32 board=nano primary=mobilenet pri_hz=33 co=yolov8s co_hz=5 D_ms=13.0 fprobe=1020 grid=306,408,510,612,714,816,918,1020 cells=306 408 510 612 714 816 918 1020 ina=false dry=false start=2026-09-15T03:12:12+00:00
+  ref g306: m=0.8260 tgate=54750 t=54875 2026-09-15T03:13:06+00:00
+  ref g408: m=0.3920 tgate=54750 t=54625 2026-09-15T03:13:39+00:00
+  ref g510: m=0.2370 tgate=54750 t=54625 2026-09-15T03:14:12+00:00
+  ref g612: m=0.0960 tgate=54750 t=54968 2026-09-15T03:14:44+00:00
+  ref g714: m=0.0010 tgate=54750 t=55000 2026-09-15T03:15:17+00:00
+  ref g816: m=0.0010 tgate=54750 t=54625 2026-09-15T03:15:49+00:00
+  ref g918: m=0.0000 tgate=54750 t=55156 2026-09-15T03:16:21+00:00
+  ref g1020: m=0.0000 tgate=54750 t=54937 2026-09-15T03:16:54+00:00
+REFSWEEP DONE cond=A1 f_oracle=714 tau=0.02 2026-09-15T03:16:57+00:00
+another infer_bench is running (E1?); refuse to start (use --force)
+another infer_bench is running (E1?); refuse to start (use --force)
+another infer_bench is running (E1?); refuse to start (use --force)
+another infer_bench is running (E1?); refuse to start (use --force)
+another infer_bench is running (E1?); refuse to start (use --force)
+NANO_E3 DONE 2026-09-15T03:16:57+00:00

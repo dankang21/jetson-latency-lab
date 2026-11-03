@@ -1,0 +1,35 @@
+session cond=A6r host=jetson-orin commit=bad9d31 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=10 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/vit/est_emc2133_gpu306.json,results/nano_grid/vit/est_emc2133_gpu1020.json trials=1..1 ina=false dry=false start=2026-09-15T03:52:10+00:00
+  co-runner ready after 2s
+  t1: Mg=9955us f_pt=612 f_b=612 m_b=0.0000 m_pt=- tgate=52843 tend=56062 2026-09-15T03:53:26+00:00
+ADMIT_LOOP DONE cond=A6r 2026-09-15T03:53:26+00:00
+session cond=A6r host=jetson-orin commit=aa1ec15 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=10 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/vit/est_emc2133_gpu306.json,results/nano_grid/vit/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T04:09:50+00:00
+  co-runner ready after 2s
+  t2: Mg=5457us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=53750 tend=56468 2026-09-15T04:11:26+00:00
+  co-runner ready after 2s
+  t3: Mg=7022us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=55312 tend=56906 2026-09-15T04:13:02+00:00
+  co-runner ready after 2s
+  t4: Mg=8020us f_pt=612 f_b=612 m_b=0.0010 m_pt=- tgate=54250 tend=56250 2026-09-15T04:14:58+00:00
+  co-runner ready after 2s
+  t5: Mg=6767us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=53781 tend=56656 2026-09-15T04:16:54+00:00
+  co-runner ready after 2s
+  t6: Mg=6796us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=55218 tend=56781 2026-09-15T04:18:30+00:00
+  co-runner ready after 2s
+  t7: Mg=7792us f_pt=612 f_b=612 m_b=0.5000 m_pt=- tgate=54406 tend=56562 2026-09-15T04:20:26+00:00
+  co-runner ready after 2s
+  t8: Mg=2757us f_pt=408 f_b=408 m_b=1.0000 m_pt=- tgate=53937 tend=55781 2026-09-15T04:22:31+00:00
+  co-runner ready after 2s
+  t9: Mg=6633us f_pt=510 f_b=510 m_b=0.6240 m_pt=- tgate=54375 tend=56468 2026-09-15T04:24:07+00:00
+  co-runner ready after 2s
+  t10: Mg=148us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=54093 tend=55031 2026-09-15T04:26:35+00:00
+ADMIT_LOOP DONE cond=A6r 2026-09-15T04:26:35+00:00
+refsweep cond=A6r host=jetson-orin commit=bc214d2 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=10 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 cells=306 408 510 612 714 816 918 1020 ina=false dry=false start=2026-09-15T04:37:38+00:00
+  co-runner ready after 2s
+  ref g306: m=1.0000 tgate=54562 t=56437 2026-09-15T04:39:31+00:00
+  ref g408: m=1.0000 tgate=54562 t=57687 2026-09-15T04:40:34+00:00
+  ref g510: m=1.0000 tgate=54562 t=58937 2026-09-15T04:41:29+00:00
+  ref g612: m=0.3940 tgate=54562 t=60656 2026-09-15T04:42:23+00:00
+  ref g714: m=0.0280 tgate=54562 t=59750 2026-09-15T04:43:17+00:00
+  ref g816: m=0.0000 tgate=54562 t=59812 2026-09-15T04:44:10+00:00
+  ref g918: m=0.0000 tgate=54562 t=59625 2026-09-15T04:45:03+00:00
+  ref g1020: m=0.0000 tgate=54562 t=59125 2026-09-15T04:45:56+00:00
+REFSWEEP DONE cond=A6r f_oracle=816 tau=0.02 2026-09-15T04:45:59+00:00

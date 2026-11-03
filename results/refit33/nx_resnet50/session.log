@@ -1,0 +1,14 @@
+refit board=nx host=Pandora commit=8acfb29 hz=20 model=resnet50 start=2026-09-15T15:12:20+08:00
+  emc2133_g306_r1: OK t=56218
+  emc2133_g1173_r1: OK t=57468
+  emc2133_g306_r2: OK t=56250
+  emc2133_g1173_r2: OK t=57531
+  emc2133_g306_r3: OK t=56562
+  emc2133_g1173_r3: OK t=57000
+  emc3199_g306_r1: OK t=57468
+  emc3199_g1173_r1: OK t=58750
+  emc3199_g306_r2: OK t=58125
+  emc3199_g1173_r2: OK t=59312
+  emc3199_g306_r3: OK t=58187
+  emc3199_g1173_r3: OK t=59375
+REFIT DONE 2026-09-15T16:28:08+08:00

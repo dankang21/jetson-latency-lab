@@ -1,0 +1,22 @@
+session cond=A5 host=jetson-orin commit=abf3e32 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=5 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/vit/est_emc2133_gpu306.json,results/nano_grid/vit/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T02:34:51+00:00
+  t1: Mg=10460us f_pt=612 f_b=714 m_b=0.0000 m_pt=0.0000 tgate=52125 tend=53781 2026-09-15T02:37:12+00:00
+  t2: Mg=297us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=53562 tend=53625 2026-09-15T02:39:05+00:00
+  t3: Mg=3947us f_pt=408 f_b=510 m_b=0.2510 m_pt=0.7500 tgate=53531 tend=54187 2026-09-15T02:41:27+00:00
+  t4: Mg=2305us f_pt=408 f_b=408 m_b=0.7130 m_pt=- tgate=54093 tend=53656 2026-09-15T02:42:56+00:00
+  t5: Mg=15891us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=53656 tend=54187 2026-09-15T02:44:23+00:00
+  t6: Mg=11225us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=54375 tend=54343 2026-09-15T02:45:50+00:00
+  t7: Mg=11656us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=54312 tend=54125 2026-09-15T02:47:18+00:00
+  t8: Mg=5534us f_pt=510 f_b=510 m_b=0.2500 m_pt=- tgate=54468 tend=53968 2026-09-15T02:48:46+00:00
+  t9: Mg=13297us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=53687 tend=54375 2026-09-15T02:50:13+00:00
+  t10: Mg=12083us f_pt=714 f_b=714 m_b=0.1310 m_pt=- tgate=54281 tend=54093 2026-09-15T02:51:41+00:00
+ADMIT_LOOP DONE cond=A5 2026-09-15T02:51:41+00:00
+refsweep cond=A5 host=jetson-orin commit=bad9d31 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=5 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 cells=306 408 510 612 714 816 918 1020 ina=false dry=false start=2026-09-15T03:34:12+00:00
+  ref g306: m=1.0000 tgate=53937 t=54750 2026-09-15T03:35:52+00:00
+  ref g408: m=0.5000 tgate=53937 t=55656 2026-09-15T03:36:46+00:00
+  ref g510: m=0.5000 tgate=53937 t=56281 2026-09-15T03:37:39+00:00
+  ref g612: m=0.2500 tgate=53937 t=56593 2026-09-15T03:38:32+00:00
+  ref g714: m=0.0000 tgate=53937 t=56718 2026-09-15T03:39:25+00:00
+  ref g816: m=0.0000 tgate=53937 t=57187 2026-09-15T03:40:18+00:00
+  ref g918: m=0.0000 tgate=53937 t=57250 2026-09-15T03:41:10+00:00
+  ref g1020: m=0.0000 tgate=53937 t=57187 2026-09-15T03:42:03+00:00
+REFSWEEP DONE cond=A5 f_oracle=714 tau=0.02 2026-09-15T03:42:06+00:00

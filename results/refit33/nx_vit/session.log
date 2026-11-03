@@ -1,0 +1,14 @@
+refit board=nx host=Pandora commit=8acfb29 hz=20 model=vit start=2026-09-15T12:30:42+08:00
+  emc2133_g306_r1: OK t=56437
+  emc2133_g1173_r1: OK t=57500
+  emc2133_g306_r2: OK t=56562
+  emc2133_g1173_r2: OK t=57687
+  emc2133_g306_r3: OK t=56281
+  emc2133_g1173_r3: OK t=57468
+  emc3199_g306_r1: OK t=57875
+  emc3199_g1173_r1: OK t=59125
+  emc3199_g306_r2: OK t=57781
+  emc3199_g1173_r2: OK t=59156
+  emc3199_g306_r3: OK t=58031
+  emc3199_g1173_r3: OK t=58843
+REFIT DONE 2026-09-15T13:45:26+08:00

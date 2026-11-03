@@ -54,3 +54,18 @@ results/e4_replication/
 results/partb_ext/
 results/soak_qwen/soak.power.csv
 campaign/make_tab_*.py
+
+# Sept-Oct 2026 campaigns: per-trial E3 probe traces (~6.5 KB each; e3_stats.py input) and run
+# logs (session/trial/co-runner/chain/reference) are analysis inputs -> kept despite the rules above
+!results/e3_nano/**/t*.probe.csv
+!results/e3_nx/**/t*.probe.csv
+!results/e3_nx_r33/**/t*.probe.csv
+!results/e3_nano/**/*.log
+!results/e3_nx/**/*.log
+!results/e3_nx_r33/**/*.log
+!results/e5b_live/**/*.log
+!results/govrep_rev/**/*.log
+!results/horizon_ext/**/*.log
+!results/launch_ext/**/*.log
+!results/nx_validation_r33/*.log
+!results/refit33/**/*.log

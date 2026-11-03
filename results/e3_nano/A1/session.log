@@ -1,0 +1,24 @@
+session cond=A1 host=jetson-orin commit=fa5ca18 board=nano primary=mobilenet pri_hz=33 co=yolov8s co_hz=5 D_ms=13.0 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/mobilenet/est_emc2133_gpu306.json,results/nano_grid/mobilenet/est_emc2133_gpu1020.json trials=1..2 ina=false dry=false start=2026-09-15T01:02:22+00:00
+  t1: Mg=5478us f_pt=816 f_b=918 m_b=0.0010 m_pt=0.0020 tgate=51687 tend=53343 2026-09-15T01:03:57+00:00
+  t2: Mg=6172us f_pt=918 f_b=918 m_b=0.0010 m_pt=- tgate=52937 tend=54937 2026-09-15T01:05:00+00:00
+ADMIT_LOOP DONE cond=A1 2026-09-15T01:05:00+00:00
+session cond=A1 host=jetson-orin commit=fa5ca18 board=nano primary=mobilenet pri_hz=33 co=yolov8s co_hz=5 D_ms=13.0 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/mobilenet/est_emc2133_gpu306.json,results/nano_grid/mobilenet/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T01:47:32+00:00
+  t3: Mg=5113us f_pt=816 f_b=816 m_b=0.0010 m_pt=- tgate=50812 tend=52312 2026-09-15T01:48:35+00:00
+  t4: Mg=3662us f_pt=714 f_b=714 m_b=0.0310 m_pt=- tgate=52187 tend=52468 2026-09-15T01:49:37+00:00
+  t5: Mg=5431us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=52437 tend=52437 2026-09-15T01:50:40+00:00
+  t6: Mg=4703us f_pt=714 f_b=816 m_b=0.0010 m_pt=0.0200 tgate=52937 tend=53031 2026-09-15T01:52:14+00:00
+  t7: Mg=6601us f_pt=918 f_b=1020 m_b=0.0000 m_pt=0.0000 tgate=52843 tend=53031 2026-09-15T01:53:49+00:00
+  t8: Mg=4401us f_pt=714 f_b=816 m_b=0.0000 m_pt=0.0000 tgate=53312 tend=52968 2026-09-15T01:55:24+00:00
+  t9: Mg=4403us f_pt=714 f_b=816 m_b=0.0000 m_pt=0.0310 tgate=52875 tend=52781 2026-09-15T01:56:58+00:00
+  t10: Mg=5456us f_pt=816 f_b=918 m_b=0.0000 m_pt=0.0000 tgate=52750 tend=52937 2026-09-15T01:58:33+00:00
+ADMIT_LOOP DONE cond=A1 2026-09-15T01:58:33+00:00
+refsweep cond=A1 host=jetson-orin commit=abf3e32 board=nano primary=mobilenet pri_hz=33 co=yolov8s co_hz=5 D_ms=13.0 fprobe=1020 grid=306,408,510,612,714,816,918,1020 cells=306 408 510 612 714 816 918 1020 ina=false dry=false start=2026-09-15T03:12:12+00:00
+  ref g306: m=0.8260 tgate=54750 t=54875 2026-09-15T03:13:06+00:00
+  ref g408: m=0.3920 tgate=54750 t=54625 2026-09-15T03:13:39+00:00
+  ref g510: m=0.2370 tgate=54750 t=54625 2026-09-15T03:14:12+00:00
+  ref g612: m=0.0960 tgate=54750 t=54968 2026-09-15T03:14:44+00:00
+  ref g714: m=0.0010 tgate=54750 t=55000 2026-09-15T03:15:17+00:00
+  ref g816: m=0.0010 tgate=54750 t=54625 2026-09-15T03:15:49+00:00
+  ref g918: m=0.0000 tgate=54750 t=55156 2026-09-15T03:16:21+00:00
+  ref g1020: m=0.0000 tgate=54750 t=54937 2026-09-15T03:16:54+00:00
+REFSWEEP DONE cond=A1 f_oracle=714 tau=0.02 2026-09-15T03:16:57+00:00

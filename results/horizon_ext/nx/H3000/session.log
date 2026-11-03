@@ -1,0 +1,7 @@
+session H=3000 host=Pandora commit=8acfb29 board=nx H=3000 model=qwen2.5-1.5b-instruct-q4_k_m.gguf warmup=40 vcpu=7 prio=80 co=vit co_model=vit_small_patch16_224.onnx co_hz=10 co_iters=100000 co_warmup=30 ccpu=5 gpu=1173 emc=2133000000 launches=t1..t5 dry=false start=2026-09-16T08:30:28+08:00
+  t1: H=3000 gpu=1173 miss D28=32.87% D44=0.10% n=3000 tgate=55187 tend=64375 2026-09-16T08:33:49+08:00
+  t2: H=3000 gpu=1173 miss D28=33.07% D44=0.13% n=3000 tgate=55000 tend=64093 2026-09-16T08:39:50+08:00
+  t3: H=3000 gpu=1173 miss D28=33.17% D44=0.03% n=3000 tgate=55000 tend=64093 2026-09-16T08:46:10+08:00
+  t4: H=3000 gpu=1173 miss D28=32.90% D44=0.17% n=3000 tgate=55156 tend=64312 2026-09-16T08:52:11+08:00
+  t5: H=3000 gpu=1173 miss D28=32.77% D44=0.20% n=3000 tgate=55187 tend=64437 2026-09-16T08:58:12+08:00
+HORIZON_EXT DONE H=3000 board=nx launches=t1..t5 2026-09-16T08:58:12+08:00

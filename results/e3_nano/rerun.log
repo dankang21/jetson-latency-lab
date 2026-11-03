@@ -1,0 +1,48 @@
+requested=2133000000 actual=2133000000
+session cond=A5r host=jetson-orin commit=bad9d31 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=5 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/vit/est_emc2133_gpu306.json,results/nano_grid/vit/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T03:54:16+00:00
+  co-runner ready after 2s
+  t1: Mg=7822us f_pt=612 f_b=612 m_b=0.2500 m_pt=- tgate=53125 tend=54937 2026-09-15T03:55:31+00:00
+  co-runner ready after 2s
+  t2: Mg=5526us f_pt=510 f_b=510 m_b=0.2500 m_pt=- tgate=55218 tend=55093 2026-09-15T03:56:46+00:00
+  co-runner ready after 2s
+  t3: Mg=15513us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=54125 tend=55468 2026-09-15T03:58:20+00:00
+  co-runner ready after 2s
+  t4: Mg=12636us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=54593 tend=55593 2026-09-15T03:59:55+00:00
+  co-runner ready after 2s
+  t5: Mg=13249us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=54218 tend=55500 2026-09-15T04:01:29+00:00
+  co-runner ready after 2s
+  t6: Mg=13236us f_pt=714 f_b=714 m_b=0.0060 m_pt=- tgate=54500 tend=56031 2026-09-15T04:03:04+00:00
+  co-runner ready after 2s
+  t7: Mg=15105us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=54468 tend=55750 2026-09-15T04:04:38+00:00
+  co-runner ready after 2s
+  t8: Mg=351us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=54562 tend=55093 2026-09-15T04:06:40+00:00
+  co-runner ready after 2s
+  t9: Mg=13416us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=53718 tend=55593 2026-09-15T04:08:14+00:00
+  co-runner ready after 2s
+  t10: Mg=14979us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=54187 tend=55375 2026-09-15T04:09:48+00:00
+ADMIT_LOOP DONE cond=A5r 2026-09-15T04:09:48+00:00
+requested=2133000000 actual=2133000000
+session cond=A6r host=jetson-orin commit=aa1ec15 board=nano primary=vit pri_hz=20 co=yolov8s co_hz=10 D_ms=37.5 fprobe=1020 grid=306,408,510,612,714,816,918,1020 h_us=400 R=1.035 cells=results/nano_grid/vit/est_emc2133_gpu306.json,results/nano_grid/vit/est_emc2133_gpu1020.json trials=1..10 ina=false dry=false start=2026-09-15T04:09:50+00:00
+  skip t1
+  co-runner ready after 2s
+  t2: Mg=5457us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=53750 tend=56468 2026-09-15T04:11:26+00:00
+  co-runner ready after 2s
+  t3: Mg=7022us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=55312 tend=56906 2026-09-15T04:13:02+00:00
+  co-runner ready after 2s
+  t4: Mg=8020us f_pt=612 f_b=612 m_b=0.0010 m_pt=- tgate=54250 tend=56250 2026-09-15T04:14:58+00:00
+  co-runner ready after 2s
+  t5: Mg=6767us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=53781 tend=56656 2026-09-15T04:16:54+00:00
+  co-runner ready after 2s
+  t6: Mg=6796us f_pt=510 f_b=510 m_b=1.0000 m_pt=- tgate=55218 tend=56781 2026-09-15T04:18:30+00:00
+  co-runner ready after 2s
+  t7: Mg=7792us f_pt=612 f_b=612 m_b=0.5000 m_pt=- tgate=54406 tend=56562 2026-09-15T04:20:26+00:00
+  co-runner ready after 2s
+  t8: Mg=2757us f_pt=408 f_b=408 m_b=1.0000 m_pt=- tgate=53937 tend=55781 2026-09-15T04:22:31+00:00
+  co-runner ready after 2s
+  t9: Mg=6633us f_pt=510 f_b=510 m_b=0.6240 m_pt=- tgate=54375 tend=56468 2026-09-15T04:24:07+00:00
+  co-runner ready after 2s
+  t10: Mg=148us f_pt=306 f_b=306 m_b=1.0000 m_pt=- tgate=54093 tend=55031 2026-09-15T04:26:35+00:00
+ADMIT_LOOP DONE cond=A6r 2026-09-15T04:26:35+00:00
+./campaign/nano_e3_rerun.sh: line 5: ./campaign/admit_refsweep.sh: Permission denied
+./campaign/nano_e3_rerun.sh: line 6: ./campaign/admit_refsweep.sh: Permission denied
+NANO_RERUN DONE 2026-09-15T04:26:35+00:00

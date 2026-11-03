@@ -1,0 +1,55 @@
+session cond=N9 host=Pandora commit=8acfb29 board=nx primary=vit pri_hz=20 co=yolov8s co_hz=7 D_ms=32.5 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 h_us=400 R=1.035 cells=results/nx_validation/nx_est_emc2133_gpu306_vit.json,results/nx_validation/nx_est_emc2133_gpu1173_vit.json trials=1..10 ina=false dry=false start=2026-09-16T15:09:40+08:00
+  co-runner ready after 2s
+  t1: PICK FAIL 2026-09-16T15:10:01+08:00
+  co-runner ready after 2s
+  t2: PICK FAIL 2026-09-16T15:10:22+08:00
+  co-runner ready after 2s
+  t3: PICK FAIL 2026-09-16T15:10:44+08:00
+  co-runner ready after 2s
+  t4: PICK FAIL 2026-09-16T15:11:25+08:00
+  co-runner ready after 2s
+  t5: PICK FAIL 2026-09-16T15:12:06+08:00
+  co-runner ready after 2s
+  t6: PICK FAIL 2026-09-16T15:13:08+08:00
+  co-runner ready after 2s
+  t7: PICK FAIL 2026-09-16T15:14:09+08:00
+  co-runner ready after 2s
+  t8: PICK FAIL 2026-09-16T15:15:10+08:00
+  co-runner ready after 2s
+  t9: PICK FAIL 2026-09-16T15:16:32+08:00
+  co-runner ready after 2s
+  t10: PICK FAIL 2026-09-16T15:17:33+08:00
+ADMIT_LOOP DONE cond=N9 2026-09-16T15:17:33+08:00
+refsweep cond=N9 host=Pandora commit=8acfb29 board=nx primary=vit pri_hz=20 co=yolov8s co_hz=7 D_ms=32.5 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 cells=510 612 714 816 918 1020 1122 1173 ina=false dry=false start=2026-09-16T15:17:34+08:00
+  co-runner ready after 2s
+  ref g510: m=FAIL tgate=54968 t=57718 2026-09-16T15:18:55+08:00
+  ref g612: m=FAIL tgate=54968 t=58687 2026-09-16T15:19:48+08:00
+  ref g714: m=FAIL tgate=54968 t=59406 2026-09-16T15:20:41+08:00
+  ref g816: m=FAIL tgate=54968 t=59875 2026-09-16T15:21:33+08:00
+  ref g918: m=FAIL tgate=54968 t=59968 2026-09-16T15:22:26+08:00
+  ref g1020: m=FAIL tgate=54968 t=60437 2026-09-16T15:23:18+08:00
+  ref g1122: m=FAIL tgate=54968 t=61312 2026-09-16T15:24:10+08:00
+  ref g1173: m=FAIL tgate=54968 t=61093 2026-09-16T15:25:02+08:00
+REFSWEEP DONE cond=N9 f_oracle=INFEASIBLE tau=0.02 2026-09-16T15:25:05+08:00
+session cond=N9 host=Pandora commit=8acfb29 board=nx primary=vit pri_hz=20 co=yolov8s co_hz=7 D_ms=32.5 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 h_us=400 R=1.035 cells=results/nx_validation/nx_est_emc2133_gpu306_vit.json,results/nx_validation/nx_est_emc2133_gpu1173_vit.json trials=1..10 ina=false dry=false start=2026-10-14T03:21:04+08:00
+  co-runner ready after 2s
+  t1: Mg=13209us f_pt=918 f_b=1020 m_b=0.0000 m_pt=0.0030 tgate=54875 tend=59375 2026-10-14T03:24:30+08:00
+  co-runner ready after 2s
+  t2: Mg=14546us f_pt=1020 f_b=1020 m_b=0.0000 m_pt=- tgate=54875 tend=58375 2026-10-14T03:29:04+08:00
+  co-runner ready after 2s
+  t3: Mg=14356us f_pt=1020 f_b=1020 m_b=0.0000 m_pt=- tgate=55281 tend=58437 2026-10-14T03:32:59+08:00
+  co-runner ready after 2s
+  t4: Mg=15923us f_pt=1122 f_b=1122 m_b=0.0000 m_pt=- tgate=55093 tend=58687 2026-10-14T03:37:13+08:00
+  co-runner ready after 2s
+  t5: Mg=14525us f_pt=1020 f_b=1020 m_b=0.0000 m_pt=- tgate=54937 tend=58500 2026-10-14T03:42:07+08:00
+  co-runner ready after 2s
+  t6: Mg=15468us f_pt=1020 f_b=1122 m_b=0.0000 m_pt=0.0000 tgate=54968 tend=59406 2026-10-14T03:47:13+08:00
+  co-runner ready after 2s
+  t7: Mg=15434us f_pt=1020 f_b=1122 m_b=0.0000 m_pt=0.0000 tgate=55312 tend=59500 2026-10-14T03:52:20+08:00
+  co-runner ready after 2s
+  t8: Mg=14604us f_pt=1020 f_b=1020 m_b=0.0000 m_pt=- tgate=54937 tend=58593 2026-10-14T03:57:34+08:00
+  co-runner ready after 2s
+  t9: Mg=15426us f_pt=1020 f_b=1122 m_b=0.0000 m_pt=0.0000 tgate=55281 tend=59625 2026-10-14T04:02:20+08:00
+  co-runner ready after 2s
+  t10: Mg=15768us f_pt=1122 f_b=1122 m_b=0.0000 m_pt=- tgate=55062 tend=58687 2026-10-14T04:06:54+08:00
+ADMIT_LOOP DONE cond=N9 2026-10-14T04:06:54+08:00

@@ -1,0 +1,14 @@
+refit board=nano host=jetson-orin commit=fa5ca18 hz=20 model=vit start=2026-09-15T00:50:32+00:00
+  emc2133_g306_r1: OK t=51468
+  emc2133_g1020_r1: OK t=53031
+  emc2133_g306_r2: OK t=52468
+  emc2133_g1020_r2: OK t=53625
+  emc2133_g306_r3: OK t=52625
+  emc2133_g1020_r3: OK t=53156
+  emc3199_g306_r1: OK t=53875
+  emc3199_g1020_r1: OK t=54718
+  emc3199_g306_r2: OK t=54500
+  emc3199_g1020_r2: OK t=55187
+  emc3199_g306_r3: OK t=54281
+  emc3199_g1020_r3: OK t=54812
+REFIT DONE 2026-09-15T01:01:37+00:00

@@ -1,0 +1,95 @@
+session cond=N7 host=Pandora commit=8acfb29 board=nx primary=vit pri_hz=20 co=resnet50 co_hz=5 D_ms=32.5 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 h_us=400 R=1.035 cells=results/nx_validation/nx_est_emc2133_gpu306_vit.json,results/nx_validation/nx_est_emc2133_gpu1173_vit.json trials=1..20 ina=false dry=false start=2026-09-16T11:24:54+08:00
+  co-runner ready after 2s
+  t1: PICK FAIL 2026-09-16T11:25:55+08:00
+  co-runner ready after 2s
+  t2: PICK FAIL 2026-09-16T11:26:56+08:00
+  co-runner ready after 2s
+  t3: PICK FAIL 2026-09-16T11:27:57+08:00
+  co-runner ready after 2s
+  t4: PICK FAIL 2026-09-16T11:29:19+08:00
+  co-runner ready after 2s
+  t5: PICK FAIL 2026-09-16T11:30:40+08:00
+  co-runner ready after 2s
+  t6: PICK FAIL 2026-09-16T11:31:41+08:00
+  co-runner ready after 2s
+  t7: PICK FAIL 2026-09-16T11:32:42+08:00
+  co-runner ready after 2s
+  t8: PICK FAIL 2026-09-16T11:33:43+08:00
+  co-runner ready after 2s
+  t9: PICK FAIL 2026-09-16T11:34:44+08:00
+  co-runner ready after 2s
+  t10: PICK FAIL 2026-09-16T11:35:46+08:00
+  co-runner ready after 2s
+  t11: PICK FAIL 2026-09-16T11:36:47+08:00
+  co-runner ready after 2s
+  t12: PICK FAIL 2026-09-16T11:37:48+08:00
+  co-runner ready after 2s
+  t13: PICK FAIL 2026-09-16T11:38:49+08:00
+  co-runner ready after 2s
+  t14: PICK FAIL 2026-09-16T11:39:50+08:00
+  co-runner ready after 2s
+  t15: PICK FAIL 2026-09-16T11:40:51+08:00
+  co-runner ready after 2s
+  t16: PICK FAIL 2026-09-16T11:41:53+08:00
+  co-runner ready after 2s
+  t17: PICK FAIL 2026-09-16T11:42:34+08:00
+  co-runner ready after 2s
+  t18: PICK FAIL 2026-09-16T11:43:35+08:00
+  co-runner ready after 2s
+  t19: PICK FAIL 2026-09-16T11:44:36+08:00
+  co-runner ready after 2s
+  t20: PICK FAIL 2026-09-16T11:45:37+08:00
+ADMIT_LOOP DONE cond=N7 2026-09-16T11:45:37+08:00
+refsweep cond=N7 host=Pandora commit=8acfb29 board=nx primary=vit pri_hz=20 co=resnet50 co_hz=5 D_ms=32.5 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 cells=510 612 714 816 918 1020 1122 1173 ina=false dry=false start=2026-09-16T12:52:46+08:00
+  co-runner ready after 2s
+  ref g510: m=FAIL tgate=54937 t=57656 2026-09-16T12:56:06+08:00
+  ref g612: m=FAIL tgate=54937 t=57812 2026-09-16T12:56:59+08:00
+  ref g714: m=FAIL tgate=54937 t=58937 2026-09-16T12:57:51+08:00
+  ref g816: m=FAIL tgate=54937 t=58468 2026-09-16T12:58:43+08:00
+  ref g918: m=FAIL tgate=54937 t=58687 2026-09-16T12:59:35+08:00
+  ref g1020: m=FAIL tgate=54937 t=58718 2026-09-16T13:00:27+08:00
+  ref g1122: m=FAIL tgate=54937 t=59468 2026-09-16T13:01:20+08:00
+  ref g1173: m=FAIL tgate=54937 t=59281 2026-09-16T13:02:12+08:00
+REFSWEEP DONE cond=N7 f_oracle=INFEASIBLE tau=0.02 2026-09-16T13:02:14+08:00
+session cond=N7 host=Pandora commit=8acfb29 board=nx primary=vit pri_hz=20 co=resnet50 co_hz=5 D_ms=32.5 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 h_us=400 R=1.035 cells=results/nx_validation/nx_est_emc2133_gpu306_vit.json,results/nx_validation/nx_est_emc2133_gpu1173_vit.json trials=1..20 ina=false dry=false start=2026-10-14T01:19:49+08:00
+  co-runner ready after 2s
+  t1: Mg=3316us f_pt=510 f_b=510 m_b=0.0000 m_pt=- tgate=54812 tend=57031 2026-10-14T01:23:04+08:00
+  co-runner ready after 2s
+  t2: Mg=422us f_pt=510 f_b=510 m_b=0.2500 m_pt=- tgate=54937 tend=56968 2026-10-14T01:25:58+08:00
+  co-runner ready after 2s
+  t3: Mg=8039us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=54843 tend=56937 2026-10-14T01:28:52+08:00
+  co-runner ready after 2s
+  t4: Mg=13047us f_pt=918 f_b=1020 m_b=0.0000 m_pt=0.0000 tgate=54875 tend=57718 2026-10-14T01:32:38+08:00
+  co-runner ready after 2s
+  t5: Mg=4426us f_pt=612 f_b=612 m_b=0.0000 m_pt=- tgate=55281 tend=56843 2026-10-14T01:36:12+08:00
+  co-runner ready after 2s
+  t6: Mg=11753us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=54875 tend=57125 2026-10-14T01:39:06+08:00
+  co-runner ready after 2s
+  t7: Mg=11119us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=55062 tend=57062 2026-10-14T01:42:19+08:00
+  co-runner ready after 2s
+  t8: Mg=504us f_pt=510 f_b=510 m_b=0.2320 m_pt=- tgate=54843 tend=56781 2026-10-14T01:45:54+08:00
+  co-runner ready after 2s
+  t9: Mg=10520us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=55187 tend=57187 2026-10-14T01:48:07+08:00
+  co-runner ready after 2s
+  t10: Mg=507us f_pt=510 f_b=510 m_b=0.2500 m_pt=- tgate=54843 tend=56937 2026-10-14T01:51:22+08:00
+  co-runner ready after 2s
+  t11: Mg=12997us f_pt=918 f_b=1020 m_b=0.0000 m_pt=0.0000 tgate=54687 tend=57812 2026-10-14T01:54:48+08:00
+  co-runner ready after 2s
+  t12: Mg=567us f_pt=510 f_b=510 m_b=0.2500 m_pt=- tgate=55000 tend=56875 2026-10-14T01:58:22+08:00
+  co-runner ready after 2s
+  t13: Mg=13022us f_pt=918 f_b=1020 m_b=0.0000 m_pt=0.0000 tgate=55093 tend=57718 2026-10-14T02:01:48+08:00
+  co-runner ready after 2s
+  t14: Mg=13079us f_pt=918 f_b=1020 m_b=0.0000 m_pt=0.0000 tgate=55000 tend=57906 2026-10-14T02:06:14+08:00
+  co-runner ready after 2s
+  t15: Mg=508us f_pt=510 f_b=510 m_b=0.2500 m_pt=- tgate=55000 tend=57281 2026-10-14T02:09:28+08:00
+  co-runner ready after 2s
+  t16: Mg=8273us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=54906 tend=57062 2026-10-14T02:12:02+08:00
+  co-runner ready after 2s
+  t17: Mg=460us f_pt=510 f_b=510 m_b=0.0000 m_pt=- tgate=55281 tend=56750 2026-10-14T02:14:57+08:00
+  co-runner ready after 2s
+  t18: Mg=486us f_pt=510 f_b=510 m_b=0.2500 m_pt=- tgate=55156 tend=56968 2026-10-14T02:17:31+08:00
+  co-runner ready after 2s
+  t19: Mg=9121us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=54812 tend=57000 2026-10-14T02:20:25+08:00
+  co-runner ready after 2s
+  t20: Mg=573us f_pt=510 f_b=510 m_b=0.0000 m_pt=- tgate=55125 tend=57125 2026-10-14T02:23:19+08:00
+ADMIT_LOOP DONE cond=N7 2026-10-14T02:23:19+08:00

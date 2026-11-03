@@ -1,0 +1,14 @@
+refit board=nx host=Pandora commit=8acfb29 hz=10 model=yolov8s start=2026-09-15T13:45:26+08:00
+  emc2133_g306_r1: OK t=57312
+  emc2133_g1173_r1: OK t=58593
+  emc2133_g306_r2: OK t=57156
+  emc2133_g1173_r2: OK t=58281
+  emc2133_g306_r3: OK t=56968
+  emc2133_g1173_r3: OK t=58187
+  emc3199_g306_r1: OK t=58875
+  emc3199_g1173_r1: OK t=59968
+  emc3199_g306_r2: OK t=58593
+  emc3199_g1173_r2: OK t=59968
+  emc3199_g306_r3: OK t=58687
+  emc3199_g1173_r3: OK t=60312
+REFIT DONE 2026-09-15T15:12:20+08:00

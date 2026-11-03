@@ -1,0 +1,14 @@
+refit board=nx host=Pandora commit=8acfb29 hz=33 model=mobilenet start=2026-09-15T08:12:56+08:00
+  emc2133_g306_r1: OK t=51593
+  emc2133_g1173_r1: OK t=52625
+  emc2133_g306_r2: OK t=53000
+  emc2133_g1173_r2: OK t=53500
+  emc2133_g306_r3: OK t=53562
+  emc2133_g1173_r3: OK t=53968
+  emc3199_g306_r1: OK t=54812
+  emc3199_g1173_r1: OK t=55375
+  emc3199_g306_r2: OK t=55156
+  emc3199_g1173_r2: OK t=55750
+  emc3199_g306_r3: OK t=55343
+  emc3199_g1173_r3: OK t=55843
+REFIT DONE 2026-09-15T08:20:27+08:00

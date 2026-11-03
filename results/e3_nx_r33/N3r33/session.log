@@ -1,0 +1,53 @@
+refsweep cond=N3r33 host=Pandora commit=8acfb29 board=nx primary=mobilenet pri_hz=33 co=resnet50 co_hz=5 D_ms=12.0 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 cells=510 612 714 816 918 1020 1122 1173 ina=false dry=false start=2026-10-23T13:38:35+08:00
+  co-runner ready after 2s
+  ref g510: m=0.1220 tgate=54875 t=56406 2026-10-23T13:39:55+08:00
+  ref g612: m=0.0850 tgate=54875 t=56718 2026-10-23T13:40:27+08:00
+  ref g714: m=0.0260 tgate=54875 t=56625 2026-10-23T13:40:59+08:00
+  ref g816: m=0.0000 tgate=54875 t=57375 2026-10-23T13:41:31+08:00
+  ref g918: m=0.0300 tgate=54875 t=57343 2026-10-23T13:42:04+08:00
+  ref g1020: m=0.0000 tgate=54875 t=57437 2026-10-23T13:42:36+08:00
+  ref g1122: m=0.0000 tgate=54875 t=57062 2026-10-23T13:43:08+08:00
+  ref g1173: m=0.0000 tgate=54875 t=57656 2026-10-23T13:43:40+08:00
+REFSWEEP DONE cond=N3r33 f_oracle=816 tau=0.02 2026-10-23T13:43:43+08:00
+session cond=N3r33 host=Pandora commit=8acfb29 board=nx primary=mobilenet pri_hz=33 co=resnet50 co_hz=5 D_ms=12.0 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 h_us=400 R=1.035 cells=results/refit33/nx/cells_mobilenet/nx_est33_emc2133_gpu306_mobilenet.json,results/refit33/nx/cells_mobilenet/nx_est33_emc2133_gpu1173_mobilenet.json trials=1..20 ina=false dry=false start=2026-10-23T13:43:44+08:00
+  co-runner ready after 2s
+  t1: Mg=3877us f_pt=816 f_b=816 m_b=0.0020 m_pt=- tgate=54656 tend=55625 2026-10-23T13:45:33+08:00
+  co-runner ready after 2s
+  t2: Mg=3276us f_pt=714 f_b=816 m_b=0.0570 m_pt=0.0100 tgate=54937 tend=55843 2026-10-23T13:47:14+08:00
+  co-runner ready after 2s
+  t3: Mg=4404us f_pt=918 f_b=918 m_b=0.0080 m_pt=- tgate=55156 tend=55656 2026-10-23T13:48:43+08:00
+  co-runner ready after 2s
+  t4: Mg=3625us f_pt=816 f_b=816 m_b=0.0340 m_pt=- tgate=54718 tend=55468 2026-10-23T13:50:32+08:00
+  co-runner ready after 2s
+  t5: Mg=3816us f_pt=816 f_b=816 m_b=0.0610 m_pt=- tgate=54812 tend=55343 2026-10-23T13:52:02+08:00
+  co-runner ready after 2s
+  t6: Mg=3866us f_pt=816 f_b=816 m_b=0.0420 m_pt=- tgate=55218 tend=55750 2026-10-23T13:53:11+08:00
+  co-runner ready after 2s
+  t7: Mg=3939us f_pt=816 f_b=816 m_b=0.0270 m_pt=- tgate=55187 tend=55687 2026-10-23T13:54:20+08:00
+  co-runner ready after 2s
+  t8: Mg=3357us f_pt=714 f_b=816 m_b=0.0000 m_pt=0.0330 tgate=54718 tend=55906 2026-10-23T13:56:41+08:00
+  co-runner ready after 2s
+  t9: Mg=3307us f_pt=714 f_b=816 m_b=0.0590 m_pt=0.0010 tgate=54812 tend=55843 2026-10-23T13:58:42+08:00
+  co-runner ready after 2s
+  t10: Mg=4386us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=54656 tend=55406 2026-10-23T14:00:31+08:00
+  co-runner ready after 2s
+  t11: Mg=4743us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=55000 tend=55687 2026-10-23T14:01:40+08:00
+  co-runner ready after 2s
+  t12: Mg=3833us f_pt=816 f_b=816 m_b=0.0000 m_pt=- tgate=55187 tend=55750 2026-10-23T14:03:09+08:00
+  co-runner ready after 2s
+  t13: Mg=4203us f_pt=816 f_b=918 m_b=0.0000 m_pt=0.0000 tgate=54968 tend=56000 2026-10-23T14:04:51+08:00
+  co-runner ready after 2s
+  t14: Mg=2629us f_pt=714 f_b=714 m_b=0.0300 m_pt=- tgate=55000 tend=55343 2026-10-23T14:06:20+08:00
+  co-runner ready after 2s
+  t15: Mg=4746us f_pt=918 f_b=918 m_b=0.0120 m_pt=- tgate=55125 tend=55718 2026-10-23T14:07:29+08:00
+  co-runner ready after 2s
+  t16: Mg=2980us f_pt=714 f_b=714 m_b=0.0000 m_pt=- tgate=55000 tend=55562 2026-10-23T14:08:58+08:00
+  co-runner ready after 2s
+  t17: Mg=4417us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=54687 tend=55750 2026-10-23T14:10:27+08:00
+  co-runner ready after 2s
+  t18: Mg=4274us f_pt=816 f_b=918 m_b=0.0000 m_pt=0.0000 tgate=55093 tend=55718 2026-10-23T14:12:28+08:00
+  co-runner ready after 2s
+  t19: Mg=3347us f_pt=714 f_b=816 m_b=0.0000 m_pt=0.0600 tgate=54781 tend=55812 2026-10-23T14:14:49+08:00
+  co-runner ready after 2s
+  t20: Mg=4105us f_pt=816 f_b=918 m_b=0.0000 m_pt=0.0000 tgate=54968 tend=56031 2026-10-23T14:16:30+08:00
+ADMIT_LOOP DONE cond=N3r33 2026-10-23T14:16:30+08:00

@@ -1,0 +1,18 @@
+session tag=mobilenet_vit10_g1020_D12 host=Pandora commit=8acfb29 board=nx tag=mobilenet_vit10_g1020_D12 primary=mobilenet pri_model=mobilenetv2-12.onnx pri_hz=33 iters=1000 warmup=60 vcpu=7 co=vit co_model=vit_small_patch16_224.onnx co_hz=10 co_iters=100000 co_warmup=30 ccpu=5 f=1020 D_ms=12 emc=2133000000 launches=t9..t24 committed=true ina=false dry=false start=2026-09-16T13:10:46+08:00
+  t9: miss=NA (json 0.0000) f=1020 D=12 tgate=55062 tend=56031 2026-09-16T13:14:20+08:00
+  t10: miss=NA (json 0.0000) f=1020 D=12 tgate=54843 tend=55750 2026-09-16T13:16:34+08:00
+  t11: miss=NA (json 0.0000) f=1020 D=12 tgate=54875 tend=55750 2026-09-16T13:18:28+08:00
+  t12: miss=NA (json 0.0000) f=1020 D=12 tgate=55000 tend=56031 2026-09-16T13:20:02+08:00
+  t13: miss=NA (json 0.0000) f=1020 D=12 tgate=54968 tend=56218 2026-09-16T13:21:36+08:00
+  t14: miss=NA (json 0.0000) f=1020 D=12 tgate=55031 tend=56093 2026-09-16T13:23:11+08:00
+  t15: miss=NA (json 0.0000) f=1020 D=12 tgate=54812 tend=56156 2026-09-16T13:24:45+08:00
+  t16: miss=NA (json 0.0000) f=1020 D=12 tgate=55000 tend=56468 2026-09-16T13:26:19+08:00
+  t17: miss=NA (json 0.0000) f=1020 D=12 tgate=54968 tend=55906 2026-09-16T13:27:53+08:00
+  t18: miss=NA (json 0.0000) f=1020 D=12 tgate=54875 tend=56406 2026-09-16T13:29:27+08:00
+  t19: miss=NA (json 0.0000) f=1020 D=12 tgate=54875 tend=56062 2026-09-16T13:31:01+08:00
+  t20: miss=NA (json 0.0000) f=1020 D=12 tgate=55031 tend=55843 2026-09-16T13:32:35+08:00
+  t21: miss=NA (json 0.0000) f=1020 D=12 tgate=54875 tend=56281 2026-09-16T13:34:09+08:00
+  t22: miss=NA (json 0.0000) f=1020 D=12 tgate=55187 tend=56093 2026-09-16T13:35:44+08:00
+  t23: miss=NA (json 0.0000) f=1020 D=12 tgate=55062 tend=56718 2026-09-16T13:37:18+08:00
+  t24: miss=NA (json 0.0000) f=1020 D=12 tgate=54750 tend=56781 2026-09-16T13:39:12+08:00
+LAUNCH_EXT DONE tag=mobilenet_vit10_g1020_D12 board=nx launches=t9..t24 2026-09-16T13:39:12+08:00

@@ -1,0 +1,113 @@
+session cond=N2 host=Pandora commit=8acfb29 board=nx primary=mobilenet pri_hz=33 co=yolov8s co_hz=10 D_ms=12.0 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 h_us=400 R=1.035 cells=results/nx_validation/nx_est_emc2133_gpu306_mobilenet.json,results/nx_validation/nx_est_emc2133_gpu1173_mobilenet.json trials=1..20 ina=false dry=false start=2026-09-16T09:28:25+08:00
+  co-runner ready after 2s
+  t1: PICK FAIL 2026-09-16T09:29:02+08:00
+  co-runner ready after 2s
+  t2: PICK FAIL 2026-09-16T09:30:18+08:00
+  co-runner ready after 2s
+  t3: PICK FAIL 2026-09-16T09:31:35+08:00
+  co-runner ready after 2s
+  t4: PICK FAIL 2026-09-16T09:32:52+08:00
+  co-runner ready after 2s
+  t5: PICK FAIL 2026-09-16T09:34:29+08:00
+  co-runner ready after 2s
+  t6: PICK FAIL 2026-09-16T09:35:46+08:00
+  co-runner ready after 2s
+  t7: PICK FAIL 2026-09-16T09:37:23+08:00
+  co-runner ready after 2s
+  t8: PICK FAIL 2026-09-16T09:38:19+08:00
+  co-runner ready after 2s
+  t9: PICK FAIL 2026-09-16T09:39:16+08:00
+  co-runner ready after 2s
+  t10: PICK FAIL 2026-09-16T09:40:33+08:00
+  co-runner ready after 2s
+  t11: PICK FAIL 2026-09-16T09:41:30+08:00
+  co-runner ready after 2s
+  t12: PICK FAIL 2026-09-16T09:42:47+08:00
+  co-runner ready after 2s
+  t13: PICK FAIL 2026-09-16T09:44:04+08:00
+  co-runner ready after 2s
+  t14: PICK FAIL 2026-09-16T09:45:21+08:00
+  co-runner ready after 2s
+  t15: PICK FAIL 2026-09-16T09:46:37+08:00
+  co-runner ready after 2s
+  t16: PICK FAIL 2026-09-16T09:48:14+08:00
+  co-runner ready after 2s
+  t17: PICK FAIL 2026-09-16T09:49:11+08:00
+  co-runner ready after 2s
+  t18: PICK FAIL 2026-09-16T09:50:28+08:00
+  co-runner ready after 2s
+  t19: PICK FAIL 2026-09-16T09:52:05+08:00
+  co-runner ready after 2s
+  t20: PICK FAIL 2026-09-16T09:53:42+08:00
+ADMIT_LOOP DONE cond=N2 2026-09-16T09:53:42+08:00
+refsweep cond=N2 host=Pandora commit=8acfb29 board=nx primary=mobilenet pri_hz=33 co=yolov8s co_hz=10 D_ms=12.0 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 cells=510 612 714 816 918 1020 1122 1173 ina=false dry=false start=2026-09-16T12:18:39+08:00
+  co-runner ready after 2s
+  ref g510: m=FAIL tgate=54781 t=57218 2026-09-16T12:20:39+08:00
+  ref g612: m=FAIL tgate=54781 t=58031 2026-09-16T12:21:12+08:00
+  ref g714: m=FAIL tgate=54781 t=58750 2026-09-16T12:21:44+08:00
+  ref g816: m=FAIL tgate=54781 t=59093 2026-09-16T12:22:16+08:00
+  ref g918: m=FAIL tgate=54781 t=59531 2026-09-16T12:22:48+08:00
+  ref g1020: m=FAIL tgate=54781 t=59625 2026-09-16T12:23:20+08:00
+  ref g1122: m=FAIL tgate=54781 t=60031 2026-09-16T12:23:52+08:00
+  ref g1173: m=FAIL tgate=54781 t=60437 2026-09-16T12:24:24+08:00
+REFSWEEP DONE cond=N2 f_oracle=INFEASIBLE tau=0.02 2026-09-16T12:24:26+08:00
+session cond=N2 host=Pandora commit=8acfb29 board=nx primary=mobilenet pri_hz=33 co=yolov8s co_hz=10 D_ms=12.0 fprobe=1173 grid=510,612,714,816,918,1020,1122,1173 h_us=400 R=1.035 cells=results/nx_validation/nx_est_emc2133_gpu306_mobilenet.json,results/nx_validation/nx_est_emc2133_gpu1173_mobilenet.json trials=1..20 ina=false dry=false start=2026-10-13T12:57:26+08:00
+  co-runner ready after 2s
+  t1: Mg=4533us f_pt=918 f_b=918 m_b=0.0140 m_pt=- tgate=55000 tend=57750 2026-10-13T12:59:55+08:00
+  WARN thermal gate timed out after 1200s (t=55156); proceeding
+  co-runner ready after 2s
+  t2: Mg=4025us f_pt=816 f_b=918 m_b=0.0290 m_pt=0.0590 tgate=55281 tend=58718 2026-10-13T13:21:17+08:00
+  co-runner ready after 2s
+  t3: Mg=4471us f_pt=918 f_b=918 m_b=0.0350 m_pt=- tgate=55187 tend=58125 2026-10-13T13:33:27+08:00
+  WARN thermal gate timed out after 1200s (t=55093); proceeding
+  co-runner ready after 2s
+  t4: Mg=4311us f_pt=918 f_b=918 m_b=0.0090 m_pt=- tgate=55125 tend=57781 2026-10-13T13:54:16+08:00
+  WARN thermal gate timed out after 1200s (t=55406); proceeding
+  co-runner ready after 2s
+  t5: Mg=4309us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=55281 tend=58093 2026-10-13T14:15:06+08:00
+  WARN thermal gate timed out after 1200s (t=55281); proceeding
+  co-runner ready after 2s
+  t6: Mg=4085us f_pt=816 f_b=918 m_b=0.0080 m_pt=0.0090 tgate=55562 tend=58812 2026-10-13T14:36:28+08:00
+  WARN thermal gate timed out after 1200s (t=55375); proceeding
+  co-runner ready after 2s
+  t7: Mg=3760us f_pt=816 f_b=918 m_b=0.0250 m_pt=0.0330 tgate=55312 tend=59031 2026-10-13T14:57:50+08:00
+  WARN thermal gate timed out after 1200s (t=55906); proceeding
+  co-runner ready after 2s
+  t8: Mg=4483us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=55843 tend=58625 2026-10-13T15:18:40+08:00
+  WARN thermal gate timed out after 1200s (t=55968); proceeding
+  co-runner ready after 2s
+  t9: Mg=4554us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=55968 tend=58562 2026-10-13T15:39:30+08:00
+  WARN thermal gate timed out after 1200s (t=56250); proceeding
+  co-runner ready after 2s
+  t10: Mg=4422us f_pt=918 f_b=918 m_b=0.0300 m_pt=- tgate=56031 tend=58687 2026-10-13T16:00:19+08:00
+  WARN thermal gate timed out after 1200s (t=56343); proceeding
+  co-runner ready after 2s
+  t11: Mg=4400us f_pt=918 f_b=918 m_b=0.0020 m_pt=- tgate=56250 tend=58968 2026-10-13T16:21:09+08:00
+  WARN thermal gate timed out after 1200s (t=56093); proceeding
+  co-runner ready after 2s
+  t12: Mg=4075us f_pt=816 f_b=918 m_b=0.0180 m_pt=0.0340 tgate=56343 tend=59906 2026-10-13T16:42:31+08:00
+  WARN thermal gate timed out after 1200s (t=56093); proceeding
+  co-runner ready after 2s
+  t13: Mg=4354us f_pt=918 f_b=918 m_b=0.0040 m_pt=- tgate=55781 tend=58593 2026-10-13T17:03:21+08:00
+  WARN thermal gate timed out after 1200s (t=56062); proceeding
+  co-runner ready after 2s
+  t14: Mg=4276us f_pt=918 f_b=918 m_b=0.0060 m_pt=- tgate=56250 tend=58968 2026-10-13T17:24:10+08:00
+  WARN thermal gate timed out after 1200s (t=56312); proceeding
+  co-runner ready after 2s
+  t15: Mg=3861us f_pt=816 f_b=918 m_b=0.0010 m_pt=0.0170 tgate=56218 tend=59906 2026-10-13T17:45:32+08:00
+  WARN thermal gate timed out after 1200s (t=55968); proceeding
+  co-runner ready after 2s
+  t16: Mg=4453us f_pt=918 f_b=918 m_b=0.0070 m_pt=- tgate=56500 tend=58875 2026-10-13T18:06:22+08:00
+  WARN thermal gate timed out after 1200s (t=56406); proceeding
+  co-runner ready after 2s
+  t17: Mg=4249us f_pt=918 f_b=918 m_b=0.0000 m_pt=- tgate=56250 tend=58968 2026-10-13T18:27:12+08:00
+  WARN thermal gate timed out after 1200s (t=56281); proceeding
+  co-runner ready after 2s
+  t18: Mg=4348us f_pt=918 f_b=918 m_b=0.0160 m_pt=- tgate=56250 tend=59000 2026-10-13T18:48:02+08:00
+  WARN thermal gate timed out after 1200s (t=56250); proceeding
+  co-runner ready after 2s
+  t19: Mg=3974us f_pt=816 f_b=918 m_b=0.0310 m_pt=0.0220 tgate=56625 tend=60125 2026-10-13T19:09:24+08:00
+  WARN thermal gate timed out after 1200s (t=56093); proceeding
+  co-runner ready after 2s
+  t20: Mg=3808us f_pt=816 f_b=918 m_b=0.0290 m_pt=0.0490 tgate=56062 tend=59500 2026-10-13T19:30:46+08:00
+ADMIT_LOOP DONE cond=N2 2026-10-13T19:30:46+08:00
