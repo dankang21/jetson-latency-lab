@@ -1,0 +1,26 @@
+{
+ "meta": {
+  "derived": "median over r1-r3 of per-run response_us.p50",
+  "source": [
+   "results/refit33/nano/emc2133_g1020_r1.json",
+   "results/refit33/nano/emc2133_g1020_r2.json",
+   "results/refit33/nano/emc2133_g1020_r3.json"
+  ],
+  "per_run_p50": [
+   4763.511,
+   4739.999,
+   4752.8475
+  ],
+  "source_timestamps": [
+   "2026-10-28T00:42:34.292294+00:00",
+   "2026-10-28T00:43:39.595310+00:00",
+   "2026-10-28T00:44:45.056633+00:00"
+  ],
+  "hz": 33.0,
+  "created": "2026-10-28",
+  "purpose": "audit-2 (2026-10-28): post-hoc rate-matched re-pick of the Nano E3 MobileNetV2 conditions A1-A4 (no new launches); mirrors results/refit33/nx/cells_mobilenet"
+ },
+ "response_us": {
+  "p50": 4752.8475
+ }
+}

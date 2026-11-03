@@ -1,0 +1,14 @@
+refit board=nano host=jetson-orin commit=2c17090 hz=33 model=mobilenet start=2026-10-28T00:41:28+00:00
+  emc2133_g306_r1: OK t=50468
+  emc2133_g1020_r1: OK t=51437
+  emc2133_g306_r2: OK t=51281
+  emc2133_g1020_r2: OK t=52187
+  emc2133_g306_r3: OK t=51718
+  emc2133_g1020_r3: OK t=52656
+  emc3199_g306_r1: OK t=52812
+  emc3199_g1020_r1: OK t=53625
+  emc3199_g306_r2: OK t=53343
+  emc3199_g1020_r2: OK t=54250
+  emc3199_g306_r3: OK t=53656
+  emc3199_g1020_r3: OK t=54250
+REFIT DONE 2026-10-28T00:48:01+00:00
