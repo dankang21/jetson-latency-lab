@@ -80,10 +80,22 @@ def replay(traces, D_us, alpha, window, n_cycles, k, b, tau, index_mode):
     init = cur
     esc = miss_esc = first_to = last = None
     misses = switches = 0
+    post_inf, exc, in_exc = 0, [], False     # after the first switch: infeasible cycles; excursions above it
     for i in range(n_cycles):
         tr = traces[cur]
         resp = tr[(i if index_mode == "global" else i - arrived) % len(tr)]
         misses += resp > D_us
+        if esc is not None:                  # a cycle after the first switch
+            post_inf += not feasible[cur]
+            if cur > first_to:               # an excursion above the clock the first switch landed on
+                if not in_exc:
+                    exc.append([0, 0, 0])
+                    in_exc = True
+                exc[-1][0] += 1
+                exc[-1][1] = max(exc[-1][1], GRID.index(cur) - GRID.index(first_to))
+                exc[-1][2] += resp > D_us
+            else:
+                in_exc = False
         buf.append(resp - T(cur))
         if len(buf) < window:
             continue
@@ -98,7 +110,8 @@ def replay(traces, D_us, alpha, window, n_cycles, k, b, tau, index_mode):
             cur, arrived = new, i + 1
     return dict(init=init, init_feasible=feasible[init], escape=esc, misses_before=miss_esc, first_to=first_to,
                 lands_feasible=None if first_to is None else feasible[first_to],
-                switches=switches, last_switch=last, final=cur)
+                switches=switches, last_switch=last, final=cur, post_switch_infeasible_cycles=post_inf,
+                excursions=[dict(cycles=c, bins_up=u, misses=m) for c, u, m in exc], excursion_open_at_end=in_exc)
 
 
 def live(D, k, b):
@@ -207,6 +220,17 @@ def main():
         print(f"  infeasible initial pick left in one switch (first switch lands on a feasible clock): "
               f"{sum(1 for x in os_ if x[3])}/{len(os_)} (D x run x variant)"
               + (f"; no escape within {a.n_cycles} cycles: {len(no_escape[src])}" if no_escape[src] else ""))
+        xs = list(res[src].values())
+        ex = [e for x in xs for e in x["excursions"]]
+        closed = [e for x in xs for e in (x["excursions"][:-1] if x["excursion_open_at_end"] else x["excursions"])]
+        nfl = sum(len(res[src][(D, r, "flame")]["excursions"]) for D in D_MS for r in s["runs"])
+        sw46 = sorted({res[src][(4.6, r, kk)]["switches"] for r in s["runs"] for kk in allk})
+        print(f"  after the first switch: cycles on an infeasible clock {sum(x['post_switch_infeasible_cycles'] for x in xs)}; "
+              f"excursions above the landing clock {len(ex)} ({nfl} at FLAME's cadence)"
+              + (f", {min(e['bins_up'] for e in ex)}-{max(e['bins_up'] for e in ex)} bins up, "
+                 f"{fr(rng_of([e['cycles'] for e in closed]))} cycles (closed ones; {len(ex) - len(closed)} open at the end), "
+                 f"misses in them {sum(e['misses'] for e in ex)}" if ex else "")
+              + f"; switches per run at D=4.6: {'-'.join(map(str, sorted({sw46[0], sw46[-1]})))}")
         inf = [(D, r) for D in D_MS for r in s["runs"] if not res[src][(D, r, "a0.1")]["init_feasible"]]
         if len(inf) < len(D_MS) * len(s["runs"]):
             sub = lambda kk: rng_of([res[src][(D, r, kk)]["escape"] for D, r in inf])

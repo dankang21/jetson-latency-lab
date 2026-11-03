@@ -278,7 +278,7 @@ Other numbers in the main text:
 | §V co-tenancy characterization; the co-tenant decode distribution quoted in §VI | `tenancy/`; solo runs `govrep/`, `nx_validation/`; decode `boundary_stats/q15_g1173_r*`, `joint_hxt/q15co_g1173_r*` | `tenancy_stats.py --section victim` (MobileNetV2 under the 10 Hz co-runner; the EMC samples of `pin_check.tegra`), `--section decode` (solo and co-tenant medians over the same tokens, all 2,000 and the first 300; the collision plateau's share, location and 1 ms bins; Figs. 3 and 4b) |
 | §V Qwen2.5-3B drift | `boundary_stats/q3_*` | `qwen3b_drift.py` |
 | §VI, §VII decode drift under the co-tenant; §VI decode-probe autocorrelation | `joint_hxt/`, `boundary_stats/q15_*` | `tenancy_stats.py --section drift` (pooled and per-run), `--section probe` |
-| §VII EWMA level calibrator | `govrep/`, `govrep_rev/nx_mobilenet/`, `live_gov/` | `replay_ewma.py` |
+| §VII EWMA level calibrator; Supp. §S2 online calibrator | `govrep/`, `govrep_rev/nx_mobilenet/`, `live_gov/` | `replay_ewma.py` (escape and first switch per gain and cadence; after the first switch, cycles on an infeasible clock and the excursions above the landing clock; `--per-run` for every run) |
 | §VII band-width sensitivity | `joint_gov/probe_co_g1173.csv`, `fresh_loop/vprobe_t*`, `banded_loop/probe_t*` | `replay_bandwidth.py` |
 | §VIII-A rate-matched sensitivity | as Supp. S12 | `e3_repick.py` |
 | §VIII-A summed utilization u and the ≈ 2T̂(f) stretch | `e3_nano/` | `e3_util_offline.py` |
@@ -528,8 +528,8 @@ trace `nx_probe_gpu_1173_816.csv.gz`, gunzipped to
 `results/pilot_trans/gpu_1173000000_816000000.probe.csv`; without them it stops
 with a one-line message that names the missing files. The NX GPU trace is needed
 only for the script to run: the script prints that pair, but its data-quality
-gate excludes it from the verdict (`probe_rc=2`, the probe exit code in
-`results/pilot_trans/gpu_1173000000_816000000.meta.json`), and Supp. §S7, like
+gate excludes it from the verdict (it prints `probe_rc=2`: the probe's exit
+code, `probe_returncode` in `results/pilot_trans/gpu_1173000000_816000000.meta.json`), and Supp. §S7, like
 the shipped `results/pilot_trans/analysis_trans.txt`, reports only the six Nano
 pairs.
 `campaign/thermal_record.py` scans `e4_replication/`, `partb_ext/` and `e4_nx/`;
