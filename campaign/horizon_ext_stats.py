@@ -14,7 +14,7 @@ per H, markdown tables of the pre-stated endpoints:
     definition (windows [0,500) and [1500,2000) at H = 2000, divisor 1500 =
     the distance between the window starts = between the window centres
     250 -> 1750) generalised to windows [0,500) and [H-500,H), whose start and
-    centre distances are both H - 500; the late-horizon median the submitted
+    centre distances are both H - 500; the late-horizon median the frozen
     rule predicts from the launch's own head median,
         pred_rule = med_head * (1 + gamma_sub * H)
     (the rule's (1+gamma H) term as the admission rule evaluates it, which
@@ -28,19 +28,25 @@ per H, markdown tables of the pre-stated endpoints:
     of N and the Clopper-Pearson upper bound on P(launch miss > tau) (one-sided
     95 %, plus the upper end of the two-sided 95 % CI; launch_ext_stats.cp_upper,
     numpy only);
-  * the submitted composed rule replayed at each H (analyze_joint.hxt()):
+  * the frozen composed rule replayed at each H (analyze_joint.hxt()):
     D*(H) = t_solo * dil * (1 + gamma_sub H) * r + M with t_solo = median of
     tokens 0-299 of the solo runs, dil = probe median / t_solo and M = p98 - p50
     of results/joint_hxt/probe_co_g1173.csv, ACC/REJ at each D, and the quoted
     co-tenant horizon cap H*_co(D) = ((D - M) / (r t_solo dil) - 1) / gamma_sub.
-gamma_sub, the submitted gamma: the fresh_pick.py value, i.e. the first five
-results/boundary_stats/q15_g1173_r*.csv (r1..r5; solo 2,000-token decodes at
-1173, no co-runner), windows [0,500) vs [1500,2000), pooled medians, divisor
-1500. analyze_joint.hxt() pools r1..r8 for the same quantity (that variant
-produced the paper's H* ~ 2,140 and D* = 43.79 ms); --solo-n 8 reproduces it
-and the r1..r8 value is printed alongside either way.
+gamma_sub, the solo drift coefficient of the frozen rule: the fresh_pick.py
+value, i.e. the first five results/boundary_stats/q15_g1173_r*.csv (r1..r5;
+solo 2,000-token decodes at 1173, no co-runner), windows [0,500) vs
+[1500,2000), pooled medians, divisor 1500. analyze_joint.py pools r1..r8 for
+the same quantity (that variant gives the article's H* = 2,147 (~2,150) tokens
+and D* = 43.79 ms); --solo-n 8 reproduces it and the r1..r8 value is printed
+alongside either way.
+The 2,000-token cell: on the NX with the default --root, the nine 2,000-token
+decodes of results/joint_hxt/q15co_g1173_r<k>.csv (the joint-stress cell of
+analyze_joint.hxt(): same co-runner, GPU 1173 MHz, EMC 2133 MHz; main-text
+Table VI) are scored as H = 2,000 under the same definitions, rows r<k>;
+--no-h2000 leaves them out.
 Usage: horizon_ext_stats.py [--board nx|nano] [--root DIR] [--H 1000,3000]
-         [--D 28,44] [--tau 2] [--r 1.035] [--solo-n 5] [--json]
+         [--D 28,44] [--tau 2] [--r 1.035] [--solo-n 5] [--no-h2000] [--json]
 """
 import argparse, glob, json, os, re, sys, warnings
 import numpy as np
@@ -51,6 +57,8 @@ from launch_ext_stats import cp_upper   # exact binomial inversion, numpy only
 LAB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOLO_GLOB = os.path.join(LAB, "results", "boundary_stats", "q15_g1173_r*.csv")   # fresh_pick.py:25
 PROBE_CSV = os.path.join(LAB, "results", "joint_hxt", "probe_co_g1173.csv")      # analyze_joint.py:84
+JOINT_DIR = os.path.join(LAB, "results", "joint_hxt")                            # analyze_joint.hxt()
+JOINT_H, JOINT_PATTERN, JOINT_RX = 2000, "q15co_g1173_r*.csv", r"/q15co_g1173_r(\d+)\.csv$"
 WIN = 500          # head / tail window, tokens (protocol: "tokens 0-500 vs the last 500")
 T_SHORT = 300      # analyze_joint.py:58,97 short-cell level window
 
@@ -68,8 +76,8 @@ def rel(p):
     return r if not r.startswith("..") else os.path.abspath(p)
 
 
-def submitted(solo_n):
-    """gamma_sub, t_solo, dil, M from the committed solo runs and the submitted probe."""
+def frozen_rule(solo_n):
+    """gamma_sub, t_solo, dil, M of the frozen rule from the committed solo runs and the reference probe."""
     files = sorted(glob.glob(SOLO_GLOB))
     if len(files) < solo_n:
         sys.exit(f"need {solo_n} solo runs at {SOLO_GLOB}, found {len(files)}")
@@ -107,11 +115,13 @@ def launch_stats(v, H, Ds, gam_sub, r):
     return d
 
 
-def analyse_H(hdir, H, Ds, sub, tau, r):
+def analyse_H(hdir, H, Ds, sub, tau, r, pattern="t*.csv", rx=r"/t(\d+)\.csv$", label=None):
+    """Score every launch CSV of one horizon: hdir/t<k>.csv by default; pattern/rx select other run files
+    (k = the run index), label replaces the 't' of the row names."""
     launches, traces, incomplete = [], [], []
-    files = [p for p in glob.glob(os.path.join(hdir, "t*.csv")) if re.search(r"/t(\d+)\.csv$", p)]
-    for csv in sorted(files, key=lambda p: int(re.search(r"t(\d+)\.csv$", p).group(1))):
-        k = int(re.search(r"t(\d+)\.csv$", csv).group(1))
+    files = [p for p in glob.glob(os.path.join(hdir, pattern)) if re.search(rx, p)]
+    for csv in sorted(files, key=lambda p: int(re.search(rx, p).group(1))):
+        k = int(re.search(rx, csv).group(1))
         try:
             v = load_us(csv, 1)
         except Exception as e:                       # truncated / malformed file
@@ -138,6 +148,8 @@ def analyse_H(hdir, H, Ds, sub, tau, r):
         launches.append(d); traces.append(v)
     out = dict(H=H, dir=rel(hdir), N=len(launches), launches=launches,
                incomplete=[dict(k=k, why=w) for k, w in incomplete])
+    if label:
+        out["label"] = label
     if not launches:
         return out
     heads = np.concatenate([v[:WIN] for v in traces]); tails = np.concatenate([v[-WIN:] for v in traces])
@@ -157,7 +169,7 @@ def analyse_H(hdir, H, Ds, sub, tau, r):
                                  last_pct=100 * float(np.mean(tails > D * 1e3)),
                                  x_exceed=x, cp_upper_95=cp_upper(x, N, 0.05), cp_upper_975=cp_upper(x, N, 0.025))
     out["pooled"] = pooled
-    # submitted composed rule at this H (analyze_joint.hxt():100-105)
+    # frozen composed rule at this H (analyze_joint.hxt():100-105)
     if "M_us" in sub:
         lvl = sub["t_solo_us"] * sub["dil"]
         dstar = lvl * (1 + sub["gamma"] * H) * r + sub["M_us"]
@@ -181,15 +193,15 @@ def rule_str(res, D):
 
 
 def print_H(res, Ds, sub, tau, r):
-    H = res["H"]
+    H, lab = res["H"], res.get("label", "t")
     print(f"\n### H = {H:,} tokens  ({res['dir']}; N = {res['N']} launches)\n")
     for inc in res["incomplete"]:
-        print(f"- skipped t{inc['k']}: {inc['why']}")
+        print(f"- skipped {lab}{inc['k']}: {inc['why']}")
     if not res["launches"]:
         print("- no complete launches\n")
         return
     if "rule" in res:
-        print(f"Submitted rule at H={H}: " + "; ".join(f"D={D:g}: {rule_str(res, D)}" for D in Ds) + "\n")
+        print(f"Frozen rule at H={H}: " + "; ".join(f"D={D:g}: {rule_str(res, D)}" for D in Ds) + "\n")
     cols = ["k", "n"]
     for D in Ds:
         cols += [f"miss%@{D:g}", f"last500@{D:g}"]
@@ -206,11 +218,11 @@ def print_H(res, Ds, sub, tau, r):
                   f"{d['err_lin_pct']:+.2f}", "yes" if d["within_r"] else "NO"]
         print("| " + " | ".join(cells) + " |")
     for d in res["launches"]:
-        row(f"t{d['k']}", d)
+        row(f"{lab}{d['k']}", d)
     row("pooled", res["pooled"])
     for d in res["launches"]:
         if "warn" in d:
-            print(f"- WARN t{d['k']}: {d['warn']}")
+            print(f"- WARN {lab}{d['k']}: {d['warn']}")
     print()
     print(f"| D (ms) | launches with miss > {tau:g} % | CP upper bound, one-sided 95 % | upper end of two-sided 95 % CI | pooled miss % | pooled last-500 miss % |")
     print("|---:|---:|---:|---:|---:|---:|")
@@ -224,11 +236,13 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--board", choices=["nx", "nano"], default="nx")
     ap.add_argument("--root", help="directory holding H<H>/t<k>.csv (default results/horizon_ext/<board>)")
-    ap.add_argument("--H", action="append", help="only these horizons, comma-separated (default: every H<H> dir)")
+    ap.add_argument("--H", action="append", help="only these horizons, comma-separated (default: every H<H> dir and, on the NX, the 2,000-token cell)")
     ap.add_argument("--D", action="append", help="deadlines in ms, comma-separated (default 28,44)")
     ap.add_argument("--tau", type=float, default=2.0, help="per-launch exceedance threshold, %% (default 2)")
     ap.add_argument("--r", type=float, default=1.035, help="solo safety multiplier (default 1.035)")
     ap.add_argument("--solo-n", type=int, default=5, help="solo runs pooled for gamma_sub / t_solo (5 = fresh_pick.py, 8 = analyze_joint.hxt)")
+    ap.add_argument("--no-h2000", action="store_true",
+                    help="leave out the 2,000-token cell of results/joint_hxt (scored by default on the NX with the default --root)")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
     Ds = [float(x) for s in (a.D or ["28,44"]) for x in s.split(",") if x.strip()]
@@ -238,22 +252,27 @@ def main():
     hdirs = sorted(((int(re.search(r"H(\d+)$", d).group(1)), d) for d in glob.glob(os.path.join(root, "H*"))
                     if re.search(r"H(\d+)$", d) and os.path.isdir(d)))
     hdirs = [(H, d) for H, d in hdirs if Hs is None or H in Hs]
-    if not hdirs:
+    cells = [(H, d, {}) for H, d in hdirs]
+    if (a.board == "nx" and not a.root and not a.no_h2000 and (Hs is None or JOINT_H in Hs)
+            and JOINT_H not in {H for H, _ in hdirs} and glob.glob(os.path.join(JOINT_DIR, JOINT_PATTERN))):
+        cells = sorted(cells + [(JOINT_H, JOINT_DIR, dict(pattern=JOINT_PATTERN, rx=JOINT_RX, label="r"))],
+                       key=lambda c: c[0])
+    if not cells:
         sys.exit(f"no H<H> directories under {root} (run campaign/horizon_ext.sh on the NX first)")
-    sub = submitted(a.solo_n)
-    results = [analyse_H(d, H, Ds, sub, a.tau, a.r) for H, d in hdirs]
-    out = dict(board=a.board, root=rel(root), D_ms=Ds, tau_pct=a.tau, r=a.r, submitted=sub, H=results)
+    sub = frozen_rule(a.solo_n)
+    results = [analyse_H(d, H, Ds, sub, a.tau, a.r, **kw) for H, d, kw in cells]
+    out = dict(board=a.board, root=rel(root), D_ms=Ds, tau_pct=a.tau, r=a.r, frozen_rule=sub, H=results)
     if a.json:
         print(json.dumps(out, indent=1, default=str))
         return
 
     print(f"## E8 horizon coverage under co-tenancy -- board {a.board}, {rel(root)}")
-    print(f"\nSubmitted gamma_sub = {sub['gamma']:.4e} per token (drift {sub['drift_2k_pct']:+.2f} % over 1,500 tokens) from "
+    print(f"\nFrozen-rule gamma_sub = {sub['gamma']:.4e} per token (drift {sub['drift_2k_pct']:+.2f} % over 1,500 tokens) from "
           f"{len(sub['solo_files'])} solo runs {sub['solo_files'][0]} .. {sub['solo_files'][-1]} "
           f"(fresh_pick.py windows [0,500) vs [1500,2000), pooled medians, divisor 1500)"
           + (f"; analyze_joint.hxt() r1..r8 variant {sub['gamma_r1_8']:.4e}" if "gamma_r1_8" in sub else "") + ".")
     if "M_us" in sub:
-        print(f"Submitted level t_solo = {sub['t_solo_us']/1e3:.3f} ms (tokens 0-{T_SHORT-1}), probe median "
+        print(f"Frozen-rule level t_solo = {sub['t_solo_us']/1e3:.3f} ms (tokens 0-{T_SHORT-1}), probe median "
               f"{sub['probe_med_us']/1e3:.3f} ms -> dil = {sub['dil']:.4f}, M = p98 - p50 = {sub['M_us']/1e3:.2f} ms "
               f"({sub['probe']}); r = {a.r}, tau = {a.tau:g} %.")
     print(f"\nColumns: miss % over all tokens and over the last 500 at each D (dur > D); medians of tokens 0-{WIN-1} "
@@ -262,7 +281,7 @@ def main():
     for res in results:
         print_H(res, Ds, sub, a.tau, a.r)
     print("\n### Summary\n")
-    print("| H | D (ms) | N | pooled miss % | last-500 miss % | x (miss > tau) | CP95 UB | submitted rule | gamma_pool e-5 | gamma_pool / gamma_sub | err_rule % (pooled) | within r |")
+    print("| H | D (ms) | N | pooled miss % | last-500 miss % | x (miss > tau) | CP95 UB | frozen rule | gamma_pool e-5 | gamma_pool / gamma_sub | err_rule % (pooled) | within r |")
     print("|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|:---|")
     for res in results:
         if not res["launches"]:
