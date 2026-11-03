@@ -30,6 +30,11 @@ Escape = the number of cycles executed at the initial pick, i.e. 1 + the index o
   cycles.  A clock is feasible at D in a run when its trace misses <= tau = 2 %;
   'one switch' = the first switch away from an infeasible initial pick lands on
   a feasible clock.
+After the first switch (one line per trace set): the cycles spent on a clock infeasible for
+  the run, and the excursions above the clock that switch landed on (an excursion is a maximal
+  run of cycles above it; bins up = the highest grid step it reaches; open = still running at
+  the last cycle); --json adds post_switch_infeasible_cycles, excursions and
+  excursion_open_at_end to every replay.
 Live runs (results/live_gov/calib_D<D>_r<1..3>.csv, alpha 0.1, 2,000 cycles):
   escape = first 'switched' row's cycle + 1; misses up to and including it; switch
   count; cycle of the last switch.

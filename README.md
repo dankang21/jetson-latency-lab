@@ -125,7 +125,8 @@ Supp. Tables S16 and S17 list every knob and every power mode of both boards.
   `cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=87 -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release && cmake --build build -j`.
   The commit and flags of the NX build were not recorded.
 
-**The loop.** Every deployment, admission and transfer run uses
+**The loop.** Every vision deployment, admission and transfer run except the
+live-controller runs (below) uses
 [`harness/infer_bench.py`](harness/infer_bench.py): a periodic loop that
 releases one inference at each absolute time t0 + iP
 (`clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME)`), so an overrun never delays
@@ -150,7 +151,12 @@ runs `results/energy_cal/inv_*` (`energy_cal_inv.sh`) asked for core 7, which
 the 6-core Nano lacks, so the affinity call itself failed and they ran
 unpinned, as `SCHED_OTHER` without memory locking; their `rt_warnings` read
 `set_realtime failed: [Errno 22] Invalid argument` and the same `mlockall`
-line.
+line. The live-controller runs in `results/live_gov` (`nx_live.sh`, which starts
+`nx_live_gov.py`; the controller writes the GPU and EMC clocks itself) release
+at absolute times in a loop of their own, launched as root and pinned with
+`sudo taskset -c 7`; the controller requests no real-time class, so they ran
+`SCHED_OTHER` without memory locking, and they write per-cycle CSV files only,
+with no run JSON.
 
 **Energy.** [`campaign/ina_log.py`](campaign/ina_log.py) polls the INA3221
 `VDD_IN` rail (with `CPU_GPU_CV` and `SOC`) as fast as the driver allows, on
@@ -469,6 +475,11 @@ the files entered version control with this release, as each header states.
 - Decode runs (`tools/slm_decode_bench`): `<tag>.csv` = `token, dur_ns`;
   `<tag>.json` = `compute_us` percentiles and `meta` (model path, `ngl`,
   `prompt_tokens`, `warmup`, `tokens`, `prefill_ms`, `kv_range`, `cpu`, `prio`).
+- Live-controller runs (`campaign/nx_live_gov.py`, `results/live_gov/`): one CSV
+  per run and no JSON; columns `cycle, gpu_mhz, response_us, miss, switched`,
+  then `offset_us` (the EWMA offset after the cycle's update, `calib_*`) or
+  `emc_hz` (the EMC rate read back after the cycle, `emcsw_*`). `gpu_mhz` is the
+  clock after the cycle's pick, so a switch shows in its own row.
 
 **Session files** (September–October 2026 folders): `session.log` (start line
 with board, host, commit and parameters; one line per cell, trial or launch with
