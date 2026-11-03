@@ -28,6 +28,11 @@ RQ3 is demoted from a headline contribution to an appendix.
 Data-quality gates: pairs with readback timeouts, dropped transitions
 (empty windows), a dead probe at loop end, or a nonzero probe exit are
 flagged loudly and excluded from the verdict.
+
+The probe traces (*.probe.csv, 50-240 MB each) are not in the repository; they
+are in the Zenodo deposit 10.5281/zenodo.21236659 (zenodo_v2_bulk.tar.gz for the
+six Nano traces, nx_probe_gpu_1173_816.csv.gz for the NX GPU trace).  Without
+them the script stops with a one-line message that names the missing files.
 """
 
 import bisect
@@ -47,6 +52,19 @@ KILL_US = 100.0
 DEGENERATE_LEVEL = 0.20
 SETTLE_BAND = 0.15
 SETTLE_CONSEC = 3
+ZENODO = "10.5281/zenodo.21236659 (concept DOI 10.5281/zenodo.20694687)"
+NX_GPU_TRACE = "gpu_1173000000_816000000.probe.csv"   # = nx_probe_gpu_1173_816.csv.gz, gunzipped
+
+
+def missing_traces_msg(missing):
+    """One-line message naming the missing probe traces and where they are on Zenodo."""
+    src = []
+    if any(m != NX_GPU_TRACE for m in missing):
+        src.append("extract zenodo_v2_bulk.tar.gz at the repository root")
+    if NX_GPU_TRACE in missing:
+        src.append(f"gunzip nx_probe_gpu_1173_816.csv.gz to results/pilot_trans/{NX_GPU_TRACE}")
+    return (f"missing {len(missing)} probe trace(s) in results/pilot_trans/: {', '.join(missing)}; "
+            f"they are in the Zenodo deposit {ZENODO}: {' and '.join(src)}")
 
 
 def load_probe(path: Path):
@@ -141,6 +159,9 @@ def main():
                     if not p.name.endswith(".probe.csv"))
     if not labels:
         sys.exit(f"no results under {OUT} — run pilot_trans/run_trans_pilot.py first")
+    missing = [f"{lb}.probe.csv" for lb in labels if not (OUT / f"{lb}.probe.csv").exists()]
+    if missing:
+        sys.exit(missing_traces_msg(missing))
 
     print(f"{'pair':<24} {'dir':<5} {'n':>3} {'stall p50/p95 us':>18} "
           f"{'noise p95':>10} {'settle p50/p95 ms':>18} "

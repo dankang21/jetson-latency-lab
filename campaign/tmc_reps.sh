@@ -1,5 +1,5 @@
 #!/bin/bash
-# TMC calibration round: enlarge independent-run counts on the three
+# Calibration round: enlarge independent-run counts on the three
 # true-admission cells.
 #   A: vision co-tenancy guarded pick (MNv2 @918, D=12) r4..r10  (3->10)
 #   B: joint Qwen+ViT co-tenant accept (@1173, 2k tokens) r4..r9 (3->9)

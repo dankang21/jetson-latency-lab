@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Revised fig:govdeploy: deployed EMC-blind vs EMC-aware MobileNetV2 governor on
+"""Fig. 2 (fig:govdeploy): deployed EMC-blind vs EMC-aware MobileNetV2 governor on
 the NX, per-run deadline miss against the deadline.
 
 Replaces the July three-run figure (results/govrep).  Data and rule are exactly
-those of the revised Table II (campaign/govdeploy_common.py): the three interleaved E1 sessions
+those of Table II (campaign/govdeploy_common.py): the three interleaved E1 sessions
 results/govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3} (auto-detected; EMC locked 2133,
 33 Hz, 10 pairs x 1000 cycles per clock), the rate-matched two-cell fits from results/refit33/nx (median p50 of three
 33 Hz repeats at GPU 306/1173, blind @EMC 3199, aware @EMC 2133), r = 1.035, pick =

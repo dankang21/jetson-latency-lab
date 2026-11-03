@@ -1,5 +1,5 @@
 #!/bin/bash
-# E-D mechanism dose-response (guava / Orin Nano — the inversion platform).
+# E-D mechanism dose-response (Orin Nano — the inversion platform).
 # Question 1 (dose-response): per-kernel GEMM stall-tail vs ALL FOUR lockable EMC
 #   points at fixed GPU 1020 (the inversion configuration). Paper currently has
 #   only 2133 vs 3199; a monotone curve upgrades "consistent with" materially.

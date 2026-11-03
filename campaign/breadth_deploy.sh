@@ -1,10 +1,10 @@
 #!/bin/bash
-# Workload-breadth deployed-governor generalization on the NX (hebesu):
+# Workload-breadth deployed-governor generalization on the NX:
 # ResNet-50 (CNN, heavier than MobileNetV2) + YOLOv8s (detection, 640x640).
 # Mirrors vit_deploy.sh exactly:
 #   PHASE 1: estimator sweep @ EMC {3199,2133} x GPU freqs (1 run/cell) -> policy fit
 #   PHASE 2: 3-repeat deployment @ EMC 2133 across the GPU-responsive range,
-#            with tegrastats (clock ground truth) + 1 ms-sampled INA (energy).
+#            with tegrastats (clock ground truth) + INA3221 VDD_IN log (energy; median 3.6 ms per sample).
 # infer_bench runs as the invoking USER; clocks/tegrastats via sudo. Self-contained.
 # Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u

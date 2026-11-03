@@ -1,5 +1,5 @@
 #!/bin/bash
-# ViT-Small deployed-governor generalization on the NX (hebesu).
+# ViT-Small deployed-governor generalization on the NX.
 # Phase 1: estimator sweep @ EMC {3199,2133} x GPU freqs (1 run/cell) -> policy fit.
 # Phase 2: 3-repeat deployment @ EMC 2133 across the GPU-responsive range + energy.
 # infer_bench runs as the invoking USER; clocks/tegrastats via sudo. Self-contained.

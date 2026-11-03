@@ -140,8 +140,17 @@ def main():
     sweep = []
     for b in BETAS:
         t, e, _ = fixed_emc(b); f = emc_free(b)
+        # EMC-free violating picks: picks with a recorded or re-run run over tau
+        viol_free = sum(1 for pk in f["H1c"]["picks"].values()
+                        if pk and (pk["rec"][0] > 0 or (pk["live"] is not None and pk["live"][0] > 0)))
         sweep.append(dict(beta=b, admitted=t["H1c"]["eval"] + t["H1c"]["na"], same=t["H1c"]["same"], lower=t["H1c"]["lower"],
-                          viol=t["H1c"]["viol"], err=e["mobilenet"]["H1c"], escapes=f["H1c"]["escapes"], adm_free=f["H1c"]["admitted"]))
+                          viol=t["H1c"]["viol"], viol_free=viol_free, err=e["mobilenet"]["H1c"], escapes=f["H1c"]["escapes"],
+                          adm_free=f["H1c"]["admitted"]))
+    # the generated caption states "with no violating pick at any pin" for the pinned family
+    assert all(s["viol"] == 0 for s in sweep), ("a pinned-beta fixed-EMC pick has a violating run",
+                                                [(s["beta"], s["viol"]) for s in sweep])
+    assert all(s["viol_free"] == 0 for s in sweep), ("a pinned-beta EMC-free pick has a violating run",
+                                                     [(s["beta"], s["viol_free"]) for s in sweep])
     sw_adm = (min(s["admitted"] for s in sweep), max(s["admitted"] for s in sweep)); sw_same = (min(s["same"] for s in sweep), max(s["same"] for s in sweep))
     _, Pm, _, _ = fits_for("mobilenet")
     h1a44 = ef["H1a"]["live_max"].get(4.4)
@@ -166,9 +175,9 @@ def main():
         md.append(f"| {lab} | " + " | ".join(vals) + " |")
     md += ["", "Coefficients (us; f in GHz): " + "; ".join(f"{arm}: {fmt_params(Pm[arm])}" for arm in ARMS), "",
            "Pinned-beta family (H1c, 20 cells at {665.6, 3199} MHz, C free, beta pinned): training residual identical for every pin;",
-           "| beta | C (us) | MNv2 held-out med/max % | fixed-EMC admitted | at refit's clock | below | EMC-free admitted | 3199 picks |", "|---:|---:|---|---:|---:|---:|---:|---|"]
+           "| beta | C (us) | MNv2 held-out med/max % | fixed-EMC admitted | at refit's clock | below | EMC-free admitted | 3199 picks | violating picks (fixed EMC / EMC free) |", "|---:|---:|---|---:|---:|---:|---:|---|---:|"]
     for s in sweep:
-        md.append(f"| {s['beta']} | {fits_for('mobilenet', s['beta'])[1]['H1c']['C']:.1f} | {s['err'][0]:.1f}/{s['err'][1]:.1f} | {s['admitted']} | {s['same']} | {s['lower']} | {s['adm_free']}/9 | {', '.join(f'{D:.1f}' for D in s['escapes'])} |")
+        md.append(f"| {s['beta']} | {fits_for('mobilenet', s['beta'])[1]['H1c']['C']:.1f} | {s['err'][0]:.1f}/{s['err'][1]:.1f} | {s['admitted']} | {s['same']} | {s['lower']} | {s['adm_free']}/9 | {', '.join(f'{D:.1f}' for D in s['escapes'])} | {s['viol']} / {s['viol_free']} |")
     md += ["", "EMC-free picks (MobileNetV2, 33 Hz; cell = EMC/GPU MHz, recorded runs over tau / n, re-run runs over tau / n where the cell was re-run):"]
     for D in EF.DEADLINES:
         md.append(f"- D = {D:.1f} ms: " + "; ".join(

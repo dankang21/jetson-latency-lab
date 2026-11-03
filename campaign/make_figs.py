@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Generate the paper's figures from results/campaign_g2 (+ pilot data).
+"""Render Supp. Figs. S1, S2, S6-S8 and S10-S12 from results/campaign_g2,
+results/estimator_break/govsim_curves.json (written by
+campaign/analyze_governor_sim.py --json) and, for Fig. S10, the values of
+results/pilot_trans/analysis_trans.txt (written into fig_actuation).
 
-Run with any python that has matplotlib + numpy.
-Outputs PDF (for LaTeX) + PNG (for quick viewing) into paper/figs/
-(created if absent; the directory is gitignored).
+Run with any python that has matplotlib + numpy:
+    python3 campaign/make_figs.py --out DIR
+Outputs PDF (for LaTeX) + PNG (for quick viewing) into DIR (created if
+absent); nothing is written without --out.
 """
 
+import argparse
 import json
 import re
 from collections import defaultdict
@@ -19,8 +24,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 G2 = ROOT / "results" / "campaign_g2"
-FIGS = ROOT / "paper" / "figs"
-FIGS.mkdir(parents=True, exist_ok=True)
+FIGS = None   # output directory, set from --out in main()
 
 WL_LABEL = {
     "mobilenet": "MobileNetV2",
@@ -240,20 +244,6 @@ def fig_actuation():
     save(fig, "rq3_actuation")
 
 
-def main():
-    cells = load_part_a()
-    fig_rq1_curves(cells)
-    fig_rq1_spectrum(cells)
-    fig_rq2_cliffs()
-    fig_rq2_bursts()
-    fig_rq2_tailfit()
-    fig_actuation()
-
-
-if __name__ == "__main__":
-    main()
-
-
 def fig_govsim():
     import json
     data = json.loads((ROOT / "results" / "estimator_break" /
@@ -286,7 +276,7 @@ def fig_govsim():
 def fig_evtval():
     """Out-of-sample EVT validation: first-50k GPD prediction vs last-50k
     empirical quantiles, per Part B cell. Replaces the in-sample survival
-    plot as the main Fig 5 (review: figure must show the validation the
+    plot as the main Fig 5 (the figure must show the validation the
     text claims)."""
     import math
     def gpd_q(u, xi, sigma, zeta, p):
@@ -354,3 +344,26 @@ def fig_govsim_all():
                loc="lower center", bbox_to_anchor=(0.5, -0.02))
     fig.tight_layout()
     save(fig, "govsim_all")
+
+
+def main():
+    global FIGS
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--out", required=True, metavar="DIR",
+                    help="write the PDF and PNG files into DIR (created if absent)")
+    a = ap.parse_args()
+    FIGS = Path(a.out)
+    FIGS.mkdir(parents=True, exist_ok=True)
+    cells = load_part_a()
+    fig_rq1_curves(cells)
+    fig_rq1_spectrum(cells)
+    fig_rq2_cliffs()
+    fig_rq2_bursts()
+    fig_rq2_tailfit()
+    fig_actuation()
+    fig_evtval()        # Supp. Fig. S8
+    fig_govsim_all()    # Supp. Fig. S12
+
+
+if __name__ == "__main__":
+    main()

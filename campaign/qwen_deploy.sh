@@ -1,6 +1,6 @@
 #!/bin/bash
 # Qwen2.5-1.5B-Instruct (Q4_K_M) deployed-governor generalization on the NX
-# (hebesu) with calibrated 1 ms-sampled onboard-INA energy. Token decode is saturated
+# with calibrated onboard-INA energy (INA3221 VDD_IN log, median 3.6 ms per sample). Token decode is saturated
 # (back-to-back); miss@D = P(per-token decode > D); energy/token = mean active
 # VDD_IN power x p50 decode time. Estimator sweep @{2133,3199} fits blind/aware.
 # Env: PY (python3 with onnxruntime) and GGUF_DIR (GGUF models) override the default paths below.
@@ -33,7 +33,7 @@ for EMC in 3199 2133; do
   done
 done
 
-echo "=== PHASE 2: 3-repeat deployment @ EMC 2133 + 1 ms-sampled INA ==="
+echo "=== PHASE 2: 3-repeat deployment @ EMC 2133 + INA3221 VDD_IN log (max rate, ~3.6 ms per sample) ==="
 sudo bash -c "$LAB/pilot_emc/emc_ctl.sh lock 2133000000 >/dev/null"
 for f in 714 816 918 1020 1122 1173; do
   for r in 1 2 3; do

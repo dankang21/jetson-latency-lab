@@ -5,11 +5,17 @@ Part 3 analysis: for each stressor, does the deadline break, and does it break
 COMPUTE (GPU/memory) or JITTER (scheduler/IRQ)?
 
   python3 part3/analyze_part3.py
+
+Reads results/p3_<profile>.{json,tegra} of the repository this script is in (any
+working directory); exits non-zero when no cell is found.
 """
 import json
 import re
 import statistics as st
+import sys
+from pathlib import Path
 
+RES = Path(__file__).resolve().parent.parent / "results"
 PROFILES = ["baseline", "cpu", "memory", "cache", "io", "irq", "combined"]
 GR3D = re.compile(r"GR3D_FREQ\s+\d+%@\[?(\d+)\]?")
 GPUT = re.compile(r"gpu@([\d.]+)C")
@@ -17,14 +23,14 @@ GPUT = re.compile(r"gpu@([\d.]+)C")
 
 def load(prof):
     try:
-        return json.load(open(f"results/p3_{prof}.json"))
+        return json.load(open(RES / f"p3_{prof}.json"))
     except FileNotFoundError:
         return None
 
 
 def tegra_temp(prof):
     try:
-        t = [float(m.group(1)) for ln in open(f"results/p3_{prof}.tegra")
+        t = [float(m.group(1)) for ln in open(RES / f"p3_{prof}.tegra")
              if (m := GPUT.search(ln))]
         return max(t) if t else None
     except FileNotFoundError:
@@ -43,6 +49,8 @@ def main():
         rows.append((prof, r["p50"] / 1000, r["p99.99"] / 1000, r["max"] / 1000,
                      c["p99.99"] / 1000, jt["p99.99"], j["deadline_miss_count"],
                      tegra_temp(prof)))
+    if not rows:
+        sys.exit(f"no Part 3 cell (p3_<profile>.json) found under {RES}")
 
     print("\n=== Stress matrix (100 Hz, dynamic clocks) ===")
     print("| stressor | resp p50 | resp p99.99 | resp max | compute p99.99 | "

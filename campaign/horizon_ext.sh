@@ -33,7 +33,7 @@
 # Statistics: campaign/horizon_ext_stats.py
 # Usage: ./campaign/horizon_ext.sh --H TOKENS --launches K [--t0 1] [--gpu 1173]
 #          [--co-hz 10] [--board nx|nano  (dry-run preview aid only)] [--dry-run] [--force]
-#        E8 on hebesu:  ./campaign/horizon_ext.sh --H 1000 --launches 5
+#        E8 on the NX:  ./campaign/horizon_ext.sh --H 1000 --launches 5
 #                       ./campaign/horizon_ext.sh --H 3000 --launches 5
 set -u
 # Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.

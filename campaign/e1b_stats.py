@@ -54,8 +54,18 @@ TAU = 2.0                     # per-run miss budget, %
 SEED = 20260915
 NBOOT = 10000
 STEADY_T0 = 8.0               # sensitivity window start, s
-T975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365,
-        8: 2.306, 9: 2.262, 10: 2.228}
+# Two-sided 95 % Student t critical values t_{0.975, df} for df 1-60 (scipy.stats.t.ppf(0.975, df),
+# scipy 1.8.0, rounded to 3 decimals) and the large-df limit z_{0.975} (scipy.stats.norm.ppf(0.975));
+# used only when scipy is not importable (tcrit()).
+T975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365, 8: 2.306,
+        9: 2.262, 10: 2.228, 11: 2.201, 12: 2.179, 13: 2.160, 14: 2.145, 15: 2.131, 16: 2.120,
+        17: 2.110, 18: 2.101, 19: 2.093, 20: 2.086, 21: 2.080, 22: 2.074, 23: 2.069, 24: 2.064,
+        25: 2.060, 26: 2.056, 27: 2.052, 28: 2.048, 29: 2.045, 30: 2.042, 31: 2.040, 32: 2.037,
+        33: 2.035, 34: 2.032, 35: 2.030, 36: 2.028, 37: 2.026, 38: 2.024, 39: 2.023, 40: 2.021,
+        41: 2.020, 42: 2.018, 43: 2.017, 44: 2.015, 45: 2.014, 46: 2.013, 47: 2.012, 48: 2.011,
+        49: 2.010, 50: 2.009, 51: 2.008, 52: 2.007, 53: 2.006, 54: 2.005, 55: 2.004, 56: 2.003,
+        57: 2.002, 58: 2.002, 59: 2.001, 60: 2.000}
+T975_INF = 1.960
 
 MODELS = {
     "vit": dict(name="ViT-Small", hz=20,
@@ -204,7 +214,12 @@ def miss_pct(v, D_us):
 def tcrit(df):
     if sps is not None:
         return float(sps.t.ppf(0.975, df))
-    return T975[df]
+    if df < 1:
+        return float("nan")                    # as scipy for df = 0
+    if df in T975:
+        return T975[df]
+    # df > 60: interpolate linearly in 1/df between df = 60 and the limit (within 0.02 % of scipy)
+    return T975_INF + (T975[60] - T975_INF) * 60.0 / df
 
 
 def sign_test_p(pos, n):
@@ -467,8 +482,8 @@ def main():
                 for r in off:
                     print(f"  {r['D']:6.1f} | {fpick(r['blind']):>16} {fmiss(r['blind']):52} | "
                           f"{fpick(r['aware']):>16} {fmiss(r['aware']):52} | {fdE(r['dE'])}")
-            # comparison with the submitted table and its two-cell re-derivation
-            print("  -- vs submitted table and its two-cell re-derivation:")
+            # comparison with the original table and its two-cell re-derivation
+            print("  -- vs original table and its two-cell re-derivation:")
             allrows = {r["D"]: r for r in rows}
             if off:
                 allrows.update({r["D"]: r for r in off})

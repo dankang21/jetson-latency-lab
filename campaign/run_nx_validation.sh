@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Orin NX 16GB targeted validation for the two-SKU paper revision (v2).
+# Orin NX 16GB targeted validation, run to add the second SKU to the study.
 # *** WRITTEN BEFORE THE DEVICE ARRIVED — UNTESTED ON NX. ***
 # Everything board-specific is DISCOVERED at runtime and gated:
 #   - CPU max freq / core count from cpufreq

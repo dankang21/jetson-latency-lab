@@ -58,7 +58,7 @@ levels.  `--inventory` prints which board/model combinations satisfy this.
 Usage
 -----
     python3 campaign/han_fit.py --inventory                    # EMC levels per board/model
-    python3 campaign/han_fit.py --reproduce                    # supplementary numbers, reported vs reproduced
+    python3 campaign/han_fit.py --reproduce                    # superseded numbers of the earlier report arXiv:2606.16106v3 vs reproduced
     python3 campaign/han_fit.py --board nano --model mobilenet # fit on the Nano estimator_break grid
     python3 campaign/han_fit.py --loco-table --key compute_us  # Supp. S3 per-workload in-sample + leave-one-cell-out
     python3 campaign/han_fit.py --board nano --model gemm --loco --no-scipy   # per-cell LOCO listing
@@ -675,11 +675,11 @@ def inventory(key="response_us", boards=("nano", "nx"), models=MODELS, verbose=T
 
 
 # ----------------------------------------------------------------------------
-# reproduction of the supplementary numbers
+# reproduction of the superseded numbers of the earlier report arXiv:2606.16106v3
 # ----------------------------------------------------------------------------
 
 REPORTED = [
-    # (id, text as printed in the supplement / main text, value)
+    # (id, text as printed in the earlier report arXiv:2606.16106v3, Sec. IV and S3, value)
     ("grid", "Nano GPUxEMC grid size (cells)", 20),
     ("mn_in", "MobileNetV2 in-sample median |err| %", 1.2),
     ("mn_out", "MobileNetV2 held-out 2133 MHz cell(s) median |err| %", 2.7),
@@ -703,7 +703,7 @@ def _protocols():
     Each entry: name -> dict(train, hold, with_c, fix_beta, extra)
       fix_beta  None    : free (requires >= 3 EMC levels in `train`)
                 "solve" : P1 only -- beta is unidentified, pick the member of the
-                          equal-SSE family whose GEMM prediction equals the reported +2.67 ms
+                          equal-SSE family whose GEMM prediction equals the earlier report's +2.67 ms
                 float   : pinned
       extra     None or "campaign_g2": merge the 4 catalogue points at GPU 1020 into the training set
     """
@@ -752,7 +752,8 @@ def _solve_beta_for_dpred(d, train, target_ms, weight, with_c=True, lo=0.05, hi=
 
 
 def reproduce(keys=("compute_us", "response_us"), weights=("abs", "rel")):
-    print("Reported numbers (supplement; main text):")
+    print("Superseded numbers of the earlier report arXiv:2606.16106v3 (its Sec. IV and S3; the article fits the")
+    print("24-cell grid instead, see --loco-table --key compute_us; only the measured -1.70 ms is also the article's):")
     for _, txt, v in REPORTED:
         print(f"  {txt:<58} {v:+.2f}" if isinstance(v, float) else f"  {txt:<58} {v}")
     g2c = cells_dict(_load_campaign_g2("cproxyv2", "compute_us"))
@@ -762,7 +763,7 @@ def reproduce(keys=("compute_us", "response_us"), weights=("abs", "rel")):
     print(f"\nMeasured inversion at GPU 1020, T(2133)-T(3199):")
     print(f"  campaign_g2/partA (1000 iters, the 'full campaign'): compute_us {dm_g2:+.2f} ms "
           f"({g2c[(2133.0, 1020)] / 1e3:.2f} vs {g2c[(3199.0, 1020)] / 1e3:.2f}), response_us {dm_g2r:+.2f} ms"
-          f"   <- the reported -1.70 (16.93 vs 18.63)")
+          f"   <- the -1.70 of the earlier report and the article (16.93 vs 18.63)")
     dm_eb = {}
     for key in keys:
         eb = cells_dict(_load_estimator_break("cproxyv2", key))
@@ -801,7 +802,7 @@ def reproduce(keys=("compute_us", "response_us"), weights=("abs", "rel")):
                     if fb == "solve":
                         fb = _solve_beta_for_dpred(d, train, 2.67, w) if m == "cproxyv2" else None
                         if m != "cproxyv2":
-                            # for the other workloads there is no reported dpred to pin beta with;
+                            # for the other workloads there is no earlier-report dpred to pin beta with;
                             # report the family's range instead (beta 0.3 .. 3.0)
                             fam = []
                             for be in (0.3, 0.5, 1.0, 1.5, 2.0, 3.0):
@@ -852,8 +853,8 @@ def reproduce(keys=("compute_us", "response_us"), weights=("abs", "rel")):
                 dp = (predict(p, 1020, 2133.0) - predict(p, 1020, 3199.0)) / 1e3
                 line.append(f"b={be:g}: SSE {p['sse_grid']:.4g} dpred {dp:+.2f} hold-med {err_stats(score(p, d, hold))[0]:.1f}%")
             print(f"  {PRETTY[m]:<18} {key:<11} " + " | ".join(line))
-    # closest protocol per reported number
-    print("\n== reported vs reproduced (closest protocol per number; distance in the number's own unit) ==")
+    # closest protocol per number of the earlier report
+    print("\n== earlier report (superseded) vs reproduced (closest protocol per number; distance in the number's own unit) ==")
     getters = {
         "grid": lambda r: r["n_train"],
         "mn_in": lambda r: r["mobilenet"]["in_med"], "mn_out": lambda r: r["mobilenet"]["out_med"],
@@ -862,7 +863,7 @@ def reproduce(keys=("compute_us", "response_us"), weights=("abs", "rel")):
         "gemm_med": lambda r: r["cproxyv2"]["out_med"], "gemm_max": lambda r: r["cproxyv2"]["out_max"],
         "gemm_dpred": lambda r: r["gemm_dpred"],
     }
-    print(f"{'number':<58} {'reported':>9} {'closest':>9}  protocol / key / weight")
+    print(f"{'number':<58} {'earlier':>9} {'closest':>9}  protocol / key / weight")
     for rid, txt, v in REPORTED:
         if rid == "gemm_dmeas":
             print(f"{txt:<58} {v:>9.2f} {dm_g2:>9.2f}  campaign_g2/partA compute_us (fit grid estimator_break gives "

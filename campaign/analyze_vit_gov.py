@@ -3,7 +3,7 @@
 # Reads the estimator sweep (nx_est_emc{2133,3199}_gpu*_vit) + 3-repeat
 # deployment (govrep_vit/g{f}_r{1,2,3}) and computes blind(fit@3199) vs
 # aware(2-cell@2133) miss rates + energy across the tight-deadline regime.
-# Run with /usr/bin/python3 after rsyncing govrep_vit from hebesu.
+# Run with /usr/bin/python3 after copying results/govrep_vit from the NX.
 import json, csv, re, os, glob
 import numpy as np
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # results/... paths are repo-relative

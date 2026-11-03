@@ -74,6 +74,6 @@ res["cproxyv2_shift_2133_vs_3199_pct"] = shift("cproxyv2")
 res["inversion_reproduced"] = (shift("cproxyv2") or 0) < 0
 Path("repro/replication_result.json").write_text(json.dumps(res, indent=2))
 print(json.dumps(res, indent=2))
-print("\nPaper's unit: mobilenet +11.3%, cproxyv2 -9.1% (inversion).")
+print("\nPaper's unit: mobilenet +11.7%, cproxyv2 -9.1% (inversion).")
 print("Please share repro/replication_result.json via a GitHub issue!")
 EOF

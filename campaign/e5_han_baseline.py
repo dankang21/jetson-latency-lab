@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""E5: memory-aware controller baseline -- the Han et al. monotone power-law
+"""E5: memory-aware latency-model baseline -- the Han et al. monotone power-law
 estimator, profiled at OTHER memory points, deployed through the paper's pick
 rule and scored on the same interleaved sessions and pre-stated deadline grids
 as the blind / aware arms (docs/protocols/E1_E2_protocol.md, E5 section,
@@ -20,7 +20,7 @@ clocks, 800 cycles at the deployment release rate; response_us p50), A, B >= 0.
                    the source model's pure form (C = 0), which is identifiable.
                    Sensitivity H1c: C free with beta pinned at 1.0 (printed; a
                    different member of the same unidentified family).
-  H2 (upper bound) train on all three levels, C free, in-sample at 2133.
+  H2 (in-sample)   train on all three levels, C free, in-sample at 2133.
 Pick rule (identical to both arms): lowest grid clock f with T_hat(f, 2133) * r <= D,
 r = 1.035, else the policy DECLINES and the deployment falls back to the top clock
 (1173 MHz; its measured outcome is shown in parentheses, not counted as a pick).
@@ -476,20 +476,22 @@ def tex_table(cfgs, SS, stats_all, path):
     indic = [SS[m][a]["na_indic_max"] for m in MODELS for a in ("H1", "H2") if SS[m][a]["na_indic_max"] is not None]
     indic_txt = (f"misses at most {max(indic):.1f}\\,\\% in every such case" if indic else "n/a")
     cap = (
-        "Memory-aware controller baseline (E5): a Han-style monotone power law "
+        "Memory-aware latency-model baseline (E5): a Han-style monotone power law "
         "$\\hat T = A f_{\\mathrm{gpu}}^{-\\alpha} + B f_{\\mathrm{emc}}^{-\\beta}\\,[+C]$ fitted per model on the "
         "rate-matched GPU$\\times$EMC sweeps (EMC $\\{665.6, 2133, 3199\\}$\\,MHz $\\times$ ten GPU clocks, 800 cycles at "
         "the deployment release rate) and deployed through the same rule as both arms ($f^\\star$ = lowest grid clock with "
         "$\\hat T(f, 2133)\\,r\\le D$, $r{=}1.035$, else the deadline is declined). H1 (realistic): fitted on the "
         "profiling points $\\{665.6, 3199\\}$\\,MHz only, the deployment point 2133\\,MHz held out (pure Han form, $C{=}0$: "
-        "with a free offset, $\\beta$ is not identifiable from two memory levels); H2 (upper bound): all three levels "
+        "with a free offset, $\\beta$ is not identifiable from two memory levels); H2 (in-sample reference): all three levels "
         "in-sample, $C$ free. Every arm is scored offline on the same interleaved sessions and pre-stated deadline grids "
-        "as Table~\\ref{tab:govdeploy} (MobileNetV2, two sessions) and the breadth table (one session per model). "
+        "as main-text Table~II (MobileNetV2, the three sessions) and Table~\\ref{tab:breadthgov} (one session per model). "
         "Entries: deadlines with ${\\ge}1$ run above the $\\tau{=}2\\,\\%$ budget (in parentheses, when different: "
         "deadlines failing the pooled budget) out of the admitted, evaluable deadlines; superscripts $\\dagger d$ = the arm "
-        "declines $d$ of the $N$ grid deadlines (the aware arm declines only 4.4\\,ms, which no clock meets), "
-        "$\\ddagger m$ = $m$ admitted picks of 1173\\,MHz that the breadth sessions did not run (the 800-cycle profiling "
-        f"cell at that clock {indic_txt}). Right: median\\,/\\,max $|$error$|$ (\\%) of the Han p50 "
+        "declines $d$ of the $N$ grid deadlines (the aware arm declines only 4.4\\,ms, at which no tested clock at the "
+        "2133\\,MHz deployment point kept the budget in every run), "
+        "$\\ddagger m$ = $m$ further admitted picks of 1173\\,MHz that the breadth sessions did not run, excluded from "
+        f"the counts (the 800-cycle profiling cell at that clock {indic_txt}). Right: median\\,/\\,max $|$error$|$ (\\%) "
+        "of the Han p50 "
         f"prediction at EMC 2133\\,MHz over the ten GPU clocks (H1 held out, H2 in-sample). Over the {N} deadlines the "
         f"aware arm admits {tot['aware']['eval'] + tot['aware']['na']} with no violating run; H1 admits "
         f"{h1['eval'] + h1['na']}, declining {h1['decl_aware_admits']} that the aware arm meets, and picks a higher clock "

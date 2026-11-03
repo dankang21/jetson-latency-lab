@@ -27,8 +27,8 @@ What the logs hold:
     reading), 'tend='/'t=' at the end, and a 'WARN thermal gate timed out' line precedes each timed-out unit.
 Read-only over results/ (needs the session.log files; the pre-September tegrastats summary scans every
 results/**/*.tegra, including results/e4_replication and results/partb_ext from the Zenodo deposit, so extract those
-in place first).  Prints the markdown record; --md also writes it to a file and --tex writes the supplementary float
-(label tab:thermal):
+in place first; a WARN line names either folder when it is absent).  Prints the markdown record; --md also writes it
+to a file and --tex writes the supplementary float (label tab:thermal):
     python3 campaign/thermal_record.py [--tex OUT.tex] [--md OUT.md]
 """
 import argparse
@@ -46,6 +46,8 @@ LAB = os.path.dirname(HERE)
 RES = os.path.join(LAB, "results")
 TO_S = 1190.0
 WAIT_S = 15.0
+# Zenodo folders (10.5281/zenodo.21236659) whose tegrastats traces the pre-September summary includes
+ZENODO_TEGRA = (("e4_replication", "e4_replication_nano.tar.gz"), ("partb_ext", "partb_ext_nano.tar.gz"))
 
 
 def _pair(n):
@@ -255,6 +257,12 @@ def main():
     ap.add_argument("--tex", default=None, help="write the LaTeX table (tab:thermal) here")
     ap.add_argument("--md", default=None, help="write the markdown record here as well")
     a = ap.parse_args()
+    absent = [(d, t) for d, t in ZENODO_TEGRA if not os.path.isdir(os.path.join(RES, d))]
+    if absent:
+        print("WARN " + " and ".join(f"results/{d}" for d, _ in absent)
+              + (" is" if len(absent) == 1 else " are") + " absent, so the pre-September tegrastats summary"
+              " leaves out " + ("its" if len(absent) == 1 else "their") + " traces: extract "
+              + " and ".join(t for _, t in absent) + " of the Zenodo deposit 10.5281/zenodo.21236659 into results/")
     md = ["## Thermal-gate record (campaign/thermal_record.py; do not edit by hand)", "",
           "### Characterization sessions (end-of-cell readings; waits reconstructed)", "",
           "| session | runs | gated unit | gated starts | waited / timed out | wait s | end-of-cell T °C | cells > 55 °C | first-unit wait s |",

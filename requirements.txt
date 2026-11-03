@@ -1,5 +1,9 @@
 # Analysis-side deps (install anywhere):
 numpy
+# scipy (tested 1.8.0): the E5 fit coefficients and errors are printed as reported only with
+# scipy, which polishes the numpy grid fit of campaign/han_fit.py; without it some printed
+# last digits differ (see README, "Running the code").
+scipy
 matplotlib
 
 # Inference deps are assumed already present in your working Jetson env and are
@@ -8,5 +12,6 @@ matplotlib
 #   - onnxruntime-gpu  (Jetson build, CUDA EP)   -> https://elinux.org/Jetson_Zoo
 #   - or torch 2.9.1 + CUDA 12.6 (your baseline stack)
 #
-# System:
+# System (only for the June 2026 stress-ng runners part3/run_part3.sh and
+# part3/run_part3_highload.sh, the burst-replication runs behind Supp. S9):
 #   sudo apt-get install stress-ng

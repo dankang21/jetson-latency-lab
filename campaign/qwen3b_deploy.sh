@@ -32,7 +32,7 @@ for EMC in 3199 2133; do
   done
 done
 
-echo "=== PHASE 2: 3-repeat deployment @ EMC 2133 + 1 ms-sampled INA ==="
+echo "=== PHASE 2: 3-repeat deployment @ EMC 2133 + INA3221 VDD_IN log (max rate, ~3.6 ms per sample) ==="
 sudo bash -c "$LAB/pilot_emc/emc_ctl.sh lock 2133000000 >/dev/null"
 for f in 714 816 918 1020 1122 1173; do
   for r in 1 2 3; do

@@ -37,7 +37,7 @@
 # (csv without json) is deleted and re-run from scratch.
 # Usage: ./campaign/launch_ext.sh --launches K [--f MHz] [--D ms] [--primary {mobilenet,vit}]
 #          [--co {vit,yolov8s,resnet50}] [--co-hz N] [--t0 START] [--ina] [--force] [--dry-run]
-#        (24-launch submitted series on hebesu:  ./campaign/launch_ext.sh --launches 16)
+#        (the article's 24-launch series, on the NX:  ./campaign/launch_ext.sh --launches 16)
 set -u
 # Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"

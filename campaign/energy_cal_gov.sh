@@ -1,5 +1,5 @@
 #!/bin/bash
-# Calibrated deployed-governor energy on the NX (hebesu) via 1 ms-sampled onboard INA.
+# Calibrated deployed-governor energy on the NX via the onboard INA3221 VDD_IN log (median 3.6 ms per sample).
 # Periodic deployment duty; energy/inf = mean VDD_IN power / release rate.
 # infer_bench + ina_log as USER; clocks/EMC via sudo. Self-contained.
 # Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.

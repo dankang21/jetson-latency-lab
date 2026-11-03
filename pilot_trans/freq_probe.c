@@ -13,7 +13,7 @@
 // Chunk sizes are deliberately small (cpu ~1.8us@1728MHz/~26us@115MHz, mem
 // 128KB ~11us at single-core peak): the analyzer's stall dead zone is bounded
 // by Q_slow - Q_fast, which must stay well under the 100us kill criterion
-// (review finding: 1MB/5k-iter chunks had a 150-245us masking dead zone).
+// (an earlier version's 1MB/5k-iter chunks had a 150-245us masking dead zone).
 //
 // Samples are buffered in a preallocated, pre-touched in-memory array and
 // written out only after the measurement loop: an fprintf in the timed loop

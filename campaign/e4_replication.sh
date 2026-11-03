@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# E4: RQ2 replication for the two-SKU revision. Addresses the single-run-per-cell
+# E4: RQ2 replication on both SKUs. Addresses the single-run-per-cell
 # weakness by repeating the headline burst cell and filling out the NX Part-B
 # matrix, so clustering / GPD margins carry run-to-run spread, not point estimates.
 # Modeled on the proven cell() in campaign/run_nx_validation.sh (infer_bench runs

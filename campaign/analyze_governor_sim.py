@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """
-Trace-driven governor simulation (reviewer item: estimator/governor impact
-end-to-end, no governor implementation needed).
+Trace-driven governor simulation (estimator/governor impact end-to-end,
+no governor implementation needed).
 
 Scenario: a deadline governor picks the LOWEST GPU frequency (energy proxy)
 whose predicted latency + margin fits the deadline, targeting <=0.1% miss.
@@ -24,8 +24,13 @@ Metrics over a deadline grid per workload:
   f_avg   mean chosen GPU frequency in MHz (lower = cheaper, energy proxy)
   infeas% deadlines where the policy declares no feasible frequency
           (system then runs at max frequency; scored there)
+
+Prints the table to stdout.  --json PATH also writes the per-deadline curves
+(the committed copy is results/estimator_break/govsim_curves.json, which
+campaign/make_figs.py plots as Supp. Fig. S12); nothing is written without it.
 """
 
+import argparse
 import json
 import math
 import re
@@ -104,6 +109,10 @@ DUMP = {}
 
 
 def main():
+    ap = argparse.ArgumentParser(description=__doc__.strip().split("\n\n")[0])
+    ap.add_argument("--json", default=None, metavar="PATH",
+                    help="also write the per-deadline curves (govsim_curves.json format) to PATH")
+    a = ap.parse_args()
     data = load_cells()
     print(f"{'workload':<10} {'policy':<6} {'viol%':>7} {'miss% (viol)':>13} "
           f"{'f_avg MHz':>10} {'infeas%':>8} {'violF%':>7}")
@@ -194,10 +203,9 @@ def main():
                   f"{violF/nF*100:>6.0f}%")
         print()
 
-
-    (OUT / "govsim_curves.json").write_text(
-        json.dumps(DUMP, indent=1))
-    print(f"curves -> {OUT / 'govsim_curves.json'}")
+    if a.json:
+        Path(a.json).write_text(json.dumps(DUMP, indent=1))
+        print(f"curves -> {a.json}")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Calibrated inversion + EMC energy on the Nano (guava) via 1 ms-sampled onboard INA.
+# Calibrated inversion + EMC energy on the Nano via the onboard INA3221 VDD_IN log (median 3.7-3.9 ms per sample).
 # Saturated (continuously busy) so VDD_IN reads pure active power;
 # energy/inf = mean active power x compute latency. GPU pinned at the Nano max.
 # Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.

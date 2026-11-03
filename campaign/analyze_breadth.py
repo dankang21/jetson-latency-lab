@@ -3,7 +3,7 @@
 # on the NX. Mirrors analyze_vit_gov.py / analyze_qwen_deploy.py: blind = k/f+b
 # fit at EMC 3199, aware = refit at the 2133 deployment point; pick = lowest f
 # with T*1.035 <= D; miss measured over 3x1000-cycle deployments; energy =
-# calibrated 1 ms-sampled VDD_IN (power.csv) / release rate.
+# calibrated INA3221 VDD_IN log (power.csv, median 3.6 ms per sample) / release rate.
 import json, csv, re, os, glob, statistics as st
 import numpy as np
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # results/... paths are repo-relative

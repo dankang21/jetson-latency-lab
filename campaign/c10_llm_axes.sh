@@ -5,7 +5,7 @@
 #          penalty moves from Q4's +18.7% toward the GEMV anchor's +44.5%)
 #   CTX  : 1.5B Q4, --prompt-tokens {64, 4096} x EMC {2133,3199} x 3 reps
 #   PREFILL: llama-bench -p 512 -n 128 at both EMC points (pp/tg split)
-# GPU pinned 1173; per-token csv + 1 ms-sampled INA on every slm run.
+# GPU pinned 1173; per-token csv + INA3221 VDD_IN log (median 3.6 ms per sample) on every slm run.
 # Env: PY (python3 with onnxruntime), GGUF_DIR (GGUF models) and LLAMA_CPP (llama.cpp tree) override the default paths below.
 set -u
 PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
@@ -63,6 +63,6 @@ if [ -x "$LB" ]; then
     echo "  prefill e${EMC}: $([ -s results/llm_axes/prefill_e${EMC}.csv ] && echo OK || echo FAIL)"
   done
 else
-  echo "  llama-bench 없음 — prefill 스킵"
+  echo "  llama-bench not found: prefill skipped"
 fi
 echo "C10_LLM_AXES DONE"

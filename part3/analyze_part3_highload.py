@@ -6,19 +6,25 @@ detection. Reads both normal (p3_*) and high-load (p3hi_*) results so the
 writeup can contrast them.
 
   python3 part3/analyze_part3_highload.py
+
+Reads results/p3hi_<profile>.{json,csv,tegra} of the repository this script is in
+(any working directory); exits non-zero when no cell is found.
 """
 import csv
 import glob
 import json
 import re
+import sys
+from pathlib import Path
 
+RES = Path(__file__).resolve().parent.parent / "results"
 GPUT = re.compile(r"gpu@([\d.]+)C")
 DEADLINE_MS = 10.0
 
 
 def load(prefix, name):
     try:
-        return json.load(open(f"results/{prefix}_{name}.json"))
+        return json.load(open(RES / f"{prefix}_{name}.json"))
     except FileNotFoundError:
         return None
 
@@ -35,7 +41,7 @@ def near_misses(prefix, name):
     """count cycles within 1 ms of deadline, and over it."""
     try:
         r = [float(x["response_us"]) / 1000
-             for x in csv.DictReader(open(f"results/{prefix}_{name}.csv"))]
+             for x in csv.DictReader(open(RES / f"{prefix}_{name}.csv"))]
     except FileNotFoundError:
         return None, None
     over = sum(1 for v in r if v > DEADLINE_MS)
@@ -51,7 +57,7 @@ def row(prefix, name):
     near, over = near_misses(prefix, name)
     return (name, r["p50"] / 1000, r["p99.99"] / 1000, r["max"] / 1000,
             j["release_jitter_us"]["p99.99"], j["deadline_miss_count"],
-            near, gpu_temp(f"results/{prefix}_{name}.tegra"))
+            near, gpu_temp(RES / f"{prefix}_{name}.tegra"))
 
 
 def table(title, prefix, names):
@@ -69,12 +75,16 @@ def table(title, prefix, names):
               f"{miss}{flag} | {near} | {temp or '-'} |")
 
 
+TABLES = [("High-load: memory bandwidth sweep (--stream)", "p3hi", ["mem_2", "mem_4", "mem_6", "mem_8"]),
+          ("High-load: vm pressure", "p3hi", ["vm_light", "vm_heavy"]),
+          ("High-load: other axes maxed", "p3hi", ["cache_max", "irq_storm", "combined_max"])]
+
+
 def main():
-    table("High-load: memory bandwidth sweep (--stream)", "p3hi",
-          ["mem_2", "mem_4", "mem_6", "mem_8"])
-    table("High-load: vm pressure", "p3hi", ["vm_light", "vm_heavy"])
-    table("High-load: other axes maxed", "p3hi",
-          ["cache_max", "irq_storm", "combined_max"])
+    if not any((RES / f"{prefix}_{n}.json").is_file() for _, prefix, names in TABLES for n in names):
+        sys.exit(f"no Part 3 high-load cell (p3hi_<profile>.json) found under {RES}")
+    for title, prefix, names in TABLES:
+        table(title, prefix, names)
     print("\n(latencies in ms; 'within 1ms' = cycles in [9,10] ms; "
           f"deadline = {DEADLINE_MS:.0f} ms)")
     print("\nBreaking point: first profile with misses>0, or the max-load profile"

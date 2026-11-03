@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Calibrated per-inference energy from 1 ms-sampled onboard-INA logs.
+# Calibrated per-inference energy from onboard INA3221 VDD_IN logs (median 3.6-3.9 ms per sample).
 #  - governor cells (periodic deployment duty): E/inf = mean VDD_IN power / release rate
 #  - inversion cells (saturated, continuously busy): E/inf = mean active power x compute latency
 # Run with /usr/bin/python3 after the energy_cal campaigns + rsync.

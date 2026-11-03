@@ -71,13 +71,15 @@ The bulk traces have their own DOI,
 | `results/` | the per-run data: per-cycle (per-token) traces, run summaries, INA3221 power logs, EMC lock readbacks and session logs |
 | Zenodo | the June–July 2026 bulk traces that exceed GitHub's file limits |
 
-Not released: the manuscript sources and the scripts that typeset the
-manuscript's LaTeX tables or render its figures (`campaign/make_tab_*.py`,
-`make_fig_tmc.py`, `make_fig_layers.py`, `make_figs_cal.py`, `make_figs_v2.py`,
-`make_frontier_fig.py`, `make_fig_mech2.py`; listed in `.gitignore`). The
-[result map](#where-each-result-comes-from) names, for every table, the
-released scripts that print its numbers and marks the values that no released
-script prints.
+Not released: the manuscript sources, the generators of the manuscript's
+tables (`campaign/make_tab_*.py`: main-text Tables II and III, Supp. Tables S3,
+S4 and S11) and the manuscript figure scripts (`make_fig_tmc.py`,
+`make_fig_layers.py`, `make_figs_cal.py`, `make_figs_v2.py`,
+`make_frontier_fig.py`, `make_fig_mech2.py`); all are listed in `.gitignore`.
+Some released analysis scripts can also write their supplement table with
+`--tex`. The [result map](#where-each-result-comes-from) names, for every
+table, the released scripts that print its numbers and marks the values that
+no released script prints.
 
 ## Test bed, as measured
 
@@ -261,7 +263,7 @@ Other numbers in the main text:
 | §III thermal gate | every September–October `session.log` | `thermal_record.py` (Supp. S18) |
 | §III one-hour saturated-decode soak | `soak_qwen/` (power trace on Zenodo) | ‡ |
 | §IV admission (36 of 37 NX vision deadlines), compliance and frontier position of the refit | as Table II and Supp. S3 | `nx_vision_frontier.py` |
-| §IV GEMM sign test of the monotone power law (24-cell Nano grid) | `estimator_break/` | `han_fit.py --loco-table` |
+| §IV GEMM sign test of the monotone power law, and the Han-fit errors on the 24-cell Nano grid (Supp. §S3) | `estimator_break/` | `han_fit.py --loco-table --key compute_us` |
 | §IV cross-SKU 2133→3199 MHz penalties | `campaign_g2/partA/`, `nx_validation/nx_emc*` | ‡ ratios of the run JSONs' medians (`analyze_g2.py` prints the Nano medians) |
 | §V co-tenancy characterization | `tenancy/` | ‡ |
 | §V Qwen2.5-3B drift | `boundary_stats/q3_*` | `qwen3b_drift.py` |
@@ -270,6 +272,10 @@ Other numbers in the main text:
 | §VIII-A rate-matched sensitivity | as Supp. S12 | `e3_repick.py` |
 | §VIII-A summed utilization u and the ≈ 2T̂(f) stretch | `e3_nano/` | `e3_util_offline.py` |
 | §VIII-A tenant GPU duty, inference-occupied fraction | `refit33/nx*`, `govrep_rev/nx*`, `govrep/*.tegra` | ‡ |
+
+Table VI's measured miss of the 2,000-token decode contract (1173 MHz,
+D = 28 ms) is 84 of 16,000 tokens, exactly 0.525 %: `analyze_joint.py` prints
+it as 0.53 % and `replay_rsens.py` as 0.52 %, two roundings of the same tie.
 
 ### Supplement
 
@@ -307,12 +313,16 @@ Other numbers in the main text:
 | §S9 independent burst replication | `p3_*`, `p3hi_*` | `part3/run_part3.sh`, `part3/run_part3_highload.sh` (stress-ng, June 2026) | `part3/analyze_part3_bursts.py` (P[miss \| miss] at the p99.9-anchored deadline, per cell with its stressor) |
 
 Tables S1, S26 and S28 have no data of their own. Supp. Figs. S1, S2, S6–S8 and
-S10–S12 are rendered by `campaign/make_figs.py` (from `campaign_g2/` and
-`estimator_break/`; Fig. S10 plots values from
-`results/pilot_trans/analysis_trans.txt`); Figs. S3, S4, S5 and S9 (†) by
-manuscript-only scripts, from `campaign_g2/partA` and `nx_validation/nx_emc*`
-(S3), `energy_cal/inv_*` (S4), `govrep/`, `govrep_vit/`, `energy_cal/` and
-`qwen_deploy/` under the full-sweep fit (S5) and `mech_dose/kdur_*` (S9).
+S10–S12 are rendered by `python3 campaign/make_figs.py --out DIR` (from
+`campaign_g2/` and `estimator_break/`; Fig. S10 plots values from
+`results/pilot_trans/analysis_trans.txt`; Fig. S12 plots
+`results/estimator_break/govsim_curves.json`, which
+`python3 campaign/analyze_governor_sim.py --json PATH` regenerates byte for
+byte, while without `--json` the script only prints its table); Figs. S3, S4,
+S5 and S9 (†) by manuscript-only scripts, from `campaign_g2/partA` and
+`nx_validation/nx_emc*` (S3), `energy_cal/inv_*` (S4), `govrep/`,
+`govrep_vit/`, `energy_cal/` and `qwen_deploy/` under the full-sweep fit (S5)
+and `mech_dose/kdur_*` (S9).
 
 ## The September–October 2026 campaigns (E1–E8)
 
@@ -385,10 +395,15 @@ python3 campaign/e3_stats.py --board nx --cond N3
 Kept as recorded and not scored as band results: `e3_nano/A5` and `A6`,
 protocol-execution failures (the probe had not seen the tenant) re-run as
 A5r/A6r under the readiness check. The NX reference sweeps date from
-2026-09-16 and the NX admission loops from their re-run on 2026-10-13; the first
-NX series of 2026-09-16 produced probes but no contracts, its probe files were
-discarded, and its log lines remain in each `session.log`, where `e3_stats.py`
-reports them as `WARN` cross-check lines that affect no number.
+2026-09-16 and the NX admission loops from their re-run on 2026-10-13. The
+`WARN` cross-check lines that `e3_stats.py --board nx` prints come from the
+2026-09-16 runs, whose log lines share each condition's `session.log`, and
+affect no number: 180 `t<k> PICK FAIL` lines of the discarded first admission
+series (its run-time pick failed, so it produced probes but no contracts, and
+its probe files were discarded) and one `f_oracle=INFEASIBLE vs recomputed <f>`
+line per condition, because the run-time scoring of each reference sweep
+logged `m=FAIL` for every cell; `e3_stats.py` recomputes the frontier from the
+recorded `ref_g<f>.csv` files.
 `e3_nx_r33/{C0r33,N3r33}` is a post-hoc re-run of C0 and N3 with the 33 Hz
 endpoint cells (`results/e3_nx_r33/run_r33.sh`, 2026-10-23), not a registered
 condition.
@@ -489,26 +504,48 @@ Third deposit (10.5281/zenodo.21236659):
 
 Earlier deposits: 10.5281/zenodo.20694688 (2026-06-15; the Nano probe traces
 with their per-transition record files) and 10.5281/zenodo.20745228
-(2026-06-18; `zenodo_v2_bulk.tar.gz`). `pilot_trans/analyze_trans.py` needs the
-probe traces; `campaign/thermal_record.py` scans `e4_replication/` and
-`partb_ext/`.
+(2026-06-18; `zenodo_v2_bulk.tar.gz`). `pilot_trans/analyze_trans.py` needs
+all seven probe traces of `results/pilot_trans/`: the six Nano traces in
+`zenodo_v2_bulk.tar.gz` (extract it at the repository root) and the NX GPU
+trace `nx_probe_gpu_1173_816.csv.gz`, gunzipped to
+`results/pilot_trans/gpu_1173000000_816000000.probe.csv`; without them it stops
+with a one-line message that names the missing files.
+`campaign/thermal_record.py` scans `e4_replication/` and `partb_ext/`.
 
 ## Running the code
 
 ### Analysis
 
 ```bash
-pip install -r requirements.txt               # numpy, matplotlib
+pip install -r requirements.txt               # numpy, scipy, matplotlib
 python3 campaign/e3_stats.py --board nx       # any analysis script, from any directory
 ```
 
 The analysis scripts read `results/` only and print to stdout; they write a
-file only when given an output path (such as `--md`, `--tex` or `--save`), and
-the figure scripts write PDF and PNG files. Paths given to `--results` or
-`--root` are taken relative to the current directory. They need Python 3 with
-numpy; scipy is optional (used when importable) and matplotlib is needed only
-for the figures. Tested with the L4T system Python (3.10.12, numpy 1.21.5,
-scipy 1.8.0, matplotlib 3.5.1).
+file only when given an output path (such as `--md`, `--tex`, `--json` or
+`--save`). The figure scripts write PDF and PNG files: `make_figs.py` only into
+the folder given with `--out`, `make_fig_govdeploy_rev.py` to `--out FILE`
+(default `results/govrep_rev/govdeploy.pdf`). Paths given to `--results`,
+`--root` or an output option are taken relative to the current directory. The
+scripts need Python 3 with numpy and scipy; matplotlib is needed only for the
+figures. Tested with the L4T system Python (3.10.12, numpy 1.21.5, scipy 1.8.0,
+matplotlib 3.5.1).
+
+Without scipy the Han-model fits of `han_fit.py` lose their scipy polish and
+some printed values change in the last digits. `e5_han_baseline.py` then prints
+every fit's coefficients slightly differently (for MobileNetV2, H1 A = 1867.0,
+B = 5243.5 instead of 1867.9, 5242.4; H1c α = 1.208, C = 1898.0 instead of
+1.209, 1898.5; H2 C = 1920.2 instead of 1919.9), the ViT-Small H1 held-out
+maximum error as 16.9 % instead of 17.0 % (Supp. Table S5), and in its
+L2-resident GEMM section H2's T(2133) − T(3199) as +0.38 ms instead of
++0.21 ms and its 23.5 ms pick as 816 instead of 714 MHz; `e5b_contrast.py`
+stops at its check of the 44–61 % error reduction stated for Supp. Table S7
+(it computes 45–61 % without scipy); `e1b_stats.py` falls back to tabulated
+t quantiles, which move one steady-window interval bound by 0.01 mJ. The NX
+picks and admission counts are unchanged, and
+`han_fit.py --loco-table --key compute_us`, `selector_cmp.py` and
+`e5b_emcfree.py` print the same values (the `--json` file of the latter
+differs only beyond the printed digits).
 
 ### Board campaigns
 
@@ -546,7 +583,9 @@ scipy 1.8.0, matplotlib 3.5.1).
   llama.cpp with the `g++` line in its header, `tools/membw` with
   `gcc -O2 -pthread -o membw membw.c`, and the transition probes with the lines
   in `pilot_trans/freq_probe.c` and `pilot_trans/gpu_probe.cu`. Generate the
-  proxy models with `pilot_emc/make_*.py` (a Python with `onnx`).
+  proxy models with `pilot_emc/make_*.py` (a Python with `onnx`). The June 2026
+  burst-replication runners `part3/run_part3.sh` and `run_part3_highload.sh`
+  need `stress-ng`.
 
 ### Community replication kit
 

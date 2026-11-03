@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """
-EVT claims hardening (reviewer-grade validation of the RQ2 tail section).
+EVT claims hardening (out-of-sample and stability validation of the RQ2 tail section).
 
 The draft claimed "GPD extrapolates p99.99 within ~2%" from in-sample fits.
 That is open to an overfitting objection: same data fitted and evaluated,
@@ -12,7 +12,9 @@ adds the out-of-sample and stability evidence:
    predicts the p99.9 / p99.99 of the LAST 50k. Temporal split, not random:
    harder, and matches deployment (profile first, run later).
 2. Threshold sensitivity: shape xi and predicted p99.99 at u in
-   {p98.5, p99, p99.5} on the full data.
+   {p98.5, p99, p99.5} on the full data, with the spread of the three
+   predictions, (max - min) / min; then the predicted p99.9 at the same
+   thresholds and its spread.
 3. Bootstrap CI: 500 resamples of the exceedances -> 90% CI on predicted
    p99.99; is the empirical value inside?
 4. Margin -> QoS: set a deadline from the first 50k by (a) Gaussian
@@ -80,16 +82,32 @@ def main():
 
     print("== 2. threshold sensitivity (full data) ==")
     print(f"{'cell':<26} " + "".join(f"{'xi@'+q:>10}{'p99.99':>9}"
-                                     for q in ("98.5", "99", "99.5")))
+                                     for q in ("98.5", "99", "99.5"))
+          + f"{'spread':>9}")
+    p999_rows, worst = [], {}
     for f in files:
         resp = np.loadtxt(f, delimiter=",", skiprows=1)[:, 3]
         row = f"{f.stem:<26} "
+        pred = {1e-4: [], 1e-3: []}
         for q in (98.5, 99.0, 99.5):
             u = np.percentile(resp, q)
             xi, sg = gpd_pwm(resp[resp > u] - u)
             zeta = (resp > u).mean()
-            row += f"{xi:>10.3f}{gpd_q(u, xi, sg, zeta, 1e-4):>9.1f}"
-        print(row)
+            for p in pred:
+                pred[p].append(gpd_q(u, xi, sg, zeta, p))
+            row += f"{xi:>10.3f}{pred[1e-4][-1]:>9.1f}"
+        spread = {p: (max(v) - min(v)) / min(v) * 100 for p, v in pred.items()}
+        for p in pred:
+            if p not in worst or spread[p] > worst[p][0]:
+                worst[p] = (spread[p], f.stem)
+        print(row + f"{spread[1e-4]:>8.2f}%")
+        p999_rows.append(f"{f.stem:<26} " + "".join(f"{x:>11.1f}" for x in pred[1e-3])
+                         + f"{spread[1e-3]:>8.2f}%")
+    print(f"{'cell':<26} " + "".join(f"{'p99.9@'+q:>11}" for q in ("98.5", "99", "99.5"))
+          + f"{'spread':>9}")
+    print("\n".join(p999_rows))
+    print(f"largest spread over the cells: predicted p99.99 {worst[1e-4][0]:.2f}% "
+          f"({worst[1e-4][1]}), predicted p99.9 {worst[1e-3][0]:.2f}% ({worst[1e-3][1]})")
     print()
 
     print(f"== 3. bootstrap ({B} resamples of exceedances): 90% CI on "

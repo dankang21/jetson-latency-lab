@@ -11,7 +11,7 @@
 #                 for any deadline (the Part 3 loose-deadline mistake cannot
 #                 recur by construction).
 #
-# Assembled from reviewed, pilot-validated components: pilot_emc/emc_ctl.sh,
+# Assembled from pilot-validated components: pilot_emc/emc_ctl.sh,
 # part2/set_domain.sh, tools/membw, tools/slm_decode_bench, harness.infer_bench.
 # CPU+GPU pinned throughout; EMC locked per cell; thermal gate between cells;
 # RT throttling disabled for the whole campaign (SLM cells busy-spin FIFO 80
