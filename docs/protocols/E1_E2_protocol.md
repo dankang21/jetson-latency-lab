@@ -3,8 +3,13 @@
 > "When Memory-Clock State Changes Deadline Admission: Evidence from Jetson
 > Orin". The freeze, pre-statement and amendment dates are those recorded in
 > the log. They are self-attested: the file was not under version control
-> until this release. Passages that quoted or cited non-public documents are
-> replaced by a neutral description of what they address; internal working
+> until this release. Where the E5-B and E5-B-live sections call
+> `campaign/e5b_emcfree.py` or its scoring "committed", the script was in fact
+> kept in the author's working tree outside version control; it first entered
+> version control in this release (2026-11-03), so the times the log gives for
+> its writing and its 2026-10-28 scoring are, like all of the log's time
+> stamps, self-attested. Passages that quoted or cited non-public documents
+> are replaced by a neutral description of what they address; internal working
 > references (internal process notes, names and paths of internal notes and
 > outputs, host names) are removed, and the non-public planning document is
 > called "the campaign plan". Nothing else is changed.
