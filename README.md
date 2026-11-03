@@ -145,7 +145,12 @@ priority, not the effective policy. Runs with an empty `rt_warnings` list come
 from the root characterization harness (`SCHED_FIFO` 80 with `mlockall`), for
 example the June 2026 Nano campaign (`results/campaign_g2`,
 `results/estimator_break`) and the NX 8 Hz profiling cells in
-`results/nx_validation`.
+`results/nx_validation`. One user-mode set differs: the Nano energy-calibration
+runs `results/energy_cal/inv_*` (`energy_cal_inv.sh`) asked for core 7, which
+the 6-core Nano lacks, so the affinity call itself failed and they ran
+unpinned, as `SCHED_OTHER` without memory locking; their `rt_warnings` read
+`set_realtime failed: [Errno 22] Invalid argument` and the same `mlockall`
+line.
 
 **Energy.** [`campaign/ina_log.py`](campaign/ina_log.py) polls the INA3221
 `VDD_IN` rail (with `CPU_GPU_CV` and `SOC`) as fast as the driver allows, on
@@ -168,7 +173,7 @@ NX copies were not hashed.
 | MobileNetV2 | `mobilenetv2-12.onnx` (opset 12, 13,964,571 B) | ONNX Model Zoo, `validated/vision/classification/mobilenet/model/` (URL in [`repro/replicate.sh`](repro/replicate.sh)) | `c0c3f76d93fa3fd6580652a45618618a220fced18babf65774ed169de0432ad5` |
 | ResNet-50 | `resnet50-v1-12.onnx` (ResNet-50 v1, opset 12) | ONNX Model Zoo file name; the download URL was not recorded | `3f03fdef724b22947eed826f1eef1dc5c34151bb4c37d634f1db89dfa2dd1526` |
 | YOLOv8s | `yolov8s.onnx` (640×640, batch 1, opset 17, no NMS) | Ultralytics 8.4.62 export of `yolov8s.pt` (COCO), 2026-06-09; the export arguments are in the ONNX metadata, and an equivalent command is `yolo export model=yolov8s.pt format=onnx imgsz=640 batch=1 opset=17 simplify=True` | `f820fa58865b9b05d212c232cb1b7fb744b683f8970c41c9726be5d6e04e02ef` (`yolov8s.pt`: `1f47a78bf100391c2a140b7ac73a1caae18c32779be7d310658112f7ac9aa78a`) |
-| ViT-Small | `vit_small_patch16_224.onnx` + `vit_small_patch16_224.onnx.data` | timm `vit_small_patch16_224` (the DeiT-S configuration) with `pretrained=False`, i.e. random weights; no accuracy is evaluated. Exported as below (timm 1.0.27, torch 2.12.0, onnx 1.21.0) | `675cec44a264633387049a4d77dd50071996753066dc56a1fcd542a4a005a8ae` / `3298f5c11a74f4d4f94fee9e00477f7ef834065f3ac6ab75da2e0c27b8b6e91e`; not byte-reproducible (unseeded weights) |
+| ViT-Small | `vit_small_patch16_224.onnx` + `vit_small_patch16_224.onnx.data` | timm `vit_small_patch16_224` (the DeiT-S configuration) with `pretrained=False`, i.e. random weights; no accuracy is evaluated. Exported as below (timm 1.0.27, torch 2.12.0, onnx 1.21.0) | `675cec44a264633387049a4d77dd50071996753066dc56a1fcd542a4a005a8ae` / `3298f5c11a74f4d4f94fee9e00477f7ef834065f3ac6ab75da2e0c27b8b6e91e`; the export below reproduces the `.onnx` graph file byte for byte, but not the `.onnx.data` weights file (unseeded random weights) |
 | Qwen2.5-1.5B-Instruct Q4_K_M | `qwen2.5-1.5b-instruct-q4_k_m.gguf` (GGUF V3; `general.name` qwen2.5-1.5b-instruct, `general.version` v0.1, `file_type` 15) | Qwen2.5 Instruct GGUF; the download source was not recorded | `6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e` |
 | Qwen2.5-0.5B / 3B-Instruct Q4_K_M, Qwen2.5-1.5B-Instruct Q8_0 | `qwen2.5-0.5b-instruct-q4_k_m.gguf`, `qwen2.5-3b-instruct-q4_k_m.gguf`, `qwen2.5-1.5b-instruct-q8_0.gguf` (names from the run metadata) | as above; used on the NX only | not available |
 | GEMV decode proxy | `pilot_emc/models/decode_proxy_fp16.onnx` (12 × 4096², fp16) | `python3 pilot_emc/make_decode_proxy.py` | `f254029bc4bc2caa73d923050684238d3b760304961cc7c16dec4dc8bb46d181` |
@@ -244,12 +249,12 @@ listed data. **‡** no released script prints these values; the row says why.
 |---|---|---|---|
 | Table I — platforms; workload p50 at EMC 3199 MHz (Nano) | `campaign_g2/partA/emc3199_*.json` | `run_g2.sh A` (root) | `analyze_g2.py` (Part A) |
 | Fig. 1 — overview: (a) solo failure, (c) joint stress | as Table II; `joint_hxt/` | as Table II; `joint_hxt.sh`, `tmc_reps.sh` | † `e5_han_baseline.py --model mobilenet` (a), `analyze_joint.py` (c) |
-| Fig. 2 — deployed blind vs aware governor, NX MobileNetV2 | `govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3}`, `refit33/nx/`; dashed line: `nx_validation/nx_est_emc{2133,3199}_gpu{306,1173}_mobilenet.json` (8 Hz cells) | as Table II | `make_fig_govdeploy_rev.py [--out FILE]` (default `results/govrep_rev/govdeploy.pdf`) |
+| Fig. 2 — deployed blind vs aware governor, NX MobileNetV2 | `govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3}`, `refit33/nx/`; dashed line: `nx_validation/nx_est_emc{2133,3199}_gpu{306,1173}_mobilenet.json` (8 Hz cells) | as Table II | `make_fig_govdeploy_rev.py --out FILE` |
 | Table II — deployed MobileNetV2 governor | NX sessions `govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3}`; Nano sessions `govrep_rev/{nano,nano_mobilenet_s2}`; fits `refit33/nx/` (33 Hz, headline panel), `nx_validation/nx_est_emc{2133,3199}_gpu{306,1173}_mobilenet.json` (8 Hz, last panel), `nano_grid/mobilenet/est_emc{2133,3199}_gpu{306,1020}.json` (Nano, 50 Hz) | `govrep_rev.sh` (session 1 on each board); `govrep_rev2.sh` or `govrep_rev3.sh` (later sessions, `MODEL=mobilenet`); `MODE=refit govrep_rev2.sh` (33 Hz endpoint cells) | `govdeploy_stats.py` (every panel: picks, per-run misses, runs over τ per session, paired ΔE with its paired-t and bootstrap intervals; per session the median misses and the deadlines with a violating run; energy and p50/p99 by clock); also `e5_han_baseline.py --model mobilenet` (headline-panel picks and runs over τ per session), `selector_cmp.py` (paired ΔE means) |
 | Table III — one cell per (workload, SKU) | as Table II and Supp. S3, S4; `qwen_deploy/`, `qwen3b_deploy/`, `boundary_stats/q15_*` | as those tables; `qwen_deploy.sh`, `qwen3b_deploy.sh`, `boundary_stats.sh` | `solo_stats.py` (the six vision rows, the figures of the table note and the Qwen-1.5B 2,000-token entry), `analyze_qwen_deploy.py` (Qwen-1.5B), `analyze_breadth.py` (Qwen-3B); also `e5_han_baseline.py` (MobileNetV2, NX), `e1b_stats.py` (ViT-S, ResNet-50, YOLOv8s, NX) |
 | Table IV — EMC-free replay (E5-B) | `nx_validation_r33/` (latency fits), `govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3}` (EMC 2133 cells), `nx_pairs/` (EMC 3199 and 665.6 cells), `e5b_live/nx/` (re-run) | `sweep_rate.sh`, `govrep_emcfree.sh` | `e5b_emcfree.py` |
-| Fig. 3 — the three state layers | none (conceptual; numbers from Tables II, V, VI) | — | † |
-| Fig. 4 — horizon and tenancy as contract state | `boundary_stats/q15_*`, `horizon_4k/`, `joint_hxt/` | `boundary_stats.sh`, `tmc_reps.sh`, `horizon_4k.sh`, `joint_hxt.sh` | † `analyze_joint.py` (drift, H\*, collision cliff) |
+| Fig. 3 — the three state layers | none of its own (conceptual; numbers from Tables II, V, VI and, in the occupancy row, the §V decode runs `boundary_stats/q15_g1173_r*`, `joint_hxt/q15co_g1173_r*`) | — | † `tenancy_stats.py --section decode` (occupancy row: the all-token median shift and the plateau's share and location) |
+| Fig. 4 — horizon and tenancy as contract state | `boundary_stats/q15_*`, `horizon_4k/`, `joint_hxt/` | `boundary_stats.sh`, `tmc_reps.sh`, `horizon_4k.sh`, `joint_hxt.sh` | † `analyze_joint.py` (drift, H\*, collision cliff), `tenancy_stats.py --section decode` (panel b: p50, plateau share and location), `qwen3b_drift.py` (the caption's drift range: pooled drift of the 2,000-token runs at 918, 1020, 1122 and 1173 MHz) |
 | Table V — Qwen2.5-1.5B decode governor | `qwen_deploy/` (sweeps, 300-token cells, power logs), `boundary_stats/q15_g{918,1020,1173}_r*` (2,000-token runs) | `qwen_deploy.sh`, `boundary_stats.sh`, `tmc_reps.sh` | `analyze_qwen_deploy.py` (picks, 300-token miss, energy ordering), `qwengov_2k.py` (the 2,000-token column with its run-level bound, and the first- and last-500-token misses) |
 | Table VI — admission outcomes | `joint_gov/`, `boundary_stats/q15_g1173_r*`, `horizon_4k/`, `joint_hxt/` | `joint_gov.sh`, `jg_extra.sh`, `boundary_stats.sh`, `tmc_reps.sh`, `horizon_4k.sh`, `joint_hxt.sh` | `analyze_joint.py`, `admission_runs.py`; safety-multiplier replay `replay_rsens.py` |
 | Table VII — admission evidence by setting | `fresh_loop/`, `banded_loop/`, `launch1020/`, `launch_ext/`, `e3_nx/`, `e3_nano/`, `e3_nx_r33/` | `fresh_loop.sh`, `banded_loop.sh`, `launch1020.sh`, `launch_ext.sh`, `admit_loop.sh`, `admit_refsweep.sh` | `admit_pick.py --selftest` (re-derives the 18 recorded held-out and fresh-probe picks), `e3_repick.py` (round-1 and held-out picks and misses; re-run rows), `launch_ext_stats.py` (one-bin headroom), `e3_stats.py --board nx` and `--board nano`, `e3_tally.py` (sums by setting), `fresh_series.py` (the round-1, held-out and one-bin-headroom rows), `e3_table.py` (the transfer rows: verdict counts by setting under both wordings) |
@@ -269,7 +274,8 @@ Other numbers in the main text:
 | §IV cross-SKU 2133→3199 MHz penalties | `campaign_g2/partA/`, `nx_validation/nx_emc*` | `emc_axis_stats.py --section xsku` (response-time p50 of each run JSON; `analyze_g2.py` prints the Nano compute medians) |
 | §IV two-cell refits from every pair of the eight GPU cells | `estimator_break/emc2133_gpu*` | `emc_axis_stats.py --section pairs` (compute p50, as `analyze_estimator.py`) |
 | §IV energy of the maximum clock against the aware picks; deployed medians of the blind breadth violations | `govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3}`; `govrep_rev/nx_{vit,yolov8s,resnet50}`, `refit33/nx_*` | `deployment_stats.py --section maxclock`, `--section breadth` |
-| §V co-tenancy characterization | `tenancy/`; solo runs `govrep/`, `nx_validation/`; decode `boundary_stats/q15_g1173_r*`, `joint_hxt/q15co_g1173_r*` | `tenancy_stats.py --section victim` (MobileNetV2 under the 10 Hz co-runner; the EMC samples of `pin_check.tegra`), `--section decode` (token distribution and collision plateau, Fig. 4b) |
+| §IV tail state of the June session: slow-mode share and offset, the same p50, the full-sweep picks at 4.6–5.0 ms (blind misses per run and their mean; the aware arm's top-clock fallback), the later sessions unimodal | `govrep/` (2026-06-17); `govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3}`; fits `nx_validation/nx_est_emc{2133,3199}_gpu*_mobilenet.json` | `deployment_stats.py --section june` (slow mode of a run: its cycles more than 80 µs above the run's response-time p50; share = their fraction, offset = their median minus that p50) |
+| §V co-tenancy characterization; the co-tenant decode distribution quoted in §VI | `tenancy/`; solo runs `govrep/`, `nx_validation/`; decode `boundary_stats/q15_g1173_r*`, `joint_hxt/q15co_g1173_r*` | `tenancy_stats.py --section victim` (MobileNetV2 under the 10 Hz co-runner; the EMC samples of `pin_check.tegra`), `--section decode` (solo and co-tenant medians over the same tokens, all 2,000 and the first 300; the collision plateau's share, location and 1 ms bins; Figs. 3 and 4b) |
 | §V Qwen2.5-3B drift | `boundary_stats/q3_*` | `qwen3b_drift.py` |
 | §VI, §VII decode drift under the co-tenant; §VI decode-probe autocorrelation | `joint_hxt/`, `boundary_stats/q15_*` | `tenancy_stats.py --section drift` (pooled and per-run), `--section probe` |
 | §VII EWMA level calibrator | `govrep/`, `govrep_rev/nx_mobilenet/`, `live_gov/` | `replay_ewma.py` |
@@ -302,7 +308,7 @@ it as 0.53 % and `replay_rsens.py` as 0.52 %, two roundings of the same tie.
 | S15 co-tenancy ablation ladder | `joint_gov/`, `joint_hxt/` | `joint_gov.sh`, `jg_extra.sh`, `tmc_reps.sh`, `joint_hxt.sh` | `analyze_joint.py`, `admission_runs.py` |
 | S16 platform and harness knobs | run metadata, `emc_lock.txt`, the runners, `repro/` | — | — |
 | S17 nvpmodel power modes | `repro/nvpmodel.conf` (Nano); the NX file named in the test-bed table | — | `nvpmodel_modes.py [CONF[:LABEL] ...]` |
-| S18 thermal-gate record | every `session.log` from September 2026 on; `*.tegra` traces | — | `thermal_record.py` (its pre-September summary needs `e4_replication/` and `partb_ext/` from Zenodo; a WARN line names a missing one) |
+| S18 thermal-gate record | every `session.log` from September 2026 on; `*.tegra` traces | — | `thermal_record.py` (its pre-September summary needs `e4_replication/`, `partb_ext/` and `e4_nx/` from Zenodo; a WARN line names a missing one) |
 | S19 safety-multiplier sensitivity | as Table VI | — | `replay_rsens.py` |
 | S20, S21 fresh-probe trials | `fresh_loop/` (vision and decode arms, `decisions.csv`), `banded_loop/`, `launch1020/`, `launch_ext/` | `fresh_loop.sh`, `banded_loop.sh`, `launch1020.sh`, `launch_ext.sh` | `fresh_series.py` (every trial and aggregate row; the decode arm's decisions re-derived), `e3_repick.py` (vision picks and misses), `replay_bandwidth.py` (slack), `launch_ext_stats.py` |
 | S22 band-width sensitivity | as §VII | — | `replay_bandwidth.py` |
@@ -316,7 +322,7 @@ it as 0.53 % and `replay_rsens.py` as 0.52 %, two roundings of the same tie.
 | §S3 batch axis, session repeats, low-clock collapse and two-cell pairs | `batch_axis/`, `parta_reps/`, `parta_reps_nx/`, `campaign_g2/partA/`, `estimator_break/` | `c9_batch.sh`, `c6_reps.sh` | `emc_axis_stats.py --section batch` (compute p50), `--section reps` (response-time p50), `--section xsku`, `--section pairs` |
 | §S4 energy and Pareto dominance | `energy_cal/` | `energy_cal_inv.sh`, `energy_cal_gov.sh` | `analyze_energy_cal.py` |
 | §S5 tails and bursts | `campaign_g2/partB/`; replication cells `e4_replication/` (the NX cells also in `e4_nx/`), `partb_ext/` (Zenodo) | `run_g2.sh B`, `e4_replication.sh`, `nano_c7.sh` | `analyze_g2.py`, `analyze_bursts.py`, `analyze_evt_validation.py` (GPD validation and threshold spread), `tails_mech_stats.py --section worst`, `--section nx` (the replication cells) |
-| §S6 shared stall signature | `mech_dose/`, `mech_nx/`; `partb_ext/` (Zenodo) | `mech_dose.sh`, `nano_wave2a.sh`, `nx_wave2.sh` | `mech_kdur_extract.py`, `mech_kdur_ts.py` (kernel durations from Nsight exports), `tails_mech_stats.py --section ext`, `--section cycles`, `--section slow`; † Fig. S9; ‡ the Nsight Compute kernel-replay figures (8 % faster at 3199 MHz in isolation, L2 hit rate ≈ 83 %) and those of the fine-grained GPU-clock, temperature and supply-current trace (1013–1017 MHz, 51 vs 52 °C, +9 to 15 %): their data are not in this release |
+| §S6 shared stall signature | `mech_dose/`, `mech_nx/`; `partb_ext/` (Zenodo) | `mech_dose.sh`, `nano_wave2a.sh`, `nx_wave2.sh` | `mech_kdur_extract.py`, `mech_kdur_ts.py` (kernel durations from Nsight Systems exports, which the runners delete after extraction and which are not released; their outputs `mech_dose/kdur_*.txt`, `mech_dose/ts_ts_*.csv` and `mech_nx/kdur_*.txt` are), `tails_mech_stats.py --section ext`, `--section cycles`, `--section slow`; † Fig. S9; ‡ the Nsight Compute kernel-replay figures (8 % faster at 3199 MHz in isolation, L2 hit rate ≈ 83 %) and those of the fine-grained GPU-clock, temperature and supply-current trace (1013–1017 MHz, 51 vs 52 °C, +9 to 15 %): their data are not in this release |
 | §S7 actuation lag | `pilot_trans/` (probe traces on Zenodo); live first-miss upshift `live_gov/emcsw_*` | `pilot_trans/run_trans_pilot.py`, `nx_live.sh` | `pilot_trans/analyze_trans.py`, `tails_mech_stats.py --section live` (the live upshift) |
 | §S9 independent burst replication | `p3_*`, `p3hi_*` | `part3/run_part3.sh`, `part3/run_part3_highload.sh` (stress-ng, June 2026) | `part3/analyze_part3_bursts.py` (P[miss \| miss] at the p99.9-anchored deadline, per cell with its stressor) |
 
@@ -431,10 +437,11 @@ deployment, refit, sweep and re-run cell, and for admission trials, reference
 sweeps and launches also the reading right after the gate (`tgate=`) and every
 time-out (`WARN thermal gate timed out`). `campaign/thermal_record.py`
 rebuilds Supp. Table S18 from them; its summary of the earlier, ungated
-sessions also scans the tegrastats traces of `e4_replication/` and
-`partb_ext/`, so extract those Zenodo archives into `results/` first (a WARN
-line names a missing one). The summary counts every `*.tegra` file under
-`results/`, so an extracted `e4_nx/` or `e3_governor/` adds its traces to it.
+sessions also counts the tegrastats traces of `e4_replication/`,
+`partb_ext/` and `e4_nx/`, so extract those Zenodo archives into `results/`
+first (a WARN line names a missing one). It counts every `*.tegra` file under
+`results/` except those of `e3_governor/`, whose four NX governor cells no
+result of the article uses.
 
 ### Protocols
 
@@ -509,7 +516,7 @@ Third deposit (10.5281/zenodo.21236659):
 | `e4_replication_nano.tar.gz` | root-protocol replication runs on the Nano, and the run files of the NX cells of `partb_nx.tar.gz` (`results/e4_replication/`) |
 | `e3_governor_nx.tar.gz` | NX governor-cell auxiliary traces (`results/e3_governor/`) |
 | `soak_power_1khz.csv.gz` | the `VDD_IN` log of the one-hour saturated Qwen2.5 decode soak (`results/soak_qwen/soak.power.csv`); despite the file name its median sample interval is 3.6 ms |
-| `nx_probe_emc_3199_2133.csv.gz`, `nx_probe_gpu_1173_816.csv.gz` | NX EMC- and GPU-transition probe traces (Supp. §S7) |
+| `nx_probe_emc_3199_2133.csv.gz`, `nx_probe_gpu_1173_816.csv.gz` | NX EMC- and GPU-transition probe traces (not used in Supp. §S7, which reports only the Nano pairs; see below) |
 | `README_v3.md`, `SHA256SUMS` | file table and checksums |
 
 Earlier deposits: 10.5281/zenodo.20694688 (2026-06-15; the Nano probe traces
@@ -519,8 +526,13 @@ all seven probe traces of `results/pilot_trans/`: the six Nano traces in
 `zenodo_v2_bulk.tar.gz` (extract it at the repository root) and the NX GPU
 trace `nx_probe_gpu_1173_816.csv.gz`, gunzipped to
 `results/pilot_trans/gpu_1173000000_816000000.probe.csv`; without them it stops
-with a one-line message that names the missing files.
-`campaign/thermal_record.py` scans `e4_replication/` and `partb_ext/`;
+with a one-line message that names the missing files. The NX GPU trace is needed
+only for the script to run: the script prints that pair, but its data-quality
+gate excludes it from the verdict (`probe_rc=2`, the probe exit code in
+`results/pilot_trans/gpu_1173000000_816000000.meta.json`), and Supp. §S7, like
+the shipped `results/pilot_trans/analysis_trans.txt`, reports only the six Nano
+pairs.
+`campaign/thermal_record.py` scans `e4_replication/`, `partb_ext/` and `e4_nx/`;
 `campaign/tails_mech_stats.py` reads `e4_replication/` (or `e4_nx/` for the
 NX cells) and `partb_ext/`, and names the archive of every cell it skips;
 `campaign/deployment_stats.py` summarizes the soak's power log once
@@ -547,9 +559,10 @@ printers (`emc_axis_stats.py`, `tenancy_stats.py`, `tails_mech_stats.py`,
 `deployment_stats.py`, `profile_dispersion.py`) write nothing at all. The
 first four number printers print one block per article item, or only the
 blocks chosen with `--section NAME`; all five take `--results DIR`. The
-figure scripts write PDF and PNG files: `make_figs.py` only into the folder
-given with `--out`, `make_fig_govdeploy_rev.py` to `--out FILE` (default
-`results/govrep_rev/govdeploy.pdf`). Paths given to `--results`, `--root` or
+figure scripts write PDF and PNG files only to the paths given: `make_figs.py`
+into the folder `--out DIR`, `make_fig_govdeploy_rev.py` to `--out FILE` (plus
+a PNG in `--png DIR` if given); both require `--out` and without it stop with
+a usage error, writing nothing. Paths given to `--results`, `--root` or
 an output option are taken relative to the current directory. The scripts need
 Python 3 with numpy and scipy (the table and number printers need numpy only);
 matplotlib is needed only for the figures. Tested with the L4T system Python
@@ -569,7 +582,9 @@ t quantiles, which move one steady-window interval bound by 0.01 mJ. The NX
 picks and admission counts are unchanged, and
 `han_fit.py --loco-table --key compute_us`, `selector_cmp.py` and
 `e5b_emcfree.py` print the same values (the `--json` file of the latter
-differs only beyond the printed digits).
+differs only beyond the printed digits). `energy_pairs_ci.py` then computes its
+t quantiles from the exact finite-series form of the t distribution and prints
+the same values; only the `scipy=` flag of its first line changes.
 
 ### Board campaigns
 
