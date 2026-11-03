@@ -91,14 +91,16 @@ script prints.
 | L4T / JetPack | R36.5.0 / 6.2.2 (`nvidia-jetpack 6.2.2+b24`) | R36.4.3 / not recorded |
 | Kernel | `5.15.185-tegra #1 SMP PREEMPT` (not PREEMPT_RT) | `5.15.148-tegra #3 SMP PREEMPT` (not PREEMPT_RT) |
 | CUDA | 12.6 (`cuda-toolkit-12-6 12.6.11`, nvcc 12.6.68) | 12.6 (CUDA SDK 12.6.11) |
-| Power mode | MAXN_SUPER (id 2) of `nvpmodel_p3767_0003_super.conf` = [`repro/nvpmodel.conf`](repro/nvpmodel.conf) (its default mode set to MAXN_SUPER) | MAXN_SUPER (id 0) of the stock `nvpmodel_p3767_0000_super.conf`, sha256 `7d7e83807e95e68a934a7a33f61cce80b8a02b170de37be286c617e43f826461` |
+| Power mode | MAXN_SUPER (id 2) of `nvpmodel_p3767_0003_super.conf` = [`repro/nvpmodel.conf`](repro/nvpmodel.conf) (its default mode set to MAXN_SUPER) | MAXN_SUPER (id 0) of the stock `nvpmodel_p3767_0000_super.conf` = [`repro/nx/nvpmodel.conf`](repro/nx/nvpmodel.conf), sha256 `7d7e83807e95e68a934a7a33f61cce80b8a02b170de37be286c617e43f826461` |
 | CPU / GPU | 6 cores ≤ 1728 MHz / GPU ≤ 1020 MHz | 8 cores ≤ 1984 MHz / GPU ≤ 1173 MHz |
 | Lockable EMC points | 204, 665.6, 2133, 3199 MHz ([`repro/emc_lockable_set.txt`](repro/emc_lockable_set.txt)) | the same four ([`results/nx_validation/discovery.txt`](results/nx_validation/discovery.txt)) |
 | Python of the runs | 3.10.12 | 3.10.12 |
 
 [`repro/`](repro/) is a snapshot of the Nano taken on 2026-06-12 (kernel, L4T,
 package versions, active power mode and its nvpmodel file, the EMC lockable-set
-probe). Every profiling and deployment cell held the power mode at MAXN_SUPER,
+probe); [`repro/nx/`](repro/nx/) holds the NX's stock nvpmodel file and its
+hardware clock maxima read on 2026-09-15. Every profiling and deployment cell
+held the power mode at MAXN_SUPER,
 pinned the CPU (cpufreq governor `performance`) and the GPU (devfreq
 `min_freq` = `max_freq`), and set the EMC alone through the BPMP rate lock;
 Supp. Tables S16 and S17 list every knob and every power mode of both boards.
@@ -313,7 +315,7 @@ it as 0.53 % and `replay_rsens.py` as 0.52 %, two roundings of the same tie.
 | S14 held-out error with an EWMA offset | `estimator_break/` | `run_estimator_break.sh` | `analyze_estimator.py` (blind, EMC table), `replay_ewma.py` (offset) |
 | S15 co-tenancy ablation ladder | `joint_gov/`, `joint_hxt/` | `joint_gov.sh`, `jg_extra.sh`, `tmc_reps.sh`, `joint_hxt.sh` | `analyze_joint.py`, `admission_runs.py` |
 | S16 platform and harness knobs | run metadata, `emc_lock.txt`, the runners, `repro/` | — | — |
-| S17 nvpmodel power modes | `repro/nvpmodel.conf` (Nano); the NX file named in the test-bed table | — | `nvpmodel_modes.py [CONF[:LABEL] ...]` |
+| S17 nvpmodel power modes | `repro/nvpmodel.conf` (Nano); `repro/nx/nvpmodel.conf` and `repro/nx/clock_maxima.txt` (NX; the maxima in parentheses) | — | `nvpmodel_modes.py [CONF[:LABEL] ...]` |
 | S18 thermal-gate record | every `session.log` from September 2026 on; `*.tegra` traces | — | `thermal_record.py` (its pre-September summary needs `e4_replication/`, `partb_ext/` and `e4_nx/` from Zenodo; a WARN line names a missing one) |
 | S19 safety-multiplier sensitivity | as Table VI | — | `replay_rsens.py` |
 | S20, S21 fresh-probe trials | `fresh_loop/` (vision and decode arms, `decisions.csv`), `banded_loop/`, `launch1020/`, `launch_ext/` | `fresh_loop.sh`, `banded_loop.sh`, `launch1020.sh`, `launch_ext.sh` | `fresh_series.py` (every trial and aggregate row; the decode arm's decisions re-derived), `e3_repick.py` (vision picks and misses), `replay_bandwidth.py` (slack), `launch_ext_stats.py` |
@@ -668,7 +670,7 @@ pilot_trans/     frequency-transition / actuation-lag probes (Supp. S7)
 part3/           stress-ng burst-replication runners and analysis (Supp. S9, June 2026)
 part2/           set_domain.sh -- CPU/GPU pinning on the Orin Nano (June campaign, pilots, replication kit)
 tools/           slm_decode_bench (llama.cpp per-token decode bench), membw (memory-bandwidth adversary)
-repro/           board snapshot (Orin Nano, 2026-06-12) + community replication kit
+repro/           board snapshot (Orin Nano, 2026-06-12; NX nvpmodel file and clock maxima in repro/nx/) + community replication kit
 results/         per-run data (folder glossary above; bulk June-July traces on Zenodo)
 ```
 

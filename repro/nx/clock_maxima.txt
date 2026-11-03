@@ -1,0 +1,41 @@
+# Orin NX 16 GB (L4T R36.4.3): hardware clock ranges read on 2026-09-15 in power mode MAXN_SUPER (id 0).
+# Where the stock nvpmodel conf (nvpmodel.conf in this folder) leaves a clock uncapped (MAX_FREQ -1),
+# these maxima apply; Supp. Table S17 prints them in parentheses (CPU 1984, GPU 1173 MHz; DLA core/falcon
+# 1228.8/652.8 MHz; PVA VPS/AXI 1190.4/857.6 MHz). Lines are copied verbatim from the board dump.
+## cpufreq (kHz)
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies = 115200 192000 268800 345600 422400 499200 576000 652800 729600 806400 883200 960000 1036800 1113600 1190400 1267200 1344000 1420800 1497600 1574400 1651200 1728000 1804800 1881600 1958400 1984000 
+cpu0 online=1 gov=schedutil scaling_min=729600 scaling_max=1984000 scaling_cur=1344000 cpuinfo_min=115200 cpuinfo_max=1984000 cpuinfo_cur=882000
+cpu1 online=1 gov=schedutil scaling_min=729600 scaling_max=1984000 scaling_cur=729600 cpuinfo_min=115200 cpuinfo_max=1984000 cpuinfo_cur=1420800
+cpu2 online=1 gov=schedutil scaling_min=729600 scaling_max=1984000 scaling_cur=883200 cpuinfo_min=115200 cpuinfo_max=1984000 cpuinfo_cur=883200
+cpu3 online=1 gov=schedutil scaling_min=729600 scaling_max=1984000 scaling_cur=1420800 cpuinfo_min=115200 cpuinfo_max=1984000 cpuinfo_cur=1420800
+cpu4 online=1 gov=schedutil scaling_min=729600 scaling_max=1984000 scaling_cur=883200 cpuinfo_min=115200 cpuinfo_max=1984000 cpuinfo_cur=960000
+cpu5 online=1 gov=schedutil scaling_min=729600 scaling_max=1984000 scaling_cur=960000 cpuinfo_min=115200 cpuinfo_max=1984000 cpuinfo_cur=1344000
+cpu6 online=1 gov=schedutil scaling_min=729600 scaling_max=1984000 scaling_cur=1497600 cpuinfo_min=115200 cpuinfo_max=1984000 cpuinfo_cur=1420800
+cpu7 online=1 gov=schedutil scaling_min=729600 scaling_max=1984000 scaling_cur=1267200 cpuinfo_min=115200 cpuinfo_max=1984000 cpuinfo_cur=883200
+policy0: cpus=0 1 2 3 related=0 1 2 3
+policy4: cpus=4 5 6 7 related=4 5 6 7
+## GPU devfreq (Hz)
+/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu/available_frequencies = 306000000 408000000 510000000 612000000 714000000 816000000 918000000 1020000000 1122000000 1173000000
+/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu/min_freq = 306000000
+/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu/max_freq = 1173000000
+## EMC, BPMP debugfs (Hz; possible_rates in kHz)
+/sys/kernel/debug/bpmp/debug/clk/emc/min_rate = 204000000
+/sys/kernel/debug/bpmp/debug/clk/emc/max_rate = 3199000000
+/sys/kernel/debug/bpmp/debug/emc/possible_rates = 204000 665600 2133000 3199000 (kHz)
+## BPMP clocks of the GPU, DLA and PVA (Hz)
+gpusysclk: rate=306000000 locked=0 min=306000000 max=1173000000
+dla0_core: rate=1228800000 locked=0 min=115200000 max=1228800000
+dla1_core: rate=1228800000 locked=0 min=115200000 max=1228800000
+dla0_falcon: rate=652800000 locked=0 min=115200000 max=652800000
+dla1_falcon: rate=652800000 locked=0 min=115200000 max=652800000
+pva0_vps: rate=1190400000 locked=0 min=115200000 max=1190400000
+## jetson_clocks --show (read-only; the PVA0_AXI maximum is listed only here)
+GPU MinFreq=306000000 MaxFreq=1173000000 CurrentFreq=306000000
+EMC MinFreq=204000000 MaxFreq=3199000000 CurrentFreq=665600000 FreqOverride=0
+DLA0_CORE:   Online=1 MinFreq=0 MaxFreq=1228800000 CurrentFreq=1228800000
+DLA0_FALCON: Online=1 MinFreq=0 MaxFreq=652800000 CurrentFreq=652800000
+DLA1_CORE:   Online=1 MinFreq=0 MaxFreq=1228800000 CurrentFreq=1228800000
+DLA1_FALCON: Online=1 MinFreq=0 MaxFreq=652800000 CurrentFreq=652800000
+PVA0_VPS0: Online=1 MinFreq=0 MaxFreq=1190400000 CurrentFreq=1190400000
+PVA0_AXI:  Online=1 MinFreq=0 MaxFreq=857600000 CurrentFreq=857600000
+NV Power Mode: MAXN_SUPER
