@@ -2,13 +2,15 @@
 # Fresh-probe end-to-end admission-loop validation (NX):
 # 8 trials x (fresh co-runner launch -> fresh probe -> guarded pick ->
 # disjoint production contract) for the two co-tenancy acceptances.
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-MN=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
-VIT=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MN=$ONNX_DIR/mobilenetv2-12.onnx
+VIT=$ONNX_DIR/vit_small_patch16_224.onnx
 BENCH=$LAB/tools/slm_decode_bench
-MD=/home/dk/mobile/models
+MD="${GGUF_DIR:-/home/dk/mobile/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/fresh_loop
 CO_PID=""

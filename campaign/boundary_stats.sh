@@ -1,14 +1,17 @@
 #!/bin/bash
-# B1 (Blocker #2): boundary-cell statistical hardening on the NX.
+# B1: boundary-cell statistical hardening on the NX.
 # 10 independent 1000-cycle MNv2 deployments at the aware clocks (1173, 1122)
 # + 5x2000-token Qwen 1.5B/3B runs at the aware clocks. Miss-rate run-level CIs.
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+GGUF_DIR="${GGUF_DIR:-/home/dk/mobile/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BENCH=$LAB/tools/slm_decode_bench
-MN=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
-Q15=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
-Q3=/home/dk/mobile/models/qwen2.5-3b-instruct-q4_k_m.gguf
+MN=$ONNX_DIR/mobilenetv2-12.onnx
+Q15=$GGUF_DIR/qwen2.5-1.5b-instruct-q4_k_m.gguf
+Q3=$GGUF_DIR/qwen2.5-3b-instruct-q4_k_m.gguf
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/boundary_stats
 restore(){ sudo bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1

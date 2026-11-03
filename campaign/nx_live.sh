@@ -1,10 +1,12 @@
 #!/bin/bash
 # C1-live + C2-live launcher (NX). Whole experiment as root (clock writes are
 # in the control loop); e4_replication precedent shows root+ORT is fine here.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-MN=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MN=$ONNX_DIR/mobilenetv2-12.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/live_gov
 restore(){ sudo bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1

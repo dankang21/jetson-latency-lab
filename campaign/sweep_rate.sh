@@ -3,9 +3,10 @@
 # EMC {665.6, 2133, 3199} x GPU 306..1173 at each model's DEPLOYMENT rate,
 # 800 iters, user-mode loop -> results/nx_validation_r33/nx_est_emc<E>_gpu<f>_<model>.json
 # (new dir; the submitted 8/5/10 Hz sweeps in results/nx_validation are untouched).
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab; M=/home/dk/mobile/rt-infer-bench/models
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"; M="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 GMAX=$(( $(tr ' ' '\n' < $G/available_frequencies | sort -n | tail -1) / 1000000 ))
 FREQS=${FREQS:-"306 408 510 612 714 816 918 1020 1122 1173"}

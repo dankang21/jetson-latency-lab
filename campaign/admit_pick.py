@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E3 admission decision from one fresh probe (protocol E3_protocol.md §1, §4 steps 3-4).
+"""E3 admission decision from one fresh probe (protocol docs/protocols/E3_protocol.md §1, §4 steps 3-4).
 
 Pure function + CLI.  The maths is a verbatim transcription of the frozen
 pipeline and is checked against it by --selftest:
@@ -30,7 +30,10 @@ Usage
       re-runs the pick on results/banded_loop/probe_t*.csv and
       results/fresh_loop/vprobe_t*.csv, compares with the committed picks
       (dep_t<t>_g<pick> file names, fresh_loop/decisions.csv) and with the
-      stdout of banded_pick.py / fresh_pick.py themselves.
+      stdout of banded_pick.py / fresh_pick.py themselves.  Those two hard-code
+      the checkout they were deployed from (their LAB line); run from any other
+      checkout, the self-test rebinds that one line to this checkout and runs
+      the rest of each file verbatim.
   admit_pick.py --mg-us 4400 --D-ms 24 --board nx --primary vit
       planning aid (no probe): evaluate the rule for a hypothetical M_g, e.g.
       to place the knife-edge D of protocol §3.  Not used by admit_loop.sh.
@@ -38,7 +41,7 @@ Usage
 import argparse, csv, glob, json, os, re, subprocess, sys
 import numpy as np
 
-LAB = "/home/dk/mobile/jetson-latency-lab"
+LAB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 R_MULT = 1.035            # fresh_pick.py:9, banded_pick.py:18
 H_US = 400.0              # banded_pick.py:10 (fixed, not re-tuned per condition)
 GRID = {"nx":   [510, 612, 714, 816, 918, 1020, 1122, 1173],   # fresh_pick.py:17
@@ -128,6 +131,26 @@ def score(path, D_us):
     return {"csv": path, "n": int(len(v)), "D_us": D_us, "misses": m, "miss_rate": m / len(v)}
 
 
+# child-side loader of deployed_stdout(), argv = SCRIPT CHECKOUT ARGS...: runs SCRIPT verbatim except
+# its LAB line, which is rebound to CHECKOUT
+_REBIND = ("import re, sys; p, lab = sys.argv[1], sys.argv[2]; sys.argv = [p] + sys.argv[3:]; "
+           "src = re.sub(r'(?m)^LAB = \"[^\"]*\"$', lambda m: 'LAB = ' + repr(lab), open(p, encoding='utf-8').read(), count=1); "
+           "exec(compile(src, p, 'exec'), {'__name__': '__main__', '__file__': p})")
+
+
+def deployed_stdout(py, script, *args):
+    """stdout tokens of a frozen deployed pick script (campaign/banded_pick.py, fresh_pick.py).
+    It reads results/ under the LAB it hard-codes; when that is not this checkout, the LAB line
+    alone is rebound to this checkout and the rest of the file runs verbatim."""
+    path = f"{LAB}/campaign/{script}"
+    m = re.search(r'^LAB = "([^"]*)"$', open(path, encoding="utf-8").read(), re.M)
+    if m is None or os.path.realpath(m.group(1)) == os.path.realpath(LAB):
+        cmd = [py, path, *args]
+    else:
+        cmd = [py, "-c", _REBIND, path, LAB, *args]
+    return subprocess.run(cmd, capture_output=True, text=True).stdout.split()
+
+
 def selftest():
     """Reproduce the committed E3 picks. Exit 1 on any mismatch."""
     py = sys.executable
@@ -142,7 +165,7 @@ def selftest():
         r = evaluate(load_probe(pf), cells, D, grid, fp)
         deps = glob.glob(f"{LAB}/results/banded_loop/dep_t{t}_g*.json")
         committed = int(re.search(r"_g(\d+)\.json", deps[0]).group(1)) if deps else None
-        ref = subprocess.run([py, f"{LAB}/campaign/banded_pick.py", pf], capture_output=True, text=True).stdout.split()
+        ref = deployed_stdout(py, "banded_pick.py", pf)
         ok = (str(r["f_b"]) == str(committed)) and ref == [f"{r['Mg_us']:.0f}", str(r["f_b"])]
         bad += not ok
         rows.append(f"banded_loop t{t:>2}: Mg={r['Mg_us']:7.0f} f_pt={r['f_pt']:>4} f_b={r['f_b']:>4} "
@@ -153,7 +176,7 @@ def selftest():
                      key=lambda p: int(re.search(r"vprobe_t(\d+)", p).group(1))):
         t = int(re.search(r"vprobe_t(\d+)", pf).group(1))
         r = evaluate(load_probe(pf), cells, D, grid, fp)
-        ref = subprocess.run([py, f"{LAB}/campaign/fresh_pick.py", "vision", pf], capture_output=True, text=True).stdout.split()
+        ref = deployed_stdout(py, "fresh_pick.py", "vision", pf)
         d = dec.get(t)
         ok = d is not None and f"{r['Mg_us']:.0f}" == d["Mg"] and str(r["f_pt"]) == d["pick"] \
             and ref == [f"{r['Mg_us']:.0f}", str(r["f_pt"])]

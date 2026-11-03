@@ -6,9 +6,10 @@
 # Question 2 (interaction): does the stall need the top GPU clock? GPU {612,816}
 #   at EMC 3199 (1020@3199 comes from Q1).
 # Per cell: nsys-profiled cproxyv2 run (ORT, hz4) -> sqlite -> per-kernel durations.
+# Env: PY (python3 with onnxruntime) overrides the default path below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 MODEL=$LAB/pilot_emc/models/compute_proxy_fp16.onnx
 OUT=$LAB/results/mech_dose

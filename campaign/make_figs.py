@@ -231,7 +231,7 @@ def fig_actuation():
     ax.axvline(0.1, color="#555", lw=0.9, ls=(0, (4, 2)))
     ax.annotate( "100 µs relevance line", xy=(0.1, -0.45),
             xytext=(0.115, -0.72), fontsize=6, ha="left", va="center",
-            color="#555", arrowprops=dict(arrowstyle="-", color="#555", lw=0.7))
+            color="k", arrowprops=dict(arrowstyle="-", color="#555", lw=0.7))
     ax.set_xlabel("ms (log)")
     # legend above the plot box so it never overlaps the bars
     ax.legend(frameon=False, ncol=2, fontsize=6.5,

@@ -2,14 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # Fill the 15W row of tab:powermode: stock-governor EMC behavior under the
 # 15W nvpmodel profile (idle/CNN/GEMV/SLM traces). Restores MAXN_SUPER.
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 # Usage: sudo ./campaign/run_15w_trace.sh   (~10 min)
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"; cd "$ROOT"
 [ "$(id -u)" = 0 ] || { echo "run as root" >&2; exit 1; }
 
 PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+GGUF_DIR="${GGUF_DIR:-/home/dk/mobile/models}"
 SLM_BENCH="$ROOT/tools/slm_decode_bench"
-SLM_MODEL=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
+SLM_MODEL=$GGUF_DIR/qwen2.5-1.5b-instruct-q4_k_m.gguf
 EMC_CTL="$ROOT/pilot_emc/emc_ctl.sh"
 GPU=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 OUT=results/replication_15w; mkdir -p "$OUT"
@@ -56,7 +59,7 @@ run_bg() { "$@" & WL_PID=$!; wait "$WL_PID"; local rc=$?; WL_PID=""; return $rc;
 
 trace idle sleep 30
 trace mobilenet run_bg timeout -k 30 300 "$PY" -m harness.infer_bench \
-  --backend onnxruntime --model /home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx \
+  --backend onnxruntime --model $ONNX_DIR/mobilenetv2-12.onnx \
   --hz 8 --iters 480 --warmup 50 --cpu 5 --prio 80 \
   --label r15_mobilenet --out "$OUT/r15_mobilenet"
 trace proxy run_bg timeout -k 30 300 "$PY" -m harness.infer_bench \

@@ -4,6 +4,7 @@
 # p50 decode. blind=fit@3199, aware=fit@2133. Run with /usr/bin/python3.
 import json, csv, os, re, glob, statistics as st
 import numpy as np
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # results/... paths are repo-relative
 Q = "results/qwen_deploy"
 def p50_decode(tag):  # ms/token from .json compute_us p50
     f = f"{Q}/{tag}.json"

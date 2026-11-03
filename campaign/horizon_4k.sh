@@ -6,10 +6,11 @@
 # second half of the response violates; the joint policy's quoted horizon
 # cap H* separates the two. Qwen2.5-1.5B Q4, 4000-token decode, EMC 2133,
 # GPU {1122, 1173} x 3 reps (~110 s per run).
+# Env: GGUF_DIR (GGUF models) overrides the default path below.
 set -u
-LAB=/home/dk/mobile/jetson-latency-lab
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BENCH=$LAB/tools/slm_decode_bench
-MD=/home/dk/mobile/models
+MD="${GGUF_DIR:-/home/dk/mobile/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/horizon_4k
 restore(){ sudo bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1

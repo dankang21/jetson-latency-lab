@@ -6,10 +6,12 @@
 #   PHASE 2: 3-repeat deployment @ EMC 2133 across the GPU-responsive range,
 #            with tegrastats (clock ground truth) + 1 ms-sampled INA (energy).
 # infer_bench runs as the invoking USER; clocks/tegrastats via sudo. Self-contained.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
-LAB=/home/dk/mobile/jetson-latency-lab
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$LAB" || exit 1
 FREQS="306 408 510 612 714 816 918 1020 1122 1173"
 DEPLOY_FREQS="612 714 816 918 1020 1122 1173"
@@ -61,6 +63,6 @@ run_model(){  # run_model <name> <model_path> <hz> <sweep_warm> <dep_warm> <ina_
 # ResNet-50 at hz10 (not 20): its 306MHz@2133 sweep cell can reach ~50ms, and a
 # 50ms period would backlog the queue (period must exceed worst-cell compute).
 #           name      model                                                  hz  sw  dw  ina
-run_model resnet50 /home/dk/mobile/rt-infer-bench/models/resnet50-v1-12.onnx 10  50  60 130
-run_model yolov8s  /home/dk/mobile/rt-infer-bench/models/yolov8s.onnx         5  30  40 260
+run_model resnet50 $ONNX_DIR/resnet50-v1-12.onnx 10  50  60 130
+run_model yolov8s  $ONNX_DIR/yolov8s.onnx         5  30  40 260
 echo "BREADTH_DEPLOY DONE"

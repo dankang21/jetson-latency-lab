@@ -6,6 +6,7 @@
 # calibrated 1 ms-sampled VDD_IN (power.csv) / release rate.
 import json, csv, re, os, glob, statistics as st
 import numpy as np
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # results/... paths are repo-relative
 
 EST = "results/nx_validation"
 

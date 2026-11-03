@@ -9,10 +9,10 @@ M_tail     = p98 - p50 of a 200-cycle max-clock probe under the co-runner
              (solo policies: M_tail = 0)
 Pick the lowest feasible clock; declare INFEASIBLE if none.
 """
-import glob, json, re, sys
+import glob, json, os, re, sys
 import numpy as np
 
-LAB = "/home/dk/mobile/jetson-latency-lab"
+LAB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # deployment candidate set = the live governor's re-pick set (hz33-viable clocks)
 GRID = [510, 612, 714, 816, 918, 1020, 1122, 1173]
 R = 1.035

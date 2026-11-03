@@ -18,6 +18,7 @@
 # on core 5 for up to ~100s — default throttling would inject 50ms gaps).
 # Every cell is failure-isolated (one bad cell doesn't kill the night).
 #
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 # Usage: sudo ./campaign/run_g2.sh [A|B|AB]   (default AB)
 set -uo pipefail
 
@@ -28,17 +29,19 @@ cd "$ROOT"
 PARTS="${1:-AB}"
 case "$PARTS" in A|B|AB) ;; *) echo "usage: $0 [A|B|AB]" >&2; exit 1 ;; esac
 PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+GGUF_DIR="${GGUF_DIR:-/home/dk/mobile/models}"
 EMC_CTL="$ROOT/pilot_emc/emc_ctl.sh"
 MEMBW="$ROOT/tools/membw"
 SLM_BENCH="$ROOT/tools/slm_decode_bench"
-SLM_MODEL=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
+SLM_MODEL=$GGUF_DIR/qwen2.5-1.5b-instruct-q4_k_m.gguf
 OUT=results/campaign_g2
 mkdir -p "$OUT/partA" "$OUT/partB"
 
 # model path + hz per workload (hz sized for the slowest EMC point)
 declare -A MODEL HZ
-MODEL[mobilenet]=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx;  HZ[mobilenet]=25
-MODEL[vit]=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx; HZ[vit]=5
+MODEL[mobilenet]=$ONNX_DIR/mobilenetv2-12.onnx;  HZ[mobilenet]=25
+MODEL[vit]=$ONNX_DIR/vit_small_patch16_224.onnx; HZ[vit]=5
 MODEL[proxy]="$ROOT/pilot_emc/models/decode_proxy_fp16.onnx";                 HZ[proxy]=5
 MODEL[cproxyv1]="$ROOT/pilot_emc/models/compute_proxy_v1_gemm2048.onnx";      HZ[cproxyv1]=4
 MODEL[cproxyv2]="$ROOT/pilot_emc/models/compute_proxy_fp16.onnx";             HZ[cproxyv2]=4

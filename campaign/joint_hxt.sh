@@ -6,12 +6,14 @@
 #   deploy: 2,000-token decode x3 at {1122, 1173} under co
 # Policy scoring is offline (analyze side): T_co(f)*(1+gamma*H)*r + M <= D
 # with T_co level and M = p98-p50 both from the probe only.
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BENCH=$LAB/tools/slm_decode_bench
-MD=/home/dk/mobile/models
-VIT=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+MD="${GGUF_DIR:-/home/dk/mobile/models}"
+VIT=$ONNX_DIR/vit_small_patch16_224.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/joint_hxt
 CO_PID=""

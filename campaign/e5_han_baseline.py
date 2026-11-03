@@ -26,8 +26,8 @@ r = 1.035, else the policy DECLINES and the deployment falls back to the top clo
 (1173 MHz; its measured outcome is shown in parentheses, not counted as a pick).
 Blind / aware arms: the deployed two-cell endpoint refit k/f + b, rate-matched cells
 (results/refit33/nx*, median of three repeat p50s) -- the headline panels of
-Table II and the breadth table; recomputed here with the same
-functions (campaign/make_tab_govdeploy.py, campaign/e1b_stats.py).
+Table II and the breadth table; recomputed here with the same functions
+(campaign/govdeploy_common.py, campaign/e1b_stats.py).
 Scoring (the Table II convention): miss = response_us > D per 1000-cycle run;
 per (arm, D): median and min-max of the per-run miss %, number of runs with miss > tau
 = 2 % out of 10 per session, pooled miss over all runs.  Sessions: NX MobileNetV2
@@ -58,8 +58,8 @@ from han_fit import (load_sweep_dir, cells_dict, fit_han, predict, score, err_st
                      two_cell_kb, _load_estimator_break, HAVE_SCIPY, RES)
 from e1b_stats import (fit_2cell, miss_pct, R, TAU, GRID, FMAX, refit33_fits,          # noqa: E402
                        original_fits as e1b_original_fits, MODELS as E1B)
-from make_tab_govdeploy import (BOARDS, refit_fits as mnv2_refit_fits,                 # noqa: E402
-                                original_fits as mnv2_original_fits)
+from govdeploy_common import (BOARDS, refit_fits as mnv2_refit_fits,                   # noqa: E402
+                              original_fits as mnv2_original_fits)
 
 R33 = os.path.join(RES, "nx_validation_r33")
 DEPLOY_EMC = 2133.0
@@ -84,7 +84,7 @@ def model_cfg(model):
 # --------------------------------------------------------------- data ----
 def load_runs_dir(name, hz_expected):
     """{clock: {pair: dict(v=response_us array)}} for results/govrep_rev/<name>, or None.
-    Same files, rate and length checks as make_tab_govdeploy.load_session / e1b_stats.load_runs
+    Same files, rate and length checks as govdeploy_common.load_session / e1b_stats.load_runs
     (energy is not needed here)."""
     root = os.path.join(RES, "govrep_rev", name)
     files = [f for f in sorted(glob.glob(os.path.join(root, "g*_p*.csv"))) if not f.endswith(".power.csv")]

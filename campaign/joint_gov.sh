@@ -7,11 +7,13 @@
 #   {blind, emc-solo, joint} x D in {9,12} ms, (3) deploy every picked clock
 #   under co x3 (union of candidate picks so the analysis maps pick->cells).
 # Victim: MobileNetV2 @ hz33, EMC locked 2133. Co-runner: ViT-Small @10Hz.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-MN=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
-VIT=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MN=$ONNX_DIR/mobilenetv2-12.onnx
+VIT=$ONNX_DIR/vit_small_patch16_224.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/joint_gov
 CO_PID=""

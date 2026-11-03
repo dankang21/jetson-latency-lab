@@ -6,10 +6,10 @@ deployed cells and score misses at that policy's deadline; per-run miss rates
 for run-to-run spread. Horizon: rescore 2k and 4k traces at (D, H) contracts,
 compute the quoted horizon cap H* = ((D / (R * T_short)) - 1) / gamma.
 """
-import csv, glob, json, re
+import csv, glob, json, os, re
 import numpy as np
 
-LAB = "/home/dk/mobile/jetson-latency-lab"
+LAB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 R = 1.035
 
 def cells(pat, col="response_us"):

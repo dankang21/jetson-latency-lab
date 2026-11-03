@@ -6,8 +6,9 @@ scored under the deployed two-cell rule over the pre-stated deadline grids
 Read-only, offline (python3 over results/ only).  Run pinned:
     taskset -c 1 nice -n 19 python3 campaign/e1b_stats.py \
         [--model vit,yolov8s,resnet50] [--fits original|refit|both] [--md out.md] [--offgrid]
+The repository root defaults to the parent of campaign/ (override: LAB=/path/to/checkout).
 
-Rule (both arms, E1_E2_protocol.md): T(f) = k/f + b through the GPU 306 and 1173 endpoint
+Rule (both arms, docs/protocols/E1_E2_protocol.md): T(f) = k/f + b through the GPU 306 and 1173 endpoint
 cells (response_us p50), r = 1.035, pick = lowest f in {510, ..., 1173} with T(f)*r <= D,
 else INFEASIBLE -> 1173 fallback (reported as a fallback, not a pick).
   blind : endpoints at EMC 3199  results/nx_validation/nx_est_emc3199_gpu{306,1173}_<model>.json
@@ -45,7 +46,7 @@ try:
 except Exception:  # fall back to a small t table
     sps = None
 
-LAB = os.environ.get("LAB", "/home/dk/mobile/jetson-latency-lab")
+LAB = os.environ.get("LAB", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 R = 1.035
 GRID = [510, 612, 714, 816, 918, 1020, 1122, 1173]
 FMAX = 1173

@@ -390,7 +390,7 @@ def analyse(cdir, cond_id, tau, B, seed, D_override=None):
     elif not active:
         verdict = f"BAND IDLE - P1 = 0, P2 holds ({pct(P2['pooled'])}), f_pt = f_b on every trial: condition did not exercise the band"
     else:
-        # §6 as amended 2026-09-15 (E3_protocol.md §8): supported iff P1 = 0 and P2 holds;
+        # §6 as amended 2026-09-15 (docs/protocols/E3_protocol.md §8): supported iff P1 = 0 and P2 holds;
         # band necessity is reported as (removed admissions that failed / that passed) and
         # enters the utilization cost, not the verdict.
         verdict = (f"SUPPORTED - P1 = 0, P2 holds ({pct(P2['pooled'])}); band active on {len(active)}/{len(done)} trials, "

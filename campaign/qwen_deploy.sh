@@ -3,11 +3,13 @@
 # (hebesu) with calibrated 1 ms-sampled onboard-INA energy. Token decode is saturated
 # (back-to-back); miss@D = P(per-token decode > D); energy/token = mean active
 # VDD_IN power x p50 decode time. Estimator sweep @{2133,3199} fits blind/aware.
+# Env: PY (python3 with onnxruntime) and GGUF_DIR (GGUF models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+GGUF_DIR="${GGUF_DIR:-/home/dk/mobile/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BENCH=$LAB/tools/slm_decode_bench
-MODEL=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
+MODEL=$GGUF_DIR/qwen2.5-1.5b-instruct-q4_k_m.gguf
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/qwen_deploy
 restore(){ sudo bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1

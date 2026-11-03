@@ -3,13 +3,15 @@
 # quoted 2133->3199 penalty. 6 workloads x 2 EMC x 3 sessions, GPU pinned max.
 # Board-agnostic: detects Nano (1020) vs NX (1173) by devfreq max. 5-min
 # cooldown + 55C thermal gate between sessions.
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+GGUF_DIR="${GGUF_DIR:-/home/dk/mobile/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BENCH=$LAB/tools/slm_decode_bench
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
-MDIR=/home/dk/mobile/rt-infer-bench/models
-Q15=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
+MDIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+Q15=$GGUF_DIR/qwen2.5-1.5b-instruct-q4_k_m.gguf
 GMAX=$(( $(cat $G/max_freq) / 1000000 ))
 CPU=$([ "$GMAX" -ge 1100 ] && echo 7 || echo 5)
 cd "$LAB" || exit 1; mkdir -p results/parta_reps

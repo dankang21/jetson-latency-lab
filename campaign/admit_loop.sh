@@ -19,12 +19,13 @@
 #         t<k>.pick.json, t<k>.done, condition.txt, emc_lock.txt, session.log
 # Resumable: trials with contract_b.json or a .done marker are skipped; an
 # interrupted trial is re-run from scratch (fresh probe), nothing reused.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 # Usage: ./campaign/admit_loop.sh --primary {mobilenet,vit} --co {yolov8s,resnet50,vit}
 #          --co-hz N --D ms --trials K --cond ID [--t0 1] [--ina] [--force] [--dry-run]
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-MDIR=/home/dk/mobile/rt-infer-bench/models
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MDIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 EMC_RATE=/sys/kernel/debug/bpmp/debug/clk/emc/rate
 H_US=400; INA_S=120

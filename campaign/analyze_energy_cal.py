@@ -4,6 +4,7 @@
 #  - inversion cells (saturated, continuously busy): E/inf = mean active power x compute latency
 # Run with /usr/bin/python3 after the energy_cal campaigns + rsync.
 import csv, json, os, statistics as st, glob, re
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # results/... paths are repo-relative
 R = "results/energy_cal"
 
 def meanpow(tag, rail="vdd_in_mw"):

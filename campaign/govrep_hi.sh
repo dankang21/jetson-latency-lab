@@ -1,11 +1,13 @@
 #!/bin/bash
 # E3 governor repeats: mobilenet @ EMC 2133, 5 GPU freqs x 3 repeats, with energy.
 # Self-contained (defines its own vars); infer_bench runs as the invoking USER.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-MODEL=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+MODEL=$ONNX_DIR/mobilenetv2-12.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
-cd /home/dk/mobile/jetson-latency-lab
+cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 1
 mkdir -p results/govrep
 sudo bash -c "echo -1 > /proc/sys/kernel/sched_rt_runtime_us
 for c in /sys/devices/system/cpu/cpu*/cpufreq; do echo performance > \$c/scaling_governor; done

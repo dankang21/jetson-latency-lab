@@ -1,16 +1,18 @@
 #!/bin/bash
 # TMC calibration round: enlarge independent-run counts on the three
-# true-admission cells (reviewer request).
+# true-admission cells.
 #   A: vision co-tenancy guarded pick (MNv2 @918, D=12) r4..r10  (3->10)
 #   B: joint Qwen+ViT co-tenant accept (@1173, 2k tokens) r4..r9 (3->9)
 #   C: horizon-only solo decode (@1173, 2k tokens) r6..r8        (5->8)
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-MN=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
-VIT=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MN=$ONNX_DIR/mobilenetv2-12.onnx
+VIT=$ONNX_DIR/vit_small_patch16_224.onnx
 BENCH=$LAB/tools/slm_decode_bench
-MD=/home/dk/mobile/models
+MD="${GGUF_DIR:-/home/dk/mobile/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1
 CO_PID=""

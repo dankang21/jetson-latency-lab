@@ -6,13 +6,15 @@
 #   CTX  : 1.5B Q4, --prompt-tokens {64, 4096} x EMC {2133,3199} x 3 reps
 #   PREFILL: llama-bench -p 512 -n 128 at both EMC points (pp/tg split)
 # GPU pinned 1173; per-token csv + 1 ms-sampled INA on every slm run.
+# Env: PY (python3 with onnxruntime), GGUF_DIR (GGUF models) and LLAMA_CPP (llama.cpp tree) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+LLAMA_CPP="${LLAMA_CPP:-/home/dk/mobile/llama.cpp}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BENCH=$LAB/tools/slm_decode_bench
-LB=/home/dk/mobile/llama.cpp/build/tools/llama-bench/llama-bench
-[ -x "$LB" ] || LB=$(find /home/dk/mobile/llama.cpp -name llama-bench -type f -executable 2>/dev/null | head -1)
-MD=/home/dk/mobile/models
+LB=$LLAMA_CPP/build/tools/llama-bench/llama-bench
+[ -x "$LB" ] || LB=$(find "$LLAMA_CPP" -name llama-bench -type f -executable 2>/dev/null | head -1)
+MD="${GGUF_DIR:-/home/dk/mobile/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/llm_axes
 restore(){ sudo bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1

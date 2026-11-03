@@ -3,11 +3,13 @@
 # Phase 1: estimator sweep @ EMC {3199,2133} x GPU freqs (1 run/cell) -> policy fit.
 # Phase 2: 3-repeat deployment @ EMC 2133 across the GPU-responsive range + energy.
 # infer_bench runs as the invoking USER; clocks/tegrastats via sudo. Self-contained.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-MODEL=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+MODEL=$ONNX_DIR/vit_small_patch16_224.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
-LAB=/home/dk/mobile/jetson-latency-lab
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$LAB" || exit 1
 mkdir -p results/nx_validation results/govrep_vit
 FREQS="306 408 510 612 714 816 918 1020 1122 1173"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# E3 reference sweep (protocol E3_protocol.md §5 "utilization cost"): for ONE
+# E3 reference sweep (protocol docs/protocols/E3_protocol.md §5 "utilization cost"): for ONE
 # condition, one 1000-cycle contract at EVERY f in G with the same co-runner
 # running, so f_oracle = lowest f whose measured miss <= tau (2 %) is known.
 # Same pinning, EMC, rates and contract arguments as admit_loop.sh; one
@@ -8,12 +8,13 @@
 # Output: results/e3_<board>/<cond>/ref_g<f>.{json,csv}[,power.csv], session.log
 # Resumable: existing ref_g<f>.json cells are skipped (a resumed sweep gets
 # a fresh co-runner launch for the remaining cells; logged).
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 # Usage: ./campaign/admit_refsweep.sh --primary {mobilenet,vit} --co {yolov8s,resnet50,vit}
 #          --co-hz N --D ms --cond ID [--ina] [--force] [--dry-run]
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-MDIR=/home/dk/mobile/rt-infer-bench/models
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MDIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 EMC_RATE=/sys/kernel/debug/bpmp/debug/clk/emc/rate
 INA_S=120; TAU=0.02

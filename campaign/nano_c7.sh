@@ -4,11 +4,13 @@
 # exactly (same FIFO/prio/warmup protocol as the existing Part-B MobileNet cells,
 # so clustering statistics are protocol-comparable).
 # 8 cells x 100k cycles @ P=40ms (hz25): {vit,cproxyv2} x EMC{2133,3199} x adv{0,2}.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-ROOT=/home/dk/mobile/jetson-latency-lab
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
 EMC_CTL="$ROOT/pilot_emc/emc_ctl.sh"; MEMBW="$ROOT/tools/membw"
-VIT=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+VIT=$ONNX_DIR/vit_small_patch16_224.onnx
 CPX=$ROOT/pilot_emc/models/compute_proxy_fp16.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 OUT=$ROOT/results/partb_ext

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # Feasibility probe: can the onboard INA3221 resolve per-inference power?
 # Logs VDD_IN (+CPU_GPU_CV, SOC) at max rate while a mobilenet burst runs.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (model dir) override the defaults below;
+# the harness runs from this checkout.
 import time, subprocess, os, sys
 H = "/sys/devices/platform/bus@0/c240000.i2c/i2c-1/1-0040/hwmon/hwmon1"
 def rail(i):  # power mW = V(mV)*I(mA)/1000
     return int(open(f"{H}/in{i}_input").read()) * int(open(f"{H}/curr{i}_input").read()) / 1000.0
-PY = "/home/dk/mobile/rt-infer-bench/.venv/bin/python3"
-MODEL = "/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx"
+PY = os.environ.get("PY", "/home/dk/mobile/rt-infer-bench/.venv/bin/python3")
+MODEL = os.path.join(os.environ.get("ONNX_DIR", "/home/dk/mobile/rt-infer-bench/models"), "mobilenetv2-12.onnx")
+LAB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 log = []
 t0 = time.time()
 proc = None
@@ -18,7 +21,7 @@ while time.time() - t0 < 8.0:
         proc = subprocess.Popen([PY, "-m", "harness.infer_bench", "--backend", "onnxruntime",
             "--model", MODEL, "--hz", "1000", "--iters", "2000", "--warmup", "50",
             "--cpu", "7", "--label", "pprobe", "--out", "/tmp/pprobe"],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, cwd="/home/dk/mobile/jetson-latency-lab")
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, cwd=LAB)
         launched = True
 if proc: proc.wait()
 import statistics as st

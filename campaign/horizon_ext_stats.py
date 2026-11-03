@@ -3,7 +3,7 @@
 
 Reads every launch under results/horizon_ext/<board>/H<H>/t<k>.csv -- the
 per-token dur_ns of one fresh H-token Qwen2.5-1.5B Q4_K_M decode against the
-ViT-Small 10 Hz co-runner (GPU 1173, EMC 2133; E8_protocol.md) -- and prints,
+ViT-Small 10 Hz co-runner (GPU 1173, EMC 2133; docs/protocols/E8_protocol.md) -- and prints,
 per H, markdown tables of the pre-stated endpoints:
   * per launch: token miss % at each D (dur > D, strict; analyze_joint.py
     convention) over all H tokens and over the last 500; the median per-token

@@ -36,16 +36,19 @@
 #        E8 on hebesu:  ./campaign/horizon_ext.sh --H 1000 --launches 5
 #                       ./campaign/horizon_ext.sh --H 3000 --launches 5
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+GGUF_DIR="${GGUF_DIR:-/home/dk/mobile/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BENCH=$LAB/tools/slm_decode_bench
-MODEL=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
-VIT=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+MODEL=$GGUF_DIR/qwen2.5-1.5b-instruct-q4_k_m.gguf
+VIT=$ONNX_DIR/vit_small_patch16_224.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 EMC_RATE=/sys/kernel/debug/bpmp/debug/clk/emc/rate
 EMC_HZ=2133000000
 WARMUP=40; PRIO=80            # joint_hxt.sh:47
-D_SCORE="28 44"               # E8_protocol.md: post-hoc deadlines logged per launch (ms)
+D_SCORE="28 44"               # docs/protocols/E8_protocol.md: post-hoc deadlines logged per launch (ms)
 
 H=""; K=""; T0=1; F=1173; CO_HZ=10; BOARD_OVR=""; FORCE=false; DRY=false
 usage(){ sed -n '/^# Usage/,/^set -u/p' "$0" | head -4; }

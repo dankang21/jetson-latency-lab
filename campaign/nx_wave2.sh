@@ -1,14 +1,17 @@
 #!/bin/bash
 # NX Wave-2 chain: B3 interleaved dE pairs -> B5 kernel identity (nsys) ->
 # C5 directed-pair coverage -> C4a sustained Qwen decode soak (1h, segmented).
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+GGUF_DIR="${GGUF_DIR:-/home/dk/mobile/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BENCH=$LAB/tools/slm_decode_bench
-MN=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
-VIT=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+MN=$ONNX_DIR/mobilenetv2-12.onnx
+VIT=$ONNX_DIR/vit_small_patch16_224.onnx
 CPX=$LAB/pilot_emc/models/compute_proxy_fp16.onnx
-Q15=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
+Q15=$GGUF_DIR/qwen2.5-1.5b-instruct-q4_k_m.gguf
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1
 mkdir -p results/ab_energy results/mech_nx results/nx_pairs results/soak_qwen

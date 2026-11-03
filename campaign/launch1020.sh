@@ -1,11 +1,13 @@
 #!/bin/bash
 # Launch-realization characterization at 1020 MHz (one bin above the
 # banded pick): 8 fresh co-runner launches x 1,000-cycle contracts, D=12.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-MN=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
-VIT=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MN=$ONNX_DIR/mobilenetv2-12.onnx
+VIT=$ONNX_DIR/vit_small_patch16_224.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/launch1020
 CO_PID=""

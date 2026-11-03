@@ -1,6 +1,6 @@
 #!/bin/bash
 # E3 Nano conditions A1-A6 (protocol §3) then reference sweeps; resumable.
-cd /home/dk/mobile/jetson-latency-lab
+cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 1
 L=./campaign/admit_loop.sh; S=./campaign/admit_refsweep.sh
 $L --primary mobilenet --co yolov8s  --co-hz 5  --D 13.0 --trials 10 --cond A1
 $L --primary mobilenet --co yolov8s  --co-hz 10 --D 13.0 --trials 10 --cond A2

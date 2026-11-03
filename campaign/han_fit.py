@@ -78,7 +78,7 @@ lines 14-17, fresh_pick.py lines 12-15, admit_pick.py::fit_2cell,
 joint_gov_policy.py::fit_2cell).  To deploy the Han model as the
 estimator instead, replace ONLY the T_hat line and keep the feasibility rule:
 
-    import sys; sys.path.insert(0, "/home/dk/mobile/jetson-latency-lab/campaign")
+    import sys; sys.path.insert(0, "campaign")     # run from the repository root
     from han_fit import load_cells, fit_han, predict, pick_han
 
     cells  = load_cells("nx", "mobilenet", key="response_us")   # list of Cell records

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# E1+E2: the reviewer-demanded estimator experiments.
+# E1+E2: the estimator experiments.
 #
 # E1 (governor observation): with the EMC UNLOCKED and CPU/GPU pinned, does
 # the stock actmon governor actually move the EMC during inference? If yes,
@@ -14,6 +14,7 @@
 # and the error reduction from an EMC-aware term (E3).
 #
 # ~2.2h total. Usage: sudo ./campaign/run_estimator_break.sh
+# Env: PY (python3 with onnxruntime), ONNX_DIR (ONNX models) and GGUF_DIR (GGUF models) override the default paths below.
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -21,17 +22,19 @@ cd "$ROOT"
 [ "$(id -u)" = 0 ] || { echo "run as root" >&2; exit 1; }
 
 PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+GGUF_DIR="${GGUF_DIR:-/home/dk/mobile/models}"
 EMC_CTL="$ROOT/pilot_emc/emc_ctl.sh"
 SLM_BENCH="$ROOT/tools/slm_decode_bench"
-SLM_MODEL=/home/dk/mobile/models/qwen2.5-1.5b-instruct-q4_k_m.gguf
+SLM_MODEL=$GGUF_DIR/qwen2.5-1.5b-instruct-q4_k_m.gguf
 GPU=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 OUT_E1=results/e1_governor
 OUT_E2=results/estimator_break
 mkdir -p "$OUT_E1" "$OUT_E2"
 
 declare -A MODEL HZ
-MODEL[mobilenet]=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx;  HZ[mobilenet]=8
-MODEL[vit]=/home/dk/mobile/rt-infer-bench/models/vit_small_patch16_224.onnx; HZ[vit]=3
+MODEL[mobilenet]=$ONNX_DIR/mobilenetv2-12.onnx;  HZ[mobilenet]=8
+MODEL[vit]=$ONNX_DIR/vit_small_patch16_224.onnx; HZ[vit]=3
 MODEL[proxy]="$ROOT/pilot_emc/models/decode_proxy_fp16.onnx";                 HZ[proxy]=8
 MODEL[cproxyv2]="$ROOT/pilot_emc/models/compute_proxy_fp16.onnx";             HZ[cproxyv2]=3
 

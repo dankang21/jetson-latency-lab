@@ -2,11 +2,13 @@
 # Calibrated inversion + EMC energy on the Nano (guava) via 1 ms-sampled onboard INA.
 # Saturated (continuously busy) so VDD_IN reads pure active power;
 # energy/inf = mean active power x compute latency. GPU pinned at the Nano max.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CPROXY=$LAB/pilot_emc/models/compute_proxy_fp16.onnx
-MOBILE=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx
+MOBILE=$ONNX_DIR/mobilenetv2-12.onnx
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 cd "$LAB" || exit 1; mkdir -p results/energy_cal
 restore(){ sudo bash -c "$LAB/pilot_emc/emc_ctl.sh unlock >/dev/null 2>&1

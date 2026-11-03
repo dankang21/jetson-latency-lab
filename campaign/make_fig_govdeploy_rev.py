@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Revised fig:govdeploy: deployed EMC-blind vs
-EMC-aware MobileNetV2 governor on the NX, per-run deadline miss against the deadline.
+"""Revised fig:govdeploy: deployed EMC-blind vs EMC-aware MobileNetV2 governor on
+the NX, per-run deadline miss against the deadline.
 
-Replaces the July three-run figure (campaign/make_figs_cal.py, results/govrep).  Data
-and rule are exactly those of the revised Table II (campaign/make_tab_govdeploy.py,
-the Table II generator): the three interleaved E1 sessions
+Replaces the July three-run figure (results/govrep).  Data and rule are exactly
+those of the revised Table II (campaign/govdeploy_common.py): the three interleaved E1 sessions
 results/govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3} (auto-detected; EMC locked 2133,
 33 Hz, 10 pairs x 1000 cycles per clock), the rate-matched two-cell fits from results/refit33/nx (median p50 of three
 33 Hz repeats at GPU 306/1173, blind @EMC 3199, aware @EMC 2133), r = 1.035, pick =
@@ -20,8 +19,9 @@ are marked at the median.  The thin dashed line is the blind arm under its origi
 8 Hz-cell picks (Table II, last panel).  Miss is on a symlog axis (linear below 0.1 %,
 the per-run resolution) so zero-miss runs are drawn at 0.
 
-Read-only on results/.  Run pinned with the system matplotlib:
-    taskset -c 1 nice -n 19 /usr/bin/python3 campaign/make_fig_govdeploy_rev.py [--png DIR]
+Read-only on results/; writes the PDF to --out (default results/govrep_rev/govdeploy.pdf).
+Run pinned with the system matplotlib:
+    taskset -c 1 nice -n 19 /usr/bin/python3 campaign/make_fig_govdeploy_rev.py [--out FILE] [--png DIR]
 Figure size (3.45 x 3.6 in, tight bbox) is that of the July figure so the float layout
 in the main text is unchanged.
 """
@@ -42,11 +42,11 @@ from matplotlib.patches import Patch
 HERE = os.path.dirname(os.path.abspath(__file__))
 LAB = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
-from make_tab_govdeploy import BOARDS, load_session, refit_fits, original_fits, pick, that  # noqa: E402
+from govdeploy_common import BOARDS, load_session, refit_fits, original_fits, pick, that  # noqa: E402
 from e1b_stats import miss_pct, TAU, R  # noqa: E402
 
 OUT = f"{LAB}/results/govrep_rev/govdeploy.pdf"
-C_BLIND, C_AWARE = "#c0392b", "#2471a3"        # same arm colours as Fig. 1 (make_fig_tmc.py)
+C_BLIND, C_AWARE = "#c0392b", "#2471a3"        # same arm colours as Fig. 1
 LINTHRESH = 0.1                                # per-run resolution: 1 miss in 1000 cycles
 TARGET_HW = 272.06 / 276.628                   # tight-bbox h/w of the July govdeploy.pdf (pdfinfo)
 
@@ -170,7 +170,7 @@ def main():
         else:
             ax.plot(D, ma, "o", ms=4.2, mfc="white", mec=C_AWARE, mew=1.0, zorder=5)
             ax.annotate("declines\n(1173 fallback)", xy=(D, ma), xytext=(D + 0.045, 28),
-                        fontsize=6, color=C_AWARE, ha="left", va="center",
+                        fontsize=6, color="k", ha="left", va="center",
                         arrowprops=dict(arrowstyle="-", lw=0.6, color=C_AWARE))
             rows["aware"].append("decl.")
         print(f"  D={D:.1f}: blind {fb}{'' if okb else '(fallback)'} n={len(db)} med {mb:5.1f} | "
@@ -192,10 +192,10 @@ def main():
     import matplotlib.transforms as mtrans
     tr = mtrans.blended_transform_factory(ax.transData, ax.transAxes)
     for arm, col, y in (("blind", C_BLIND, -0.115), ("aware", C_AWARE, -0.175)):
-        ax.text(4.29, y, f"{arm} $f^\\star$", color=col, fontsize=5.6, ha="right", va="center",
+        ax.text(4.29, y, f"{arm} $f^\\star$", color="k", fontsize=5.6, ha="right", va="center",
                 transform=tr)
         for D, s in zip(B["D"], rows[arm]):
-            ax.text(D, y, s, color=col, fontsize=5.6, ha="center", va="center", transform=tr)
+            ax.text(D, y, s, color="k", fontsize=5.6, ha="center", va="center", transform=tr)
     ax.set_xlabel("deadline $D$ (ms)", labelpad=17)
     handles = [
         Line2D([0], [0], color=C_BLIND, lw=1.4, marker="s", ms=3.6, label="EMC-blind (fit @3199)"),

@@ -13,7 +13,7 @@
 #     --score, response_us > D); session.log line
 # Board autodetected from devfreq available_frequencies:
 #   NX   victim cpu 7, co cpu 5, steps 306..1173     Nano victim cpu 5, co cpu 4, steps 306..1020
-# Primary rates: mobilenet 33 Hz, vit 20 Hz (E3_protocol.md section 3; 33 Hz = launch1020).
+# Primary rates: mobilenet 33 Hz, vit 20 Hz (docs/protocols/E3_protocol.md section 3; 33 Hz = launch1020).
 # DEFAULTS == the submitted design point == launch1020.sh verbatim:
 #   --f 1020 --D 12 --primary mobilenet --co vit --co-hz 10  ->  tag mobilenet_vit10_g1020_D12
 #   MobileNetV2 --hz 33 --iters 1000 --warmup 60 --cpu 7; ViT-Small co-runner
@@ -39,9 +39,10 @@
 #          [--co {vit,yolov8s,resnet50}] [--co-hz N] [--t0 START] [--ina] [--force] [--dry-run]
 #        (24-launch submitted series on hebesu:  ./campaign/launch_ext.sh --launches 16)
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-MDIR=/home/dk/mobile/rt-infer-bench/models
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MDIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
 G=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 EMC_RATE=/sys/kernel/debug/bpmp/debug/clk/emc/rate
 EMC_HZ=2133000000; INA_S=120

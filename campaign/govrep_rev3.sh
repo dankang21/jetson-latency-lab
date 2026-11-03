@@ -6,10 +6,11 @@
 #   MODE=refit            -> two-cell endpoints (306,<max>) at EMC 2133 and 3199,
 #                            33 Hz MobileNetV2, 3 repeats -> results/refit33/<board>/
 # Board detection uses available_frequencies (max_freq may be pinned).
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 set -u
-PY=/home/dk/mobile/rt-infer-bench/.venv/bin/python3
-LAB=/home/dk/mobile/jetson-latency-lab
-M=/home/dk/mobile/rt-infer-bench/models
+PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+LAB="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+M="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
 MODEL=${MODEL:-mobilenet}; MODE=${MODE:-pairs}; PAIRS=${PAIRS:-10}
 case $MODEL in
   mobilenet) MP=$M/mobilenetv2-12.onnx;        HZ=33; WARM=120;;

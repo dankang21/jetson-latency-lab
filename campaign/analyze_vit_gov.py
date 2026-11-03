@@ -6,6 +6,7 @@
 # Run with /usr/bin/python3 after rsyncing govrep_vit from hebesu.
 import json, csv, re, os, glob
 import numpy as np
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # results/... paths are repo-relative
 
 EST = "results/nx_validation"
 def p50us(j):

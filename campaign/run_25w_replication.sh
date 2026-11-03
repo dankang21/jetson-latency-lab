@@ -7,6 +7,7 @@
 # behavior in this mode (fills the 25W row of tab:powermode).
 #
 # Restores MAXN_SUPER (mode 2) and dynamic clocks on exit, success or not.
+# Env: PY (python3 with onnxruntime) and ONNX_DIR (ONNX models) override the default paths below.
 # Usage: sudo ./campaign/run_25w_replication.sh   (~20 min)
 set -uo pipefail
 
@@ -15,6 +16,7 @@ cd "$ROOT"
 [ "$(id -u)" = 0 ] || { echo "run as root" >&2; exit 1; }
 
 PY="${PY:-/home/dk/mobile/rt-infer-bench/.venv/bin/python3}"
+ONNX_DIR="${ONNX_DIR:-/home/dk/mobile/rt-infer-bench/models}"
 EMC_CTL="$ROOT/pilot_emc/emc_ctl.sh"
 GPU=/sys/devices/platform/17000000.gpu/devfreq/17000000.gpu
 OUT=results/replication_25w
@@ -24,7 +26,7 @@ CPU_25W=1344000
 GPU_25W=918000000
 
 declare -A MODEL HZ
-MODEL[mobilenet]=/home/dk/mobile/rt-infer-bench/models/mobilenetv2-12.onnx;  HZ[mobilenet]=8
+MODEL[mobilenet]=$ONNX_DIR/mobilenetv2-12.onnx;  HZ[mobilenet]=8
 MODEL[proxy]="$ROOT/pilot_emc/models/decode_proxy_fp16.onnx";                 HZ[proxy]=8
 MODEL[cproxyv2]="$ROOT/pilot_emc/models/compute_proxy_fp16.onnx";             HZ[cproxyv2]=3
 
