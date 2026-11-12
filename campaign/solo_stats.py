@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Table III (deployed blind-vs-aware governor, one representative cell per (workload, SKU)).
+"""Table III (deployed blind-vs-aware governor, one cell per (workload, SKU)).
 
 Vision rows: six (workload, SKU) entries -- MobileNetV2 on the NX and the Nano, ViT-Small on the NX
 and the Nano, ResNet-50 and YOLOv8s on the NX -- each scored over its pre-stated deadline grid
 (docs/protocols/E1_E2_protocol.md and its E1b / Nano ViT-Small addenda, frozen 2026-09-14/15) on
 its interleaved sessions under results/govrep_rev, with the rule, fits, cell scoring and energy
 convention of Table II (campaign/govdeploy_common.py, campaign/govdeploy_stats.py).  The
-representative row is the TIGHTEST grid deadline at which the aware arm admits a clock (does not
+row printed for the table is the TIGHTEST grid deadline at which the aware arm admits a clock (does not
 decline).  Headline fits are the rate-matched endpoint cells (results/refit33/<dir>, endpoint p50 =
 median of three repeat p50s) when their release rate is the deployment rate; otherwise the original
 profiling cells, which for MobileNetV2 on the Nano are the 50 Hz deployment-rate cells (the
 results/refit33/nano cells are a 33 Hz re-profile and are printed as an extra evaluation).  The
 original-cell evaluation of every grid cell is printed as the second evaluation of the same runs.
-Where a representative cell's dE interval spans zero, the per-pair energies and the two-state
+Where that cell's dE interval spans zero, the per-pair energies and the two-state
 VDD_IN baseline (run powers split at their largest gap) behind it are printed.
 Qwen2.5 rows: the Qwen-1.5B 2,000-token entry (D = 29 ms/tok, aware 1020 MHz: miss % [run-level
 95 % UB]) is computed as Table V's 2,000-token column (campaign/qwengov_2k.py); the other Qwen cells
@@ -125,7 +125,7 @@ def ci_spans_zero(dE):
 def run_baseline_states(sessions, clocks):
     """Per-run trimmed-mean VDD_IN [mW] at the given clocks, pooled over sessions, split at
     the largest gap: returns (low-state mean, high-state mean, n_low, n_high).  Used only to
-    document a two-state supply baseline when a representative cell's dE CI spans zero."""
+    document a two-state supply baseline when the table cell's dE CI spans zero."""
     P = []
     for s in sessions:
         for f in clocks:
@@ -199,8 +199,8 @@ def build(log=print, rate_check=True):
             print_rows(f"{rinfo['aware']['hz']:.0f} Hz re-profile cells, not at the {B['hz']:.0f} Hz deployment "
                        "rate (extra evaluation of the same runs)", B, rfits, rinfo, evaluate(B, rfits, sessions), log)
         rep = representative(head_rows)
-        assert rep["blind"]["has_data"] and rep["aware"]["has_data"], f"{B['label']}: representative cell lacks data"
-        log(f"  => representative row: D={rep['D']} blind {rep['fb'] if rep['okb'] else 'declines'} / aware {rep['fa']}")
+        assert rep["blind"]["has_data"] and rep["aware"]["has_data"], f"{B['label']}: Table III cell lacks data"
+        log(f"  => Table III row: D={rep['D']} blind {rep['fb'] if rep['okb'] else 'declines'} / aware {rep['fa']}")
         ci = None
         if ci_spans_zero(rep["dE"]):
             # Document, do not subset: print the per-pair energies and the two-state split.

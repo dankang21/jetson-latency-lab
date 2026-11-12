@@ -2,7 +2,7 @@
 > the manuscript "When Memory-Clock State Changes Deadline Admission: Evidence
 > from Jetson Orin". The freeze and amendment dates are those recorded in the
 > log. They are self-attested: the file was not under version control until
-> this release. Passages that quoted or cited non-public documents are
+> release `v2026.11`. Passages that quoted or cited non-public documents are
 > replaced by a neutral description of what they address; an internal working
 > reference (a user name) is removed. Nothing else is changed.
 

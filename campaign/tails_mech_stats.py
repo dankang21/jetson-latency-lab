@@ -312,7 +312,7 @@ def sec_slow(R):
               + (f", median {np.median(lens):.0f}, max {max(lens)}, lengths {dist}" if lens else "")
               + f"; slow kernels per inference {min(per)}-{max(per)}")
     print("  (not from released files: the isolated Nsight Compute replay values and the "
-          "fine-grained GPU-clock/temperature/power trace of Supp. Sec. S6)")
+          "GPU-clock, temperature and power log of the diagnostic run of 2026-06-17, Supp. Sec. S6)")
     print()
 
 

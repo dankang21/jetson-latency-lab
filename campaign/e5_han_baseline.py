@@ -14,7 +14,7 @@ Estimator (campaign/han_fit.py):  T(f_gpu, f_emc) = A f_gpu^-alpha + B f_emc^-be
 fitted per model on the rate-matched sweeps results/nx_validation_r33/
 nx_est_emc{665,2133,3199}_gpu{306..1173}_<model>.json (three EMC levels x ten GPU
 clocks, 800 cycles at the deployment release rate; response_us p50), A, B >= 0.
-  H1 (realistic)   train on the profiling points {665.6, 3199} only; the deployment
+  H1 (held-out)    train on the profiling points {665.6, 3199} only; the deployment
                    point 2133 is held out.  With the offset C free, beta is NOT
                    identifiable from two EMC levels (han_fit.py refuses), so H1 is
                    the source model's pure form (C = 0), which is identifiable.
@@ -480,7 +480,7 @@ def tex_table(cfgs, SS, stats_all, path):
         "$\\hat T = A f_{\\mathrm{gpu}}^{-\\alpha} + B f_{\\mathrm{emc}}^{-\\beta}\\,[+C]$ fitted per model on the "
         "rate-matched GPU$\\times$EMC sweeps (EMC $\\{665.6, 2133, 3199\\}$\\,MHz $\\times$ ten GPU clocks, 800 cycles at "
         "the deployment release rate) and deployed through the same rule as both arms ($f^\\star$ = lowest grid clock with "
-        "$\\hat T(f, 2133)\\,r\\le D$, $r{=}1.035$, else the deadline is declined). H1 (realistic): fitted on the "
+        "$\\hat T(f, 2133)\\,r\\le D$, $r{=}1.035$, else the deadline is declined). H1 (held-out): fitted on the "
         "profiling points $\\{665.6, 3199\\}$\\,MHz only, the deployment point 2133\\,MHz held out (pure Han form, $C{=}0$: "
         "with a free offset, $\\beta$ is not identifiable from two memory levels); H2 (in-sample reference): all three levels "
         "in-sample, $C$ free. Every arm is scored offline on the same interleaved sessions and pre-stated deadline grids "

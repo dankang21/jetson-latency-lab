@@ -2,21 +2,21 @@
 > the manuscript's E3 protocol log (`E3_protocol.md` in this folder), for
 > "When Memory-Clock State Changes Deadline Admission: Evidence from Jetson
 > Orin". The date of writing is the one recorded in the note. It is
-> self-attested: the file was not under version control until this release.
+> self-attested: the file was not under version control until release `v2026.11`.
 > Script line numbers refer to the versions the note was written against;
 > later commits shifted some of them. Passages that quoted or cited non-public
 > documents are replaced by a neutral description of what they address; the
 > non-public planning document is called "the campaign plan", without its
 > section numbers, and internal working references (host names, a
 > user-specific path) are removed; where the note referred to the manuscript
-> in preparation, it now says "the article". Nothing else is changed.
+> in preparation, it now says "the article". Changed after release `v2026.11`: one bracketed note that begins "Public-copy note" is added, which gives the time zone of the date of writing and the session-log times it can be read against; and item 10, which quoted six words that §2 of the public protocol does not contain, now states what §2 says. Nothing else is changed.
 
 ---
 
 # E3 runner notes — how `admit_pick.py` / `admit_loop.sh` / `admit_refsweep.sh` implement `E3_protocol.md`
 
 Written 2026-09-14 on the Orin Nano while both boards were running E1
-(`govrep_rev.sh`). **Nothing in this note was measured**: the three scripts
+(`govrep_rev.sh`). [Public-copy note: 2026-09-14 is a UTC date; by their session logs both boards ran E1 from 23:41 UTC on that day, which the NX's log prints as 07:41 on 2026-09-15 (UTC+8).] **Nothing in this note was measured**: the three scripts
 were syntax-checked (`bash -n`, `py_compile`), dry-run (`--dry-run` prints
 every command and touches neither clocks nor `results/`), and
 `admit_pick.py --selftest` was run offline against the committed probes.
@@ -329,7 +329,7 @@ for why an assumed M_g is unavoidable.
 9. **Co-runner ViT `--warmup 30` and `sleep 20`** are in the scripts, not in
    §1's probe row (which says only "co-runner started 20 s earlier"); kept
    verbatim.
-10. **§2 says C0 uses the "same workload against the same co-runner"** but
+10. **§2 re-runs the calibration condition as the control C0** but
     the E3 run of C0 will differ from the submitted 10 trials in the three
     documented ways above (pin-before-launch, per-trial thermal gate,
     `--deadline-ms` in the contract JSON). None touches the timed loop.

@@ -82,7 +82,7 @@ MODELS = {
 # Submitted rows (first-version supplement, tables tab:vitgov and tab:breadthgov):
 # D -> (blind f, blind miss, aware f, aware miss, dE mJ/inf).  Energies there: ViT from
 # results/energy_cal (20 Hz, n=2); ResNet/YOLO from results/govrep_{resnet50,yolov8s}
-# (10 Hz / 5 Hz, n=3).  Note the YOLOv8s submitted rate (5 Hz) differs from E1b (10 Hz).
+# (10 Hz / 5 Hz, n=3).  Note that both rates differ from E1b (ResNet-50 20 Hz, YOLOv8s 10 Hz), so the dE of those rows is not comparable with E1b's.
 SUBMITTED = {
     "vit": {13.6: (918, "100", 1122, "0.1", 12.6),
             14.2: (816, "100", 1020, "0.0", 10.9),
@@ -99,7 +99,7 @@ SUBMITTED = {
 REDERIVED2C = {
     "vit": {13.6: (918, 1173, 15.4), 14.2: (918, 1122, 12.6), 15.0: (816, 1020, 10.9)},
     "resnet50": {13.0: (1020, "INF", None), 14.0: (918, 1122, 23.6), 15.0: (816, 1020, 23.1)},
-    "yolov8s": {29.0: (918, 1173, 59.3), 30.0: (918, 1122, 48.7), 32.0: (816, 1020, 47.4)},
+    "yolov8s": {29.0: (918, 1173, 59.3), 30.0: (918, 1122, 48.7), 32.0: (816, 1020, 47.5)},
 }
 
 

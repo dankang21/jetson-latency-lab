@@ -328,7 +328,7 @@ def report(R):
     b = A["blind"]
     print(f"\nblind: below the frontier at {b['below']} deadlines ({b['below_viol']} with violating runs), dE vs frontier there "
           f"{min(b['dE_below']):+.1f} to {max(b['dE_below']):+.1f} % (median {med(b['dE_below']):+.1f} %); "
-          f"false admissions (no measured-feasible clock) {b['false_adm']}")
+          f"false admissions (no clock measured feasible) {b['false_adm']}")
     for s in ("H1", "H2", "aware", "H1c"):
         a = A[s]
         meas = [x for x in a["fb"] if x[3] is not None and not x[3].get("same", False)]

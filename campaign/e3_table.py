@@ -7,7 +7,8 @@ One row per condition of docs/protocols/E3_protocol.md section 3, in protocol or
 NX; A1-A4, A5r, A6r, A7 on the Nano), from campaign/e3_stats.py --json for both boards: every endpoint
 is e3_stats' recomputation from the trial files under results/e3_<board>/<cond>/ (protocol sections
 5-6: tau = 2 %, run-level bootstrap B = 10 000, seed 20260915).  A5 and A6 as first run were
-protocol-execution failures (section 8, 2026-09-15: the probe did not see the tenant); they are listed
+classified at the time as protocol-execution failures (section 8, 2026-09-15: 7 of 10 A6 probes and one
+A5 probe were indistinguishable from the solo cell; the cause was not established); they are listed
 apart and their re-runs A5r/A6r are the rows.  Columns:
   n          completed launches (k/N while short of the protocol's N)
   P1         admitted launches with f_b < f_oracle (one-sided 95 % Clopper-Pearson UB, %)
@@ -67,7 +68,7 @@ PROTOCOL = [
     ("A6r", "nano", "vit", 20, "yolov8s", 10, 37.5, 10),
     ("A7", "nano", "vit", 20, "yolov8s", 7, 37.5, 10),
 ]
-SUPERSEDED = {"A5r": "A5", "A6r": "A6"}     # shown re-run -> execution-failure original (section 8, 2026-09-15)
+SUPERSEDED = {"A5r": "A5", "A6r": "A6"}     # shown re-run -> superseded first run (section 8, 2026-09-15)
 MECHANISM = ("A7", "N9")                     # pre-stated incommensurate-rate mechanism tests
 CONTROL = ("C0",)                            # calibration condition re-run as a positive control
 GROUPS = [

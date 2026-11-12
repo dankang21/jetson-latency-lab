@@ -4,7 +4,10 @@
 Reads every launch under results/horizon_ext/<board>/H<H>/t<k>.csv -- the
 per-token dur_ns of one fresh H-token Qwen2.5-1.5B Q4_K_M decode against the
 ViT-Small 10 Hz co-runner (GPU 1173, EMC 2133; docs/protocols/E8_protocol.md) -- and prints,
-per H, markdown tables of the pre-stated endpoints:
+per H, markdown tables of the three endpoints the protocol pre-states (token miss
+against D, the re-estimated drift coefficient, the rule's late-horizon prediction),
+of statistics derived from them, and of a replay of the frozen rule (the last item
+below), which is not one of the protocol's endpoints:
   * per launch: token miss % at each D (dur > D, strict; analyze_joint.py
     convention) over all H tokens and over the last 500; the median per-token
     latency of tokens 0-499 ("head") and of the last 500 ("tail"); the

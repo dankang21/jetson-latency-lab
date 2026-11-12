@@ -38,7 +38,7 @@ for a declined contract, at the highest clock deployed for it (the strongest
 declined candidate); 'measured' = the mean of the per-run rates with the
 run-level bootstrap 95 % upper bound (runs resampled with replacement,
 B = 20000, seed 42), as in analyze_joint.py.  Run-level feasible (main text):
-the bound below tau = 2 % for n >= 8 runs, every run within tau for a
+the bound at or below tau = 2 % for n >= 8 runs, every run within tau for a
 three-run cell.
 False admission: a contract of the admission-outcome table (guarded composed
 policy; plus the joint-stress contract at its first accepted D) admitted at r
@@ -99,7 +99,7 @@ def outcome(runs, D_us, tau, B, seed):
         per = np.array([np.mean(v > D_us) * 100 for v in runs])
         rng = np.random.default_rng(seed)
         ub = float(np.quantile([rng.choice(per, len(per), replace=True).mean() for _ in range(B)], 0.95))
-        ok = bool(np.all(per <= tau)) if len(per) < 8 else ub < tau
+        ok = bool(np.all(per <= tau)) if len(per) < 8 else ub <= tau
         _SCORED[key] = dict(n=len(per), runs=[float(x) for x in per], mean=float(per.mean()), lo=float(per.min()),
                             hi=float(per.max()), ub=ub, run_level_feasible=ok)
     return _SCORED[key]

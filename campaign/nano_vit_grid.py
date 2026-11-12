@@ -6,7 +6,7 @@ the Nano counterpart of the NX breadth table and the full grid behind the ViT-Sm
 Table III (entry 'vit_nano' of campaign/solo_stats.py; rule, fits, loader and cell scoring:
 campaign/govdeploy_common.py).
 
-Deadlines: the pre-stated grid of the protocol addendum of 2026-09-15 (docs/protocols/E1_E2_protocol.md):
+Deadlines: the pre-stated grid of the protocol addendum of 2026-09-15 (a KST date; docs/protocols/E1_E2_protocol.md and its public-copy note):
 D = T_aware(f) r rounded up to 0.5 ms for f in {612, ..., 1020} MHz plus each value + 0.5 ms, from the
 original-rate (10 Hz) aware fit; the rate-matched fit yields the same ten values (asserted).  Fits:
 rate-matched 20 Hz endpoint cells results/refit33/nano_vit (median of three repeat p50s), GPU 306 and

@@ -15,7 +15,7 @@ by bounded probes in a first-order admission prototype whose transfer was
 tested in a 14-condition study on both boards. The findings are confined to
 the two SKUs.
 
-**Earlier version.** The extended technical report
+**Earlier version.** The technical report
 [arXiv:2606.16106](https://arxiv.org/abs/2606.16106) (v3, July 2026, titled
 "Edge-Inference Governors Need Memory-Clock State") is an earlier report of
 this study with further characterization material. Its deployment tables and
@@ -53,7 +53,7 @@ Please cite the article; the technical report is its earlier version.
   howpublished = {arXiv:2606.16106v3},
   month        = jul,
   year         = {2026},
-  note         = {Extended technical report}
+  note         = {Technical report}
 }
 ```
 
@@ -81,6 +81,15 @@ scripts can also write their supplement table with `--tex`. The
 [result map](#where-each-result-comes-from) names, for every table, the
 released scripts that print its numbers and marks the values that no released
 script prints.
+
+Also not released, though the article or its supplement draws on them: the
+Nsight Compute replays, the diagnostic run of 2026-06-17 and the Nsight Systems
+profiler reports behind Supp. §S6 (see its row in the result map); the cold
+re-run of the pilot's 3199 MHz GEMM cell (Supp. §S3); the log of the per-cell
+thermal waits of the Nano characterization campaign of 2026-06-11 (Supp. Table
+S18); and the author's analysis records, which the article, its supplement and
+the public-copy notes in `docs/protocols/` cite where they give a time or an
+account that the released files do not hold.
 
 ## Test bed, as measured
 
@@ -131,8 +140,10 @@ Supp. Tables S16 and S17 list every knob and every power mode of both boards.
 live-controller runs (below) uses
 [`harness/infer_bench.py`](harness/infer_bench.py): a periodic loop that
 releases one inference at each absolute time t0 + iP
-(`clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME)`), so an overrun never delays
-later releases. Response time is measured from the scheduled release, and every
+(`clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME)`), so the release times never shift.
+Response time is measured from the scheduled release; jobs run one after
+another, so an overrun past the period delays the jobs after it, whose response
+times include that delay. Every
 inference reuses one fixed random input tensor (seed 42). The runners start it
 as the invoking user, pinned to one core (NX core 7, Nano core 5; co-runners on
 core 5 and 4), with RT throttling off (`sched_rt_runtime_us = -1`) for the
@@ -302,7 +313,7 @@ it as 0.53 % and `replay_rsens.py` as 0.52 %, two roundings of the same tie.
 |---|---|---|---|
 | S2 directed profile pairs | `nx_pairs/`, `govrep/`, `nx_validation/` | `nx_wave2.sh`, `govrep.sh`, `govrep_hi.sh`, `run_nx_validation.sh` | `deployment_stats.py --section pairs` (full-sweep fit of the response-time p50 at the source EMC point; a declined pick is marked and runs at 1173 MHz) |
 | S3 NX breadth (ViT-S, YOLOv8s, ResNet-50) | `govrep_rev/nx_{vit,yolov8s,resnet50}`, `refit33/nx_{vit,yolov8s,resnet50}`; grids from `nx_validation/nx_est_*` | `govrep_rev2.sh` or `govrep_rev3.sh` with `MODEL=vit`, `yolov8s`, `resnet50`; refits `MODE=refit govrep_rev3.sh` | `e1b_stats.py` |
-| S4 Nano ViT-Small grid | `govrep_rev/nano_vit`, `refit33/nano_vit`, `nano_grid/vit` | `MODEL=vit govrep_rev.sh`, `MODE=refit MODEL=vit govrep_rev3.sh` | `nano_vit_grid.py` (the rows and the caption's figures) |
+| S4 Nano ViT-Small grid | `govrep_rev/nano_vit`, `refit33/nano_vit`, `nano_grid/vit` | `MODEL=vit govrep_rev.sh`, `MODE=refit MODEL=vit govrep_rev3.sh` | `nano_vit_grid.py` (the rows and the caption's figures under the rate-matched cells); `solo_stats.py` (block ViT-Small (Nano), second evaluation: the picks and runs over τ under the original-rate 10 Hz cells that the caption cites) |
 | S5 Han-style baseline (E5) | `nx_validation_r33/`; the sessions of Table II and S3; `refit33/nx*` | `sweep_rate.sh` | `e5_han_baseline.py` (fits: `han_fit.py`) |
 | S6 selector comparison | as S5 | — | `selector_cmp.py` |
 | S7 contrast fits | as S5 and S8 | — | `e5b_contrast.py` (several minutes) |
@@ -310,7 +321,7 @@ it as 0.53 % and `replay_rsens.py` as 0.52 %, two roundings of the same tie.
 | S9 interleaved re-run (E5-B-live) | `e5b_live/nx/` | `govrep_emcfree.sh` | `e5b_emcfree.py --json F` then `e5b_live_table.py F` |
 | S10 decode horizon under co-tenancy (E8) | `horizon_ext/nx/H{1000,3000}`, `joint_hxt/` (2,000 tokens), `boundary_stats/` (solo γ; Qwen2.5-3B model axis) | `horizon_ext.sh` | `horizon_ext_stats.py` (the H = 1,000 and 3,000 launches and, by default, the nine 2,000-token runs of `joint_hxt/`; `--no-h2000` leaves those out); model axis `qwen3b_drift.py` |
 | S11 transfer study (E3) | `e3_nx/{C0,N1…N9}`, `e3_nano/{A1…A4,A5r,A6r,A7}` | `admit_loop.sh`, `admit_refsweep.sh`, `nano_e3_*.sh` | `e3_stats.py --board nx`, `--board nano`; `e3_table.py` (the rows with the probe-margin correlation, the verdict under both wordings and the footnote figures) |
-| S12 rate-matched sensitivity, "Nano rows" paragraph | `e3_nx/`, `e3_nano/A1…A4`, `refit33/nx/`, `refit33/nano/`, `e3_nx_r33/` | `results/e3_nx_r33/run_r33.sh`; `MODE=refit govrep_rev2.sh` | `e3_repick.py [--board nx or nano]` |
+| S12 rate-matched sensitivity, "Nano rows" paragraph | `e3_nx/`, `e3_nano/A1…A4`, `refit33/nx/`, `refit33/nano/`, `e3_nx_r33/` | `results/e3_nx_r33/run_r33.sh`; `MODE=refit govrep_rev2.sh` | `e3_repick.py [--board nx or nano]`; `e3_stats.py --board nx --results results/e3_nx_r33` (the probe-margin correlations of the two re-runs given in the caption) |
 | S13 EMC exposure of LLM decode | `llm_axes/` | `c10_llm_axes.sh` | `emc_axis_stats.py --section llm` (median of the three runs' per-token p50; energy per token) |
 | S14 held-out error with an EWMA offset | `estimator_break/` | `run_estimator_break.sh` | `analyze_estimator.py` (blind, EMC table), `replay_ewma.py` (offset) |
 | S15 co-tenancy ablation ladder | `joint_gov/`, `joint_hxt/` | `joint_gov.sh`, `jg_extra.sh`, `tmc_reps.sh`, `joint_hxt.sh` | `analyze_joint.py`, `admission_runs.py` |
@@ -324,13 +335,15 @@ it as 0.53 % and `replay_rsens.py` as 0.52 %, two roundings of the same tie.
 | S24 EMC under the Nano's stock power modes | `e1_governor/`, `replication_25w/`, `replication_15w/` | `run_estimator_break.sh`, `run_25w_replication.sh`, `run_15w_trace.sh` | `powermode_trace.py`, `analyze_replications.py` |
 | S25 held-out estimator error | `estimator_break/` | `run_estimator_break.sh` | `analyze_estimator.py` |
 | S27 TensorRT vs ONNX Runtime penalty | `e5_tensorrt/`, `campaign_g2/partA/` | harness `--backend onnxruntime-trt`, `run_g2.sh` | `emc_axis_stats.py --section s27` (response-time p50) |
+| S29 post-hoc sensitivity of the Han-style fits (E5, E5-B) to the tail state of their training sweeps, NX MobileNetV2; with its paragraph in §S2 and the main-text §IV sentence that cites it | `nx_validation_r33/` (per-cycle traces of the 30 sweep cells); scored on the runs of S5 and S8 | — | `e5_modesens.py --model mobilenet` (per sweep cell the two latency modes, their cycle counts and the mode the cell p50 lies on; the sweep cells against the scoring-session runs; H1, H1a and H2 fitted again with `han_fit.py`, on the fast-mode medians; the picks and runs over τ of S5 and of Table IV / S8 under the reported and the fast-mode fits, by the pick rules of `e5_han_baseline.py` and `e5b_emcfree.py`; H1a through the same selector with the memory point free; the picks admitted with a predicted margin under 10 µs; the per-repeat spread of the two-cell refit's endpoint cells; `--tex FILE` writes the tabular of S29; without `--model` also ViT-Small, YOLOv8s and ResNet-50, with the memory point fixed only) |
 | §S2 margin provenance (r = 1.035) | `campaign_g2/partA/`; the endpoint cells of the deployed fits | — | `analyze_g2.py` (p99/p50@3199 column), `profile_dispersion.py` |
 | §S2 thermal figures of the deployment sessions and the E5-B-live re-run | `govrep_rev/*/session.log`, `e5b_live/nx/session.log` | — | `deployment_stats.py --section thermal` |
 | §S2 acceptance and occupancy; phase-locking detail | `govrep_rev/nx*`, `govrep/*.tegra`; `e3_nx/`, `e3_nano/` | — | `tenancy_stats.py --section occupancy`, `--section phase` |
+| §S2 amendment log of the transfer study, entry (4): post-hoc re-pick of the probe summaries of the first NX admission series (2026-09-16), which the entry records as discarded unscored | JSON summaries of 178 of its 180 probes, read from the history at commit `9383875` (`e3_nx/<cond>/t<k>.probe.json`; needs a clone with its history); the registered series and the reference sweeps in `e3_nx/` | — | `e3_discarded_repick.py` (re-derives the 180 registered picks from their JSON summaries as a check of the method; then, per NX condition, the banded picks of the first series and how many lie below the reference frontier; no contract ran in that series, so P2 cannot be computed for it and no condition can be shown to be supported in it; under the rule a pick below the frontier withholds support by itself) |
 | §S3 batch axis, session repeats, low-clock collapse and two-cell pairs | `batch_axis/`, `parta_reps/`, `parta_reps_nx/`, `campaign_g2/partA/`, `estimator_break/` | `c9_batch.sh`, `c6_reps.sh` | `emc_axis_stats.py --section batch` (compute p50), `--section reps` (response-time p50), `--section xsku`, `--section pairs` |
 | §S4 energy and Pareto dominance | `energy_cal/` | `energy_cal_inv.sh`, `energy_cal_gov.sh` | `analyze_energy_cal.py` |
 | §S5 tails and bursts | `campaign_g2/partB/`; replication cells `e4_replication/` (the NX cells also in `e4_nx/`), `partb_ext/` (Zenodo) | `run_g2.sh B`, `e4_replication.sh`, `nano_c7.sh` | `analyze_g2.py`, `analyze_bursts.py`, `analyze_evt_validation.py` (GPD validation and threshold spread), `tails_mech_stats.py --section worst`, `--section nx` (the replication cells) |
-| §S6 shared stall signature | `mech_dose/`, `mech_nx/`; `partb_ext/` (Zenodo) | `mech_dose.sh`, `nano_wave2a.sh`, `nx_wave2.sh` | `mech_kdur_extract.py`, `mech_kdur_ts.py` (kernel durations from Nsight Systems exports, which the runners delete after extraction and which are not released; their outputs `mech_dose/kdur_*.txt`, `mech_dose/ts_ts_*.csv` and `mech_nx/kdur_*.txt` are), `tails_mech_stats.py --section ext`, `--section cycles`, `--section slow`; † Fig. S9; ‡ the Nsight Compute kernel-replay figures (8 % faster at 3199 MHz in isolation, L2 hit rate ≈ 83 %) and those of the fine-grained GPU-clock, temperature and supply-current trace (1013–1017 MHz, 51 vs 52 °C, +9 to 15 %): their data are not in this release |
+| §S6 shared stall signature | `mech_dose/`, `mech_nx/`; `partb_ext/` (Zenodo) | `mech_dose.sh`, `nano_wave2a.sh`, `nx_wave2.sh` | `mech_kdur_extract.py`, `mech_kdur_ts.py` (kernel durations from Nsight Systems exports, which the runners delete after extraction and which are not released; their outputs `mech_dose/kdur_*.txt`, `mech_dose/ts_ts_*.csv` and `mech_nx/kdur_*.txt` are), `tails_mech_stats.py --section ext`, `--section cycles`, `--section slow`; † Fig. S9; ‡ the Nsight Compute kernel-replay figures (8 % faster at 3199 MHz in isolation, L2 hit rate ≈ 83 %) and those of the diagnostic run of 2026-06-17 (GPU clock 993–1017 MHz, highest junction-temperature readings 51 vs 52 °C, median input power 9 % higher at EMC 3199 MHz): their data are not in this release; ‡ the figures of the 500 ms tegrastats logs of the two Nsight Systems runs of 2026-07-02 (GPU clock 993–1017 and 995–1017 MHz, mean GPU temperature 50.15 and 50.85 °C, mean input power 15 % higher at EMC 3199 MHz): read directly from the released logs `mech_dose/e{2133,3199}_g1020.tegra` |
 | §S7 actuation lag | `pilot_trans/` (probe traces on Zenodo); live first-miss upshift `live_gov/emcsw_*` | `pilot_trans/run_trans_pilot.py`, `nx_live.sh` | `pilot_trans/analyze_trans.py`, `tails_mech_stats.py --section live` (the live upshift) |
 | §S9 independent burst replication | `p3_*`, `p3hi_*` | `part3/run_part3.sh`, `part3/run_part3_highload.sh` (stress-ng, June 2026) | `part3/analyze_part3_bursts.py` (P[miss \| miss] at the p99.9-anchored deadline, per cell with its stressor) |
 
@@ -357,11 +370,11 @@ logs. They are unrelated to the older folder names `e1_governor`,
 |---|---|---|---|---|---|
 | E1 | balanced, interleaved blind/aware replication of Table II: every clock once per pair index, 10 pairs × 1,000 cycles, thermally gated, EMC locked at 2133 MHz with readback; three NX and two Nano sessions, 2026-09-14 to 09-16 | `govrep_rev.sh`, `govrep_rev2.sh`, `govrep_rev3.sh` | `govrep_rev/{nx,nx_mobilenet,nx_mobilenet_s3,nano,nano_mobilenet_s2}`; 33 Hz endpoint cells `refit33/nx/` | as Table II | `E1_E2_protocol.md` |
 | E1b | the same design for ViT-Small, YOLOv8s and ResNet-50 on the NX and ViT-Small on the Nano, one session each | `govrep_rev2.sh`, `govrep_rev3.sh`, `govrep_rev.sh` (Nano ViT-Small) | `govrep_rev/{nx_vit,nx_yolov8s,nx_resnet50,nano_vit}`, `refit33/*_{vit,yolov8s,resnet50}` | `e1b_stats.py` | `E1_E2_protocol.md` (E1b) |
-| E2 | deadline grids fixed before the E1/E1b runs | — | — | grids in `govdeploy_common.py` and `e1b_stats.py` | `E1_E2_protocol.md` |
+| E2 | pre-stated deadline grids: the two MobileNetV2 grids were logged while NX session 1 was running and just after Nano session 1 ended, before either session was scored against them; every other grid before its session (times, time zones and their basis: the public-copy notes of the protocol log) | — | — | grids in `govdeploy_common.py` and `e1b_stats.py` | `E1_E2_protocol.md` |
 | E3 | transfer study of the frozen dispersion-banded admission rule: 14 transfer conditions on both boards, two 7 Hz mechanism conditions (N9, A7) added by a dated amendment, and the calibration control C0 | `admit_loop.sh`, `admit_refsweep.sh`, `nano_e3_*.sh` | `e3_nx/`, `e3_nano/`; post-hoc rate-matched re-run `e3_nx_r33/` | `e3_stats.py`, `e3_table.py`, `e3_tally.py`, `e3_repick.py`, `e3_util_offline.py` | `E3_protocol.md` (frozen 2026-09-14; amendment log §8), `E3_runner_notes.md` |
 | E4 | 16 more fresh launches at the one-bin-headroom design point (1020 MHz, D = 12 ms), 24 with the eight of July 2026 | `launch_ext.sh --launches 16` | `launch_ext/nx/mobilenet_vit10_g1020_D12/`, `launch1020/` | `launch_ext_stats.py`, `fresh_series.py` | — |
-| E5 | Han-style memory-aware latency model (H1: deployment point held out; H2: in-sample with a free offset) inside the deployed pick rule, scored offline on the E1/E1b sessions | `sweep_rate.sh` (EMC {665.6, 2133, 3199} × 10 GPU clocks, 800 cycles at each model's release rate) | `nx_validation_r33/` | `han_fit.py`, `e5_han_baseline.py`, `selector_cmp.py`, `e5b_contrast.py` | `E1_E2_protocol.md` (E5, 2026-09-16) |
-| E5-B | EMC-free replay of a Han-derived joint-scaling selector (energy per period), with an interleaved re-run of its picks (E5-B-live: seven cells × ten rounds, EMC re-locked with readback before every cell, 2026-10-28) | `govrep_emcfree.sh` | `e5b_live/nx/` | `e5b_emcfree.py`, `e5b_live_table.py` | `E1_E2_protocol.md` (E5-B, E5-B-live, 2026-10-28) |
+| E5 | Han-style memory-aware latency model (H1: deployment point held out; H2: in-sample with a free offset) inside the deployed pick rule, scored offline on the E1/E1b sessions; the protocol entry writes the model with the offset for both variants and names two MobileNetV2 sessions, while as scored H1 has no offset (a free offset is not identifiable from two memory levels) and both variants use three MobileNetV2 sessions | `sweep_rate.sh` (EMC {665.6, 2133, 3199} × 10 GPU clocks, 800 cycles at each model's release rate) | `nx_validation_r33/` | `han_fit.py`, `e5_han_baseline.py`; added later, not in the protocol entry: `selector_cmp.py`, `e5b_contrast.py`, and the post-hoc `e5_modesens.py` (Supp. Table S29) | `E1_E2_protocol.md` (E5, 2026-09-16; post-hoc entry of 2026-11-11) |
+| E5-B | EMC-free replay of a Han-derived joint-scaling selector (energy per period), with an interleaved re-run of its picks (E5-B-live: seven cells × ten rounds, EMC re-locked with readback before every cell, 2026-10-28) | `govrep_emcfree.sh` | `e5b_live/nx/` | `e5b_emcfree.py`, `e5b_live_table.py`; post hoc: `e5_modesens.py` (Supp. Table S29) | `E1_E2_protocol.md` (E5-B, E5-B-live, 2026-10-28) |
 | E6 | paired intervals for every energy difference | — | the E1/E1b sessions | `govdeploy_stats.py`, `solo_stats.py`, `nano_vit_grid.py`, `e1b_stats.py`, `selector_cmp.py`; June–July pairs `energy_pairs_ci.py` | — |
 | E7 | knob-by-knob and power-mode tables (Supp. S16, S17) | — | run metadata, `repro/` | `nvpmodel_modes.py` | — |
 | E8 | decode horizon under the 10 Hz ViT-Small co-tenant at H = 1,000 and 3,000 tokens, five fresh launches each (Qwen2.5-1.5B Q4_K_M, GPU 1173 MHz, EMC 2133 MHz, 2026-09-16) | `horizon_ext.sh --H 1000 --launches 5` (and `--H 3000`) | `horizon_ext/nx/` | `horizon_ext_stats.py` | `E8_protocol.md` (frozen 2026-09-15) |
@@ -386,7 +399,28 @@ MODE=refit MODEL=vit ./campaign/govrep_rev3.sh             # -> results/refit33/
 
 The session logs record at their start the board, host, checkout commit and
 parameters of the run (the sweep log of `nx_validation_r33/` has no start
-line).
+line). The `commit=` field is the short id of the checkout's HEAD when the
+runner started (`git rev-parse --short HEAD`), so it does not cover files that
+were not committed. The 42 `session.log` files record 14 distinct ids. Only
+`8acfb29` (2026-07-07) is a commit in the history of this repository: every NX
+log with a start line and the Nano's first two sessions (`govrep_rev/nano`,
+`govrep_rev/nano_vit`) record it, and it is older than the runners that wrote
+those lines (first committed on 2026-09-15 or later), so there the field does
+not identify the campaign code that ran. The other 13 ids, all recorded on the
+Nano, are not in this history.
+
+Those 13 ids are commits of the working history in which the Nano ran the
+campaigns. For the release, the 28 commits of this repository dated 2026-09-15
+to 2026-10-23 were re-created from that history, each with its date and commit
+message: in nine scripts under `campaign/`, comments, docstrings and print
+strings that referred to or quoted non-public documents, or named unreleased
+files, were reworded, and one variable name and one output path were changed;
+no file under `results/` differs. The ids changed with the content; logged id = id here: `fa5ca18` = `bb67846`,
+`48b3582` = `932d6f3`, `abf3e32` = `7a9166e`, `7185490` = `c52092f`,
+`bad9d31` = `9a19dc4`, `aa1ec15` = `017f654`, `fa593f6` = `af3a639`,
+`bc214d2` = `aa10d5d`, `7dbe28c` = `854f07a`, `59bfbd9` = `e9639ef`,
+`2d8316a` = `a5d0a1b`, `662ee78` = `dea4953` and `2c17090` = `9245e41`. On the NX the checkout stayed at
+`8acfb29` and the campaign directory was synchronised by copy.
 
 ### Transfer study (E3)
 
@@ -415,14 +449,18 @@ python3 campaign/e3_stats.py --board nx --cond N3
 ```
 
 Kept as recorded and not scored as band results: `e3_nano/A5` and `A6`,
-protocol-execution failures (the probe had not seen the tenant) re-run as
+classified at the time as protocol-execution failures (7 of the 10 A6 probes
+and one A5 probe were indistinguishable from the solo cell; the cause was not
+established) and re-run as
 A5r/A6r under the readiness check. The NX reference sweeps date from
 2026-09-16 and the NX admission loops from their re-run on 2026-10-13. The
 `WARN` cross-check lines that `e3_stats.py --board nx` prints come from the
 2026-09-16 runs, whose log lines share each condition's `session.log`, and
 affect no number: 180 `t<k> PICK FAIL` lines of the discarded first admission
 series (its run-time pick failed, so it produced probes but no contracts, and
-its probe files were discarded) and one `f_oracle=INFEASIBLE vs recomputed <f>`
+its probe files were discarded; JSON summaries of 178 of its 180 probes remain
+in the history at commit `9383875`, from which `e3_discarded_repick.py`
+re-derives that series' picks, post hoc) and one `f_oracle=INFEASIBLE vs recomputed <f>`
 line per condition, because the run-time scoring of each reference sweep
 logged `m=FAIL` for every cell; `e3_stats.py` recomputes the frontier from the
 recorded `ref_g<f>.csv` files.
@@ -455,11 +493,21 @@ result of the article uses.
 
 [`docs/protocols/`](docs/protocols/) holds the protocol logs:
 `E1_E2_protocol.md` (E1/E2 frozen 2026-09-14; E1b 2026-09-15; the amendments;
-E5 2026-09-16; E5-B and E5-B-live 2026-10-28), `E3_protocol.md` (frozen
+E5 2026-09-16; E5-B and E5-B-live 2026-10-28; a post-hoc sensitivity entry of
+2026-11-11), `E3_protocol.md` (frozen
 2026-09-14; amendment log in §8, including the 2026-10-23 post-hoc entry),
 `E3_runner_notes.md` (2026-09-14: how the runners implement E3) and
 `E8_protocol.md` (frozen 2026-09-15). The dates are those recorded in the logs;
-the files entered version control with this release, as each header states.
+the files entered version control with release `v2026.11` (commit of
+2026-11-03), as each header states. Bracketed
+public-copy notes, added after that release, give the time zone of a date, the
+time of writing where the author's analysis records (not released) hold it, and
+the times of the released session logs that the date can be read against: the
+Nano's logs are in UTC, the NX's in its local time (UTC+8), and the protocol
+logs date some entries in UTC and others in Korean time (KST, UTC+9). Apart
+from what its header lists, each log is kept as written; where its wording
+differs from the article or its supplement, the article and its supplement are
+the later statement.
 
 ## Data layout and formats
 
@@ -562,9 +610,11 @@ pip install -r requirements.txt               # numpy, scipy, matplotlib
 python3 campaign/e3_stats.py --board nx       # any analysis script, from any directory
 ```
 
-The analysis scripts read `results/` only and print to stdout; they write a
+The analysis scripts read `results/` only (`e3_discarded_repick.py` also reads
+probe summaries from the git history) and print to stdout; they write a
 file only when given an output path (such as `--md`, `--tex`, `--save`, or the
-`--json PATH` of `analyze_governor_sim.py` and `e5b_emcfree.py`; elsewhere
+`--json PATH` of `analyze_governor_sim.py`, `e5b_emcfree.py` and
+`e5_modesens.py`; elsewhere
 `--json` prints JSON to stdout). The table printers (`govdeploy_stats.py`,
 `solo_stats.py`, `nano_vit_grid.py`, `qwengov_2k.py`, `fresh_series.py`,
 `e3_table.py`, which runs `e3_stats.py` for both boards) and the number
@@ -595,7 +645,12 @@ t quantiles, which move one steady-window interval bound by 0.01 mJ. The NX
 picks and admission counts are unchanged, and
 `han_fit.py --loco-table --key compute_us`, `selector_cmp.py` and
 `e5b_emcfree.py` print the same values (the `--json` file of the latter
-differs only beyond the printed digits). `energy_pairs_ci.py` then computes its
+differs only beyond the printed digits); `e5_modesens.py --model mobilenet`
+prints the same picks and counts, with the coefficients of its fast-mode fits
+changed in the last digits (H1 A = 1853.3, B = 5147.6 instead of 1852.5,
+5148.5) and the predicted margins it lists by up to 0.4 µs; run without `--model`, its
+fast-mode H1 picks for ViT-Small at 15.5 ms and for YOLOv8s at 33.0 ms (1173 MHz,
+admitted with predicted margins of 0.3 and 0.0 µs) become declines. `energy_pairs_ci.py` then computes its
 t quantiles from the exact finite-series form of the t distribution and prints
 the same values; only the `scipy=` flag of its first line changes.
 
@@ -607,7 +662,7 @@ the same values; only the `scipy=` flag of its first line changes.
   detect the board from the GPU devfreq table (top clock 1173 MHz: NX, victim
   core 7, co-runner core 5; 1020 MHz: Nano, core 5 and core 4) and put the INA
   logger on core 0.
-- **Paths.** The runners default to the authors' layout and take overrides from
+- **Paths.** The runners default to the author's layout and take overrides from
   the environment: `PY` (a Python with `onnxruntime-gpu`; default
   `/home/dk/mobile/rt-infer-bench/.venv/bin/python3`), `ONNX_DIR` (ONNX models;
   default `/home/dk/mobile/rt-infer-bench/models`), `GGUF_DIR` (GGUF models;
@@ -654,7 +709,7 @@ sha256 [above](#models)), builds the GEMM proxy if it is missing, and writes
 sudo PY=/path/to/python-with-onnxruntime-gpu GENPY=/path/to/python-with-onnx ./repro/replicate.sh
 ```
 
-On the authors' Nano the 1,000-iteration cells of Supp. §S3 give +11.7 %
+On the author's Nano the 1,000-iteration cells of Supp. §S3 give +11.7 %
 (MobileNetV2) and −9.1 % (GEMM); the 300-iteration cells of
 `results/estimator_break` at GPU 1020 MHz, run like the kit's, give +12.3 % and
 −10.6 %.

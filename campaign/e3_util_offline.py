@@ -165,7 +165,7 @@ def main():
 
     # ---- summary
     print("\n== summary (theta = 1) ==")
-    for grp, cs in [("A5r+A6r", ["A5r", "A6r"]), ("A1-A4", ["A1", "A2", "A3", "A4"]), ("A5+A6 (execution failures)", ["A5", "A6"])]:
+    for grp, cs in [("A5r+A6r", ["A5r", "A6r"]), ("A1-A4", ["A1", "A2", "A3", "A4"]), ("A5+A6 (superseded first runs)", ["A5", "A6"])]:
         rr = [r for r in rows if r["cond"] in cs and r["fb"] != "INFEASIBLE"]
         fail = [r for r in rr if r["m_b"] > TAU]
         raised = [r for r in rr if r["changed"]]

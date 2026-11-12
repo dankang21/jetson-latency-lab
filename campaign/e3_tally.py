@@ -18,8 +18,8 @@ Per condition directory results/e3_<board>/<cond>/:
   band necessity: the band fired iff t<k>.pick.json f_pt != f_b; each removed point admission
      (f_pt feasible) ran as its own contract t<k>.contract_pt.csv, scored like m_b ('pt fail').
 The contract's own label suffix _g<f> is checked against f_b and every contract against 1,000 cycles.
-'Scored' set = every condition except the superseded first runs A5 and A6 (protocol-execution
-failures, re-run as A5r/A6r under the readiness-verified runner; printed for completeness).
+'Scored' set = every condition except the superseded first runs A5 and A6 (classified at the time as
+protocol-execution failures, re-run as A5r/A6r under the readiness-verified runner; printed for completeness).
 Setting lines give, besides the sums, the range of the pooled miss over the conditions, how many
 conditions keep it within tau, and how many have P1 = 0.
 Usage: e3_tally.py [--json]

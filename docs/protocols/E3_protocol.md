@@ -2,11 +2,15 @@
 > the manuscript "When Memory-Clock State Changes Deadline Admission: Evidence
 > from Jetson Orin". The freeze, pre-statement and amendment dates are those
 > recorded in the log. They are self-attested: the file was not under version
-> control until this release. Passages that quoted or cited non-public
+> control until release `v2026.11`. Passages that quoted or cited non-public
 > documents are replaced by a neutral description of what they address;
 > internal working references (finding labels, names and paths of internal
 > notes) are removed; where the log referred to the manuscript in preparation,
-> it now says "the article". Nothing else is changed.
+> it now says "the article". Added after release `v2026.11`: one bracketed
+> note that begins "Public-copy note", which gives the time zone and the times
+> of the freeze and of the entries made before the first trials (self-attested,
+> like the log's dates) and the start of those trials in their released
+> session log. Nothing else is changed.
 
 ---
 
@@ -17,6 +21,13 @@ freeze: see `git log -1` at the time this file is committed. No fresh-probe
 trial under any condition listed below has been run before this document was
 written. Any deviation from this protocol must be recorded in §8 with the date
 and reason, and reported in the article.
+
+[Public-copy note: the date of the freeze and the dates of the three §8 entries
+made before the first trials are UTC dates. The protocol was written by 23:45
+UTC and its deadline-rule entry at 23:46 UTC on 2026-09-14, and the first entry
+dated 2026-09-15 at 00:01 UTC on that day (author's analysis records, not
+released). The first E3 trials, those of Nano A1, start at 01:02:22 UTC on
+2026-09-15 by their session log (results/e3_nano/A1/session.log).]
 
 Addresses: whether the dispersion band, set and validated only on the
 calibration condition (§2), transfers to other primaries, co-runners,
