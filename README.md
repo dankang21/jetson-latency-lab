@@ -3,9 +3,9 @@
 **Artifact for _"When Memory-Clock State Changes Deadline Admission: Evidence
 from Jetson Orin"_** (Jaehoon Kang, 2026).
 
-On integrated SoCs the memory controller has its own DVFS domain. On two Jetson
-Orin SKUs this memory clock (EMC) is a deployment state that CPU×GPU latency
-estimators omit: their "frequency-independent" term depends on it. On an
+On two Jetson Orin SKUs the memory controller has its own DVFS domain, and
+this memory clock (EMC) is a deployment state that CPU×GPU latency estimators
+omit: their "frequency-independent" term depends on it. On an
 EMC-locked Orin NX, a GPU-only MobileNetV2 fit profiled at the deployment
 release rate but at another memory point violates a 2 % miss budget at 7/7,
 7/9 and 6/9 of the pre-stated deadlines evaluated in three sessions; a two-cell
